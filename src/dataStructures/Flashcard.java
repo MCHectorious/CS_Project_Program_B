@@ -78,22 +78,6 @@ public class Flashcard {
 		return string.substring(string.indexOf(CARD_SENTENCE_SEPERATOR)+ CARD_SENTENCE_SEPERATOR.length());
 	}
 	
-	public static ArrayList<Flashcard> getFlashcardListFromTextFile(String file){
-		ArrayList<Flashcard> output = new ArrayList<>();
-		
-		try{
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			String line;
-		    while ((line = br.readLine()) != null){
-	    		output.add(new Flashcard(line));
-		    }
-		    br.close();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 
-		
-		return output;
-	}
 	
 }
