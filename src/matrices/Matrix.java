@@ -1,6 +1,6 @@
 package matrices;
 
-import util.CustomRandom;
+import generalUtilities.CustomRandom;
 
 public class Matrix extends GeneralMatrix{
 

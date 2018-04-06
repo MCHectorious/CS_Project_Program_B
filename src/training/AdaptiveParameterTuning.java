@@ -1,10 +1,10 @@
 package training;
 
 import dataStructures.FlashcardDataSet;
-import fileIO.DataExport;
-import model.Model;
-import model.NeuralNetwork;
-import util.CustomRandom;
+import fileManipulation.DataExport;
+import models.Model;
+import models.NeuralNetwork;
+import generalUtilities.CustomRandom;
 
 public class AdaptiveParameterTuning {
 	

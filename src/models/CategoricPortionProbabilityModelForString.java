@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import dataStructures.DataStep;
-import matrix.Vector;
+import matrices.Vector;
 import training.DataPreparation;
-import util.CustomRandom;
+import generalUtilities.CustomRandom;
 
 public class CategoricPortionProbabilityModelForString implements Model {
 

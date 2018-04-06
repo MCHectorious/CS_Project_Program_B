@@ -1,5 +1,7 @@
 package characterOperations;
 
+import generalUtilities.Util;
+
 import java.util.ArrayList;
 
 public class SubstitutionSetOperation implements CharacterOperation{

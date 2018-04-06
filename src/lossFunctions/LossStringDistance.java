@@ -2,12 +2,8 @@ package lossFunctions;
 
 import java.util.ArrayList;
 
-import characterOperations.CharacterOp;
-import characterOperations.CopyOp;
-import characterOperations.DeleteOp;
-import characterOperations.InsertionOp;
-import characterOperations.SubstituteOp;
-import matrix.Vector;
+import characterOperations.*;
+import matrices.Vector;
 import training.DataPreparation;
 
 public class LossStringDistance implements Loss {
@@ -96,7 +92,7 @@ public class LossStringDistance implements Loss {
         return instructions;
 	}
 	
-	public static ArrayList<CharacterOp> generateCharacterOperations(String x, String y){
+	public static ArrayList<CharacterOperation> generateCharacterOperations(String x, String y){
         int[][] dp = new int[x.length() + 1][y.length() + 1];
         
         for(int i=0;i<=x.length();i++) {
@@ -117,7 +113,7 @@ public class LossStringDistance implements Loss {
             }
         }	
         
-        ArrayList<CharacterOp> instructions = new ArrayList<>();
+        ArrayList<CharacterOperation> instructions = new ArrayList<>();
         
         for(int i=x.length();i>0;) {
         	for(int j=y.length();j>0;) {
@@ -127,14 +123,14 @@ public class LossStringDistance implements Loss {
         		
         		if(substitutionCost<insertionCost) {
                 	if(deletionCost<substitutionCost) {
-                		instructions.add(new DeleteOp());
+                		instructions.add(new DeleteOperation());
                 		i--;
                 	}else {
 
                 		if(x.charAt(i-1) == y.charAt(j-1)) {
-                			instructions.add(new CopyOp());
+                			instructions.add(new CopyOperation());
                 		}else {
-                			instructions.add(new SubstituteOp(x.charAt(i-1),y.charAt(j-1)));
+                			instructions.add(new SubstituteOperation(x.charAt(i-1),y.charAt(j-1)));
                 			
                 		}
                 		i--;
@@ -142,10 +138,10 @@ public class LossStringDistance implements Loss {
                 	}
                 }else {
                 	if(deletionCost<insertionCost) {
-                		instructions.add(new DeleteOp());
+                		instructions.add(new DeleteOperation());
                 		i--;
                 	}else {
-                		instructions.add(new InsertionOp(y.charAt(j-1)) );
+                		instructions.add(new InsertionOperation(y.charAt(j-1)) );
                 		j--;
                 	}
                 }

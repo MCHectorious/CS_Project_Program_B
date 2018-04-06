@@ -3,7 +3,7 @@ package dataSplitting;
 import java.util.ArrayList;
 
 import dataStructures.DataStep;
-import matrix.Vector;
+import matrices.Vector;
 import training.DataPreparation;
 
 public class ContainPhrase implements DataSplitOp{

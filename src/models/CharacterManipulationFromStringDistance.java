@@ -6,16 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import dataStructures.DataStep;
-import loss.LossStringDistance;
-import matrix.Vector;
+import lossFunctions.LossStringDistance;
+import matrices.Vector;
 import training.DataPreparation;
-import util.CustomRandom;
-import characterOperations.CharacterOp;
-import characterOperations.CopyOp;
-import characterOperations.DeleteOp;
-import characterOperations.InsertionOp;
-import characterOperations.SubstituteOp;
-import characterOperations.SubstitutionSetOp;
+import generalUtilities.CustomRandom;
+import characterOperations.*;
+
 
 public class CharacterManipulationFromStringDistance implements Model {
 
@@ -26,26 +22,26 @@ public class CharacterManipulationFromStringDistance implements Model {
 			return keyes;
 		}
 
-		public ArrayList<CharacterOp> getOps() {
+		public ArrayList<CharacterOperation> getOps() {
 			return ops;
 		}
 
-		private ArrayList<CharacterOp> ops = new ArrayList<>();
+		private ArrayList<CharacterOperation> ops = new ArrayList<>();
 		
-		public ProbabilitySet(ArrayList<Double> k, ArrayList<CharacterOp> o) {
+		public ProbabilitySet(ArrayList<Double> k, ArrayList<CharacterOperation> o) {
 			keyes = k;
 			ops = o;
 		}
 		
 		
 		
-		public CharacterOp getOp(double d) {
+		public CharacterOperation getOp(double d) {
 			for(int i=0;i<keyes.size();i++) {
 				if(d<=keyes.get(i)) {
 					return ops.get(i);
 				}
 			}
-			return new CopyOp();
+			return new CopyOperation();
 		}
 		
 	}
@@ -60,12 +56,12 @@ public class CharacterManipulationFromStringDistance implements Model {
 	public CharacterManipulationFromStringDistance(List<DataStep> trainingData, DataPreparation dataPreparation, CustomRandom r) {
 		dataPrep = dataPreparation;
 		random = r;
-		ArrayList<Map<CharacterOp, Integer>> operationsCombined = new ArrayList<>();
+		ArrayList<Map<CharacterOperation, Integer>> operationsCombined = new ArrayList<>();
 		
 		for(DataStep step: trainingData) {
 			
 			
-			ArrayList<CharacterOp> instructions = LossStringDistance.generateCharacterOperations(step.getInputText(), step.getOutputText());
+			ArrayList<CharacterOperation> instructions = LossStringDistance.generateCharacterOperations(step.getInputText(), step.getOutputText());
 			
 			/*for(CharacterOp charOp:instructions) {
 				StringBuilder tempBuilder = new StringBuilder();
@@ -76,14 +72,14 @@ public class CharacterManipulationFromStringDistance implements Model {
 			*/
 			for(int i=0;i<instructions.size();i++) {
 				if(operationsCombined.size()==i) {
-					operationsCombined.add(new HashMap<CharacterOp,Integer>());
+					operationsCombined.add(new HashMap<CharacterOperation,Integer>());
 				}
 				boolean found = false;
-				switch(instructions.get(i).typeID()) {
-					case CopyOp.ID:
+				switch(instructions.get(i).getTypeID()) {
+					case CopyOperation.ID:
 						
-						for(CharacterOp op : operationsCombined.get(i).keySet()) {
-							if(op.typeID()==CopyOp.ID) {
+						for(CharacterOperation op : operationsCombined.get(i).keySet()) {
+							if(op.getTypeID()==CopyOperation.ID) {
 								found = true;
 								int prevValue = operationsCombined.get(i).get(op);
 								operationsCombined.get(i).remove(op);
@@ -92,12 +88,12 @@ public class CharacterManipulationFromStringDistance implements Model {
 							}
 						}
 						if(!found) {
-							operationsCombined.get(i).put(new CopyOp(), 1);	
+							operationsCombined.get(i).put(new CopyOperation(), 1);
 						}
 						break;
-					case DeleteOp.ID:
-						for(CharacterOp op : operationsCombined.get(i).keySet()) {
-							if(op.typeID()==DeleteOp.ID) {
+					case DeleteOperation.ID:
+						for(CharacterOperation op : operationsCombined.get(i).keySet()) {
+							if(op.getTypeID()==DeleteOperation.ID) {
 								found = true;
 								int prevValue = operationsCombined.get(i).get(op);
 								operationsCombined.get(i).remove(op);
@@ -106,17 +102,17 @@ public class CharacterManipulationFromStringDistance implements Model {
 							}
 						}
 						if(!found) {
-							operationsCombined.get(i).put(new DeleteOp(), 1);
+							operationsCombined.get(i).put(new DeleteOperation(), 1);
 						}
 						break;
-					case SubstituteOp.ID:
+					case SubstituteOperation.ID:
 						
 						//System.out.println("Yes");
 						char input = instructions.get(i).getInputs().get(0).charValue();
 						char output = instructions.get(i).getOutputs().get(0).charValue();
 						boolean needsToBeAdded = true;
-						for(CharacterOp op: operationsCombined.get(i).keySet()) {
-							if(op.typeID()==SubstitutionSetOp.ID) {
+						for(CharacterOperation op: operationsCombined.get(i).keySet()) {
+							if(op.getTypeID()==SubstitutionSetOperation.ID) {
 								boolean inputExists = false;
 								for(int j=0;j<op.getInputs().size();j++) {
 									char character = op.getInputs().get(j).charValue();
@@ -142,7 +138,7 @@ public class CharacterManipulationFromStringDistance implements Model {
 									prevInputs.add(input);
 									prevOutputs.add(output);
 									operationsCombined.get(i).remove(op);
-									operationsCombined.get(i).put(new SubstitutionSetOp(prevInputs,prevOutputs), prevValue+1);
+									operationsCombined.get(i).put(new SubstitutionSetOperation(prevInputs,prevOutputs), prevValue+1);
 									needsToBeAdded = false;
 									break;
 								}
@@ -157,7 +153,7 @@ public class CharacterManipulationFromStringDistance implements Model {
 							ArrayList<Character> Outputs = new ArrayList<>();
 							Inputs.add(input);
 							Outputs.add(output);
-							operationsCombined.get(i).put(new SubstitutionSetOp(Inputs,Outputs), 1);
+							operationsCombined.get(i).put(new SubstitutionSetOperation(Inputs,Outputs), 1);
 						}
 						break;
 						/*char input = instructions.get(i).getInputs().get(0).charValue();
@@ -213,10 +209,10 @@ public class CharacterManipulationFromStringDistance implements Model {
 						}
 						break;
 						*/
-					case InsertionOp.ID:
+					case InsertionOperation.ID:
 						boolean hasBeenFound = false;
-						for(CharacterOp op: operationsCombined.get(i).keySet()) {
-							if(op.typeID()==InsertionOp.ID) {
+						for(CharacterOperation op: operationsCombined.get(i).keySet()) {
+							if(op.getTypeID()==InsertionOperation.ID) {
 								if(instructions.get(i).getOutputs().get(0).charValue()==op.getOutputs().get(0).charValue()) {
 									int prevValue = operationsCombined.get(i).get(op);
 									operationsCombined.get(i).remove(op);
@@ -236,18 +232,18 @@ public class CharacterManipulationFromStringDistance implements Model {
 			
 		}
 		
-		for(Map<CharacterOp,Integer> map: operationsCombined) {
+		for(Map<CharacterOperation,Integer> map: operationsCombined) {
 			int total = 0;
-			for(CharacterOp op: map.keySet()) {
+			for(CharacterOperation op: map.keySet()) {
 				total += map.get(op);
 			}
 			
 			//Map<Double, CharacterOp> tempMap = new HashMap<>();
 			ArrayList<Double> doubles = new ArrayList<>();
-			ArrayList<CharacterOp> charOps = new ArrayList<>();
+			ArrayList<CharacterOperation> charOps = new ArrayList<>();
 			double previous = 0.0;
 
-			for(CharacterOp op: map.keySet()) {
+			for(CharacterOperation op: map.keySet()) {
 				previous += map.get(op);
 				doubles.add((double)previous/(double) total);
 				charOps.add(op);
@@ -279,7 +275,7 @@ public class CharacterManipulationFromStringDistance implements Model {
 				}
 			}*/
 			
-			operations.get(i).getOp(randomArray[i]).convert(string.charAt(i), builder);
+			operations.get(i).getOp(randomArray[i]).convertCharacter(string.charAt(i), builder);
 			
 		}
 		if(string.length()>operations.size()) {

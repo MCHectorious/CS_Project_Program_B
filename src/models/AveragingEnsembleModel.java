@@ -2,10 +2,10 @@ package models;
 
 import java.util.ArrayList;
 
-import loss.Loss;
-import loss.LossSumOfSquares;
-import matrix.Vector;
-import util.Util;
+import lossFunctions.Loss;
+import lossFunctions.LossSumOfSquares;
+import matrices.Vector;
+import generalUtilities.Util;
 
 public class AveragingEnsembleModel implements Model {
 

@@ -1,8 +1,8 @@
 package models;
 
-import matrix.Matrix;
-import matrix.Vector;
-import util.CustomRandom;
+import matrices.Matrix;
+import matrices.Vector;
+import generalUtilities.CustomRandom;
 
 public class LinearLayer implements Layer, Model{
 

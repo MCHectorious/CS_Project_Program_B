@@ -3,15 +3,8 @@ package training;
 import java.util.ArrayList;
 
 import dataStructures.FlashcardDataSet;
-import model.AdvancedCopying;
-import model.AveragingEnsembleModel;
-import model.BasicCopying;
-import model.CategoricPortionProbabilityModelForCharacter;
-import model.CategoricPortionProbabilityModelForString;
-import model.StackingEnsembleModel;
-import model.Model;
-import model.NeuralNetwork;
-import util.CustomRandom;
+import models.*;
+import generalUtilities.CustomRandom;
 import training.Trainer;
 
 public class MainTrainer {

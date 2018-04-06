@@ -1,6 +1,6 @@
 package models;
 
-import matrix.Vector;
+import matrices.Vector;
 
 public class BasicCopying implements Model {
 

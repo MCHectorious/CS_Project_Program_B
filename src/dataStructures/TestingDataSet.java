@@ -3,14 +3,15 @@ package dataStructures;
 import java.util.ArrayList;
 import java.util.List;
 
-import fileIO.DataImport;
-import loss.LossStringDistance;
-import matrix.Vector;
-import model.Model;
-import nonlinearity.NonLinearity;
-import nonlinearity.RoughTanhUnit;
+import fileManipulation.DataImport;
+import generalUtilities.CustomRandom;
+import lossFunctions.LossStringDistance;
+import matrices.Vector;
+
+import models.Model;
+import nonlinearityFunctions.NonLinearity;
+import nonlinearityFunctions.RoughTanhUnit;
 import training.DataPreparation;
-import util.CustomRandom;
 
 public class TestingDataSet implements DataSet {
 

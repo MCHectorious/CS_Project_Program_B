@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fileIO.DataExport;
-import fileIO.DataImport;
-import loss.LossStringDistance;
-import matrix.Vector;
-import model.Model;
-import nonlinearity.NonLinearity;
-import nonlinearity.RoughTanhUnit;
+import fileManipulation.DataExport;
+import fileManipulation.DataImport;
+import lossFunctions.LossStringDistance;
+import matrices.Vector;
+import models.Model;
+import nonlinearityFunctions.NonLinearity;
+import nonlinearityFunctions.RoughTanhUnit;
 import training.DataPreparation;
-import util.CustomRandom;
-import util.Util;
+import generalUtilities.CustomRandom;
+import generalUtilities.Util;
 
 public class FlashcardDataSet implements DataSet{
 	

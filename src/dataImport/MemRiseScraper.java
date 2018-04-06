@@ -7,8 +7,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import fileIO.DataExport;
-import util.Util;
+import fileManipulation.DataExport;
+import generalUtilities.Util;
 import dataStructures.Flashcard;
 
 public class MemRiseScraper extends FlashcardScraper{

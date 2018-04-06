@@ -6,14 +6,14 @@ import java.util.List;
 
 import dataStructures.DataStep;
 import dataStructures.FlashcardDataSet;
-import fileIO.DataExport;
-import fileIO.DataImport;
-import model.*;
-import nonlinearity.RoughTanhUnit;
+import fileManipulation.DataExport;
+import fileManipulation.DataImport;
+import models.*;
+import nonlinearityFunctions.RoughTanhUnit;
 import training.DataPreparation;
 import training.Trainer;
-import util.CustomRandom;
-import util.Util;
+import generalUtilities.CustomRandom;
+import generalUtilities.Util;
 /*package findBestModel;
 
 import java.util.ArrayList;
@@ -67,20 +67,7 @@ public class TempTestingMain {
 }
 */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import dataStructures.DataStep;
-import dataStructures.FlashcardDataSet;
-import fileIO.DataExport;
-import fileIO.DataImport;
-import model.*;
-import nonlinearity.RoughTanhUnit;
-import training.DataPreparation;
-import training.Trainer;
-import util.CustomRandom;
-import util.Util;
 
 public class TempTestingMain {
 

@@ -2,11 +2,11 @@ package training;
 
 import dataStructures.DataSet;
 import dataStructures.DataStep;
-import fileIO.DataExport;
-import fileIO.DataImport;
-import matrix.Vector;
-import model.Model;
-import util.CustomRandom;
+import fileManipulation.DataExport;
+import fileManipulation.DataImport;
+import matrices.Vector;
+import models.Model;
+import generalUtilities.CustomRandom;
 
 public class Trainer {
 	

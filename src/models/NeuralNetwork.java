@@ -2,12 +2,12 @@ package models;
 
 import java.util.ArrayList;
 
-import fileIO.DataImport;
-import matrix.Matrix;
-import matrix.Vector;
-import nonlinearity.NonLinearity;
-import nonlinearity.RoughTanhUnit;
-import util.CustomRandom;
+import fileManipulation.DataImport;
+import matrices.Matrix;
+import matrices.Vector;
+import nonlinearityFunctions.NonLinearity;
+import nonlinearityFunctions.RoughTanhUnit;
+import generalUtilities.CustomRandom;
 
 public class NeuralNetwork implements Model{
 

@@ -8,22 +8,9 @@ import dataSplitting.Splitter;
 import dataStructures.DataStep;
 import dataStructures.FlashcardDataSet;
 import dataStructures.TestingDataSet;
-import matrix.Vector;
-import model.AdvancedCopying;
-import model.AverageModel;
-import model.AveragingEnsembleModel;
-import model.BasicCopying;
-import model.CategoricPortionProbabilityModelForCharacter;
-import model.CharacterManipulationFromStringDistance;
-import model.FeedForwardLayer;
-import model.Layer;
-import model.LinearLayer;
-import model.Model;
-import model.NeuralNetwork;
-import model.StackingEnsembleModel;
-import nonlinearity.RoughTanhUnit;
-import util.CustomRandom;
-import util.Util;
+import matrices.Vector;
+import models.*;
+
 
 public class TestingMain {
 

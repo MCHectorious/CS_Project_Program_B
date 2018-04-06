@@ -1,6 +1,6 @@
 package models;
 
-import matrix.Vector;
+import matrices.Vector;
 
 public interface Model {
 	void forward(Vector input, Vector output);

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dataStructures.DataStep;
-import matrix.Vector;
+import matrices.Vector;
 import training.DataPreparation;
-import util.Util;
+import generalUtilities.Util;
 
 public class AverageModel implements Model{
 

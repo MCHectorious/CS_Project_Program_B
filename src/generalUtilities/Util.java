@@ -3,7 +3,7 @@ package generalUtilities;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import model.Model;
+import models.Model;
 
 public class Util {
 

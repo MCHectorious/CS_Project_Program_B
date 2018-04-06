@@ -3,9 +3,9 @@ package dataStructures;
 import java.util.ArrayList;
 import java.util.List;
 
+import generalUtilities.CustomRandom;
 import manualTranslation.AutoDataIncrease;
 import training.DataPreparation;
-import util.CustomRandom;
 
 public class DataSequence {
 	private List<DataStep> dataSteps = new ArrayList<>();

@@ -1,11 +1,11 @@
 package training;
 
-import util.CustomRandom;
-import util.Util;
+import generalUtilities.CustomRandom;
+import generalUtilities.Util;
 import dataStructures.FlashcardDataSet;
-import fileIO.DataExport;
-import model.Model;
-import model.NeuralNetwork;
+import fileManipulation.DataExport;
+import models.Model;
+import models.NeuralNetwork;
 
 public class ParameterTuningMain {
 

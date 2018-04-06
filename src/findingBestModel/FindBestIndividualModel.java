@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import dataStructures.DataStep;
 import dataStructures.FlashcardDataSet;
-import fileIO.DataExport;
-import matrix.Vector;
-import model.*;
-import nonlinearity.RoughTanhUnit;
+import fileManipulation.DataExport;
+import matrices.Vector;
+import models.*;
+import nonlinearityFunctions.RoughTanhUnit;
 import training.DataPreparation;
 import training.Trainer;
-import util.CustomRandom;
-import util.Util;
+import generalUtilities.CustomRandom;
+import generalUtilities.Util;
 
 public class FindBestIndividualModel {
 

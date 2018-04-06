@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-import fileIO.DataExport;
+import fileManipulation.DataExport;
 import dataStructures.Flashcard;
 
 public class ManualTranslation {

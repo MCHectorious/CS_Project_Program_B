@@ -1,7 +1,7 @@
 package models;
 
 import dataSplitting.DataSplitOp;
-import matrix.Vector;
+import matrices.Vector;
 
 public class SplittingEnsembleModel implements Model{
 

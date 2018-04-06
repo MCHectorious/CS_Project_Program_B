@@ -1,6 +1,6 @@
 package dataStructures;
 
-import matrix.Vector;
+import matrices.Vector;
 
 public class DataStep {
 	private Vector input;

@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import dataStructures.DataStep;
-import loss.Loss;
-import loss.LossSumOfSquares;
-import matrix.Vector;
-import model.Model;
+import lossFunctions.Loss;
+import lossFunctions.LossSumOfSquares;
+import matrices.Vector;
+import models.Model;
 import training.DataPreparation;
-import util.Util;
+import generalUtilities.Util;
 
 public class Splitter {
 

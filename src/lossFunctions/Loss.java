@@ -1,6 +1,6 @@
 package lossFunctions;
 
-import matrix.Vector;
+import matrices.Vector;
 
 public interface Loss {
 	//void backward(Vector actualOutput, Vector targetOutput);

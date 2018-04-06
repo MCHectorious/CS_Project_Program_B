@@ -1,10 +1,10 @@
 package models;
 
-import matrix.Matrix;
-import matrix.Vector;
-import nonlinearity.*;
-import util.CustomRandom;
-import util.Util;
+import matrices.Matrix;
+import matrices.Vector;
+import nonlinearityFunctions.*;
+import generalUtilities.CustomRandom;
+import generalUtilities.Util;
 
 public class FeedForwardLayer implements Layer, Model{
 

@@ -2,7 +2,7 @@ package matrices;
 
 import java.util.ArrayList;
 
-import util.CustomRandom;
+import generalUtilities.CustomRandom;
 
 public class Vector extends GeneralMatrix{
 

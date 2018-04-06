@@ -1,8 +1,8 @@
 package models;
 
-import matrix.Vector;
-import util.CustomRandom;
-import util.Util;
+import matrices.Vector;
+import generalUtilities.CustomRandom;
+import generalUtilities.Util;
 
 public class AdvancedCopying implements Model {
 

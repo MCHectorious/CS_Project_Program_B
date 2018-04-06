@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import fileIO.DataExport;
-import fileIO.DataImport;
+import fileManipulation.DataExport;
+import fileManipulation.DataImport;
 import training.DataPreparation;
-import util.Util;
+import generalUtilities.Util;
 import dataStructures.DataStep;
 import dataStructures.Flashcard;
 

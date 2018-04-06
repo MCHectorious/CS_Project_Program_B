@@ -8,8 +8,8 @@ import java.util.Set;
 import dataStructures.DataStep;
 import dataStructures.Flashcard;
 import dataStructures.FlashcardDataSet;
-import fileIO.DataExport;
-import util.CustomRandom;
+import fileManipulation.DataExport;
+import generalUtilities.CustomRandom;
 
 public class DataPreparation {
 	

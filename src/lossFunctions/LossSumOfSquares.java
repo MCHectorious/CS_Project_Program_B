@@ -1,7 +1,7 @@
 package lossFunctions;
 
-import matrix.Vector;
-import util.Util;
+import matrices.Vector;
+import generalUtilities.Util;
 
 public class LossSumOfSquares implements Loss{
 

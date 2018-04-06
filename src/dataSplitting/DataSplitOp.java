@@ -1,6 +1,6 @@
 package dataSplitting;
 
-import matrix.Vector;
+import matrices.Vector;
 
 public interface DataSplitOp {
 

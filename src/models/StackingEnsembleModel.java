@@ -2,9 +2,9 @@ package models;
 
 import java.util.ArrayList;
 
-import matrix.Vector;
-import nonlinearity.RoughTanhUnit;
-import util.CustomRandom;
+import matrices.Vector;
+import nonlinearityFunctions.RoughTanhUnit;
+import generalUtilities.CustomRandom;
 
 public class StackingEnsembleModel implements Model {
 
