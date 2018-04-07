@@ -1,16 +1,15 @@
 package generalUtilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import models.Model;
 
-public class Util {
+import java.util.ArrayList;
+
+public class Utilities {
 
 	public static boolean isAllZeroes(double[] array) {
 		boolean output = true;
-		for(int i=0;i<array.length;i++) {
-			if(array[i]!=0) {
+		for (double d : array) {
+			if (d != 0) {
 				output = false;
 				break;
 			}
@@ -25,8 +24,8 @@ public class Util {
 	
 	public static String arrayToString(Model[] array) {
 		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<array.length;i++) {
-			builder.append(array[i].toString()).append(",");
+		for (Model model : array) {
+			builder.append(model.toString()).append(",");
 		}
 		return builder.toString();
 	}
@@ -34,45 +33,51 @@ public class Util {
 	
 	public static String arrayToString(int[] array) {
 		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<array.length;i++) {
-			builder.append(array[i]).append(",");
+		for (int i : array) {
+			builder.append(i).append(",");
 		}
 		return builder.toString();
 	}
 	
 	public static String arrayToString(Character[] array) {
 		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<array.length;i++) {
-			builder.append(array[i]).append(",");
+		for (Character character : array) {
+			builder.append(character).append(",");
 		}
 		return builder.toString();
 	}
 	
 	public static String arrayToString(double[] array) {
 		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<array.length;i++) {
-			builder.append(array[i]).append(",");
+		for (double d : array) {
+			builder.append(d).append(",");
+		}
+		return builder.toString();
+	}
+
+	public static String arrayToString(Double[] array) {
+		StringBuilder builder = new StringBuilder();
+		for (Double d : array) {
+			builder.append(d).append(",");
 		}
 		return builder.toString();
 	}
 	
 	public static String padArrayWithTabs(double[] array) {
 		StringBuilder builder = new StringBuilder();
-		for(int i=0;i<array.length;i++) {
-			builder.append(array[i]).append("\t");
+		for (double d : array) {
+			builder.append(d).append("\t");
 		}
 		return builder.toString();
 	}
 
 	public static double getLowerQuartile(ArrayList<Double> inputs) {
-		ArrayList<Double> values = inputs;
-		Collections.sort(values);
+		ArrayList<Double> values = new QuickSort().sort(inputs);
 		return values.get(values.size()/4);
 	}
 	
 	public static double getUpperQuartile(ArrayList<Double> inputs) {
-		ArrayList<Double> values = inputs;
-		Collections.sort(values);
+		ArrayList<Double> values = new QuickSort().sort(inputs);
 		return values.get(3*values.size()/4);
 	}
 	

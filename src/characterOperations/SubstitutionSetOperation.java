@@ -1,17 +1,14 @@
 package characterOperations;
 
-import generalUtilities.Util;
+import generalUtilities.Utilities;
 
 import java.util.ArrayList;
 
 public class SubstitutionSetOperation implements CharacterOperation{
 
 
-
-    final public static int ID = 4;
-
-    ArrayList<Character> inputs = new ArrayList<>();
-    ArrayList<Character> outputs = new ArrayList<>();
+    private ArrayList<Character> inputs;
+    private ArrayList<Character> outputs;
 
     public SubstitutionSetOperation(ArrayList<Character> i, ArrayList<Character> o) {
         inputs =i;
@@ -21,26 +18,13 @@ public class SubstitutionSetOperation implements CharacterOperation{
     @Override
     public void convertCharacter(char c, StringBuilder builder) {
         for(int i=0;i<inputs.size();i++) {
-            if(c==inputs.get(i).charValue()) {
+            if (c == inputs.get(i)) {
                 builder.append(outputs.get(i));
                 break;
             }
         }
     }
 
-    @Override
-    public void toString(StringBuilder builder) {
-        builder.append("Substituion Set: " + Util.arrayToString(inputs.toArray(new Character[0])) +" for " + Util.arrayToString(outputs.toArray(new Character[0])));
-    }
-
-    @Override
-    public int getTypeID() {
-        return ID;
-    }
-
-    public boolean inputContains(char c) {
-        return inputs.contains(c);
-    }
 
     @Override
     public ArrayList<Character> getInputs() {
@@ -52,4 +36,13 @@ public class SubstitutionSetOperation implements CharacterOperation{
         return outputs;
     }
 
+    @Override
+    public String description() {
+        return "Substituion Set: " + Utilities.arrayToString(inputs.toArray(new Character[0])) + " for " + Utilities.arrayToString(outputs.toArray(new Character[0]));
+    }
+
+    @Override
+    public void description(StringBuilder stringBuilder) {
+        stringBuilder.append("Substituion Set: ").append(Utilities.arrayToString(inputs.toArray(new Character[0]))).append(" for ").append(Utilities.arrayToString(outputs.toArray(new Character[0])));
+    }
 }

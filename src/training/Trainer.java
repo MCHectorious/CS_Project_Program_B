@@ -4,9 +4,9 @@ import dataStructures.DataSet;
 import dataStructures.DataStep;
 import fileManipulation.DataExport;
 import fileManipulation.DataImport;
+import generalUtilities.CustomRandom;
 import matrices.Vector;
 import models.Model;
-import generalUtilities.CustomRandom;
 
 public class Trainer {
 	
@@ -14,13 +14,11 @@ public class Trainer {
 	
 	 
 	private double numeratorLoss;
-	private Vector output = new Vector(DataPreparation.FIXED_VECTOR_SIZE);
-	private double globalMinimum, localMinimum;
+	private Vector output = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
 	private static final String minLossPath = "Models/Minimum Loss.txt";
 	
 	final private double alpha,beta1, beta2, oneMinusBeta1, oneMinusBeta2,momentum;
-	
-	private double alphaForEpoch;
+
 	private double beta1ForEpoch = 1.0;
 	private double beta2ForEpoch = 1.0;
 	
@@ -36,8 +34,8 @@ public class Trainer {
 		
 		momentum = 0.0001;
 	}
-	
-	public Trainer(double alpha,double beta1, double beta2,double momentum) {
+
+	Trainer(double alpha, double beta1, double beta2, double momentum) {
 		this.alpha = alpha;
 		this.beta1 = beta1;
 		this.beta2 = beta2;
@@ -55,11 +53,11 @@ public class Trainer {
 		int increasingStreak = 0;
 		StringBuilder builder = new StringBuilder(110);
 		long previousTime,duration;
-		double trainingLoss = 0.0;
-		double testingLoss = 0.0;
+		double trainingLoss;
+		double testingLoss;
 		final String epochSuffix = "/"+numOfTrainingEpochs+"]";
-		localMinimum = Double.MAX_VALUE;
-		globalMinimum = DataImport.getDoubleFromFile(minLossPath);
+		double localMinimum = Double.MAX_VALUE;
+		double globalMinimum = DataImport.getDoubleFromFile(minLossPath);
 		
 		
 		System.gc();
@@ -72,7 +70,7 @@ public class Trainer {
 				increasingStreak = 0;
 				if(trainingLoss < globalMinimum) {
 					builder.setLength(0);
-					model.getParams(builder);
+					model.description(builder);
 					DataExport.overwriteToTextFile(builder, savePath);
 					globalMinimum = trainingLoss;
 					DataExport.overwriteToTextFile(globalMinimum, minLossPath);
@@ -119,13 +117,13 @@ public class Trainer {
 		DataStep step;
 		
 		//for(DataStep step:  data.getTestingDataSteps()) {
-			//model.forward(step.input, output);
+		//model.run(step.input, output);
 			//numeratorLoss += DataSet.lossTraining.measure(output, step.targetOutput);
 		//}
 		int[] toTest = rand.randomIntArray(numTested, data.getTestingSize());
 		for(int i=toTest.length-1;i>=0;i--) {
 			step = data.getTestingDataSteps().get(toTest[i]);
-			model.forward(step.getInputVector(), output);
+			model.run(step, output);
 			numeratorLoss += DataSet.lossTraining.measure(output, step.getTargetOutputVector());
 
 		}
@@ -139,16 +137,16 @@ public class Trainer {
 		for(int i=data.getTrainingSize()-1;i>=0;i--) {
 			step = data.getTrainingDataSteps().get(i);
 			//System.out.println(i);
-			model.forwardWithBackProp(step.getInputVector(), output, step.getTargetOutputVector());
+			model.runAndDecideImprovements(step, output, step.getTargetOutputVector());
 			numeratorLoss += DataSet.lossTraining.measure(output, step.getTargetOutputVector());
 		}
 		
 		beta1ForEpoch *= beta1;
 		beta2ForEpoch *= beta2;
-		
-		alphaForEpoch = alpha*Math.sqrt(1-beta2ForEpoch)/(1-beta1ForEpoch);
-		
-		model.updateModelParams(momentum,beta1,beta2,alphaForEpoch, oneMinusBeta1, oneMinusBeta2);
+
+		double alphaForEpoch = alpha * Math.sqrt(1 - beta2ForEpoch) / (1 - beta1ForEpoch);
+
+		model.updateModelParameters(momentum, beta1, beta2, alphaForEpoch, oneMinusBeta1, oneMinusBeta2);
 		
 		return numeratorLoss*data.getReciprocalOfTrainingSize();
 	}

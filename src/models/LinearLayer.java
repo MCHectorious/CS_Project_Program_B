@@ -1,8 +1,9 @@
 package models;
 
+import dataStructures.DataStep;
+import generalUtilities.CustomRandom;
 import matrices.Matrix;
 import matrices.Vector;
-import generalUtilities.CustomRandom;
 
 public class LinearLayer implements Layer, Model{
 
@@ -44,79 +45,79 @@ public class LinearLayer implements Layer, Model{
 		derivativeOfCostWithRespectToInput= new double[inputSize];
 
 	}
-	
-	public LinearLayer(Matrix weights, int outputDimension) {
-		Weights = weights;
-		outputSize = outputDimension;
-		inputSize = Weights.getSize()/outputDimension;
-		
-		derivativeOfCostWithRespectToOutput = new double[outputSize];
-		derivativeOfCostWithRespectToWeight = new double[Weights.getSize()];
-		derivativeOfCostWithRespectToTotal= new double[outputSize];
-		derivativeOfCostWithRespectToInput= new double[inputSize];
 
-	}
 	
 	@Override
-	public void forward(Vector input, Vector Output) {
-		//System.out.print("Doing forward pass");
+	public void run(DataStep input, Vector Output) {
+		run(input.getInputVector(), Output);
+	}
+
+	@Override
+	public void runAndDecideImprovements(DataStep input, Vector Output, Vector targetOutput) {
+		runWithBackProp(input.getInputVector(), Output, targetOutput);
+	}
+
+	@Override
+	public void runWithBackProp(Vector input, Vector output) {
+        double total;
+        for( int i = outputSize-1; i >=0; i-- ) {
+            total = 0;
+			int startingPos = i * inputSize;
+            for( int j = inputSize-1; j >=0; j-- ) {
+				total += Weights.get(startingPos + j) * input.get(j);
+			}
+
+			output.set(i, total);
+		}
+		for (int i = 0; i < outputSize; i++) {
+			int startingPos = i * inputSize;
+			for (int j = 0; j < inputSize; j++) {
+				derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos + j);
+			}
+		}
+	}
+
+	@Override
+	public void runWithBackProp(Vector input, Vector Output, Vector targetOutput) {
 		int indexA = Weights.getSize()-1;
-        double total;
-        for( int i = outputSize-1; i >=0; i-- ) {
-            total = 0;
-            for( int j = inputSize-1; j >=0; j-- ) {
-            	total += Weights.get(indexA--) * input.get(j);
-            }
-            Output.set(i ,  total );
-        }
-	}
-	@Override
-	public void forwardWithBackProp(Vector input, Vector Output, Vector targetOutput) {
-		int indexA = Weights.getSize()-1;
-        double total;
-        for( int i = outputSize-1; i >=0; i-- ) {
-            total = 0;
-            for( int j = inputSize-1; j >=0; j-- ) {
-            	total += Weights.get(indexA--) * input.get(j);
-            }
-            derivativeOfCostWithRespectToOutput[i] = total-targetOutput.get(i);
-            derivativeOfCostWithRespectToTotal[i] = derivativeOfCostWithRespectToOutput[i];
-            Output.set(i ,  total );
-        }
-        
-        for(int i=0;i<outputSize;i++) {
-        	int startingPos = i*inputSize;
-        	for(int j=0;j<inputSize;j++) {
-        		derivativeOfCostWithRespectToWeight[startingPos+j] +=  input.get(j)*derivativeOfCostWithRespectToTotal[i];
-        		derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos+j)*derivativeOfCostWithRespectToTotal[i];
+		double total;
+		for (int i = outputSize - 1; i >= 0; i--) {
+			total = 0;
+			for (int j = inputSize - 1; j >= 0; j--) {
+				total += Weights.get(indexA--) * input.get(j);
+			}
+			derivativeOfCostWithRespectToOutput[i] = total - targetOutput.get(i);
+			derivativeOfCostWithRespectToTotal[i] = derivativeOfCostWithRespectToOutput[i];
+			Output.set(i, total);
+		}
 
-        	}
-        }
+		for (int i = 0; i < outputSize; i++) {
+			int startingPos = i * inputSize;
+			for (int j = 0; j < inputSize; j++) {
+				derivativeOfCostWithRespectToWeight[startingPos + j] += input.get(j) * derivativeOfCostWithRespectToTotal[i];
+				derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];
 
-	}
-	
-	@Override
-	public void forwardWithBackProp(Vector input, Vector output) {
-        double total;
-        for( int i = outputSize-1; i >=0; i-- ) {
-            total = 0;
-			int startingPos = i*inputSize;
-            for( int j = inputSize-1; j >=0; j-- ) {
-            	total += Weights.get(startingPos+j) * input.get(j);
-            }          
-            
-            output.set(i ,  total );
-        }
-        for(int i=0;i<outputSize;i++) {
-        	int startingPos = i*inputSize;
-        	for(int j=0;j<inputSize;j++) {
-        		derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos+j);
-        	}
-        }
+			}
+		}
+
 	}
 
 	@Override
-	public void updateModelParams(double momentum,double beta1,double beta2, double alpha, double OneMinusBeta1, double OneMinusBeta2) {
+	public void run(Vector input, Vector Output) {
+		//System.out.print("Doing run pass");
+		int indexA = Weights.getSize() - 1;
+		double total;
+		for (int i = outputSize - 1; i >= 0; i--) {
+			total = 0;
+			for (int j = inputSize - 1; j >= 0; j--) {
+				total += Weights.get(indexA--) * input.get(j);
+			}
+			Output.set(i, total);
+		}
+	}
+
+	@Override
+	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1, double OneMinusBeta2) {
 		
 		double gradient,value;
 		for(int i=0;i<derivativeOfCostWithRespectToWeight.length;i++) {
@@ -132,15 +133,6 @@ public class LinearLayer implements Layer, Model{
 		}
 		
 	}
-
-	@Override
-	public void getParams(StringBuilder builder) {
-		
-		builder.append("Weights: ");
-		Weights.toString(builder);
-		builder.append("\n");
-	}
-
 
 	@Override
 	public int getWeightCols() {
@@ -188,6 +180,14 @@ public class LinearLayer implements Layer, Model{
 	}
 
 
+	@Override
+	public String description() {
+		return "Weights: " + Weights.description();
+	}
 
-	
+	@Override
+	public void description(StringBuilder stringBuilder) {
+		stringBuilder.append("Weights: ");
+		Weights.description(stringBuilder);
+	}
 }

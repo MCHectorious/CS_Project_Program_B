@@ -1,9 +1,5 @@
 package manualTranslation;
 
-import java.util.ArrayList;
-
-import dataStructures.Flashcard;
-
 public class MainTranslation {
 
 	public static void main(String[] args) {
@@ -19,11 +15,11 @@ public class MainTranslation {
 		
 		//ArrayList<Flashcard> Flashcards = Flashcard.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
 
-		//AutoDataIncrease.autoTranslateRawFlashcards(Flashcards, "DataSets/TranslatedFlashcards.txt");
-		
-		//AutoDataIncrease.deleteDuplicates("DataSets/TranslatedFlashcards.txt");
-		
-		AutoDataIncrease.removeTranslatedCards("DataSets/RawFlashcards.txt", "DataSets/TranslatedFlashcards.txt");
+        //AutomaticDataPreProcessing.autoTranslateRawFlashcards(Flashcards, "DataSets/TranslatedFlashcards.txt");
+
+        //AutomaticDataPreProcessing.deleteDuplicates("DataSets/TranslatedFlashcards.txt");
+
+        AutomaticDataPreProcessing.removeTranslatedCards("DataSets/RawFlashcards.txt", "DataSets/TranslatedFlashcards.txt");
 		
 		
 		//.removeFlashcardsWithUnknownCharacters("DataSets/RawFlashcards.txt");

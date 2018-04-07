@@ -1,25 +1,34 @@
 package models;
 
+import dataStructures.DataStep;
+import generalUtilities.CustomRandom;
+import generalUtilities.Utilities;
 import matrices.Matrix;
 import matrices.Vector;
-import nonlinearityFunctions.*;
-import generalUtilities.CustomRandom;
-import generalUtilities.Util;
+import nonlinearityFunctions.NonLinearity;
+import nonlinearityFunctions.RoughTanhUnit;
 
 public class FeedForwardLayer implements Layer, Model{
 
-	public static void main(String[] args) {
-		double[] weights = {1,-2,3,-4,5,-6,7,-8,9};
-		System.out.println("Weights: "+Util.arrayToString(weights));
-		double[] biases = {1,-2,3};
-		System.out.println("Biases: "+Util.arrayToString(biases));
-		double[] input = {1,2,3};
-		System.out.println("Input: "+Util.arrayToString(input));
-		FeedForwardLayer layer = new FeedForwardLayer(weights, biases, new RoughTanhUnit());
-		Vector output = new Vector(3);
-		layer.forward( new Vector(input), output);
-		double[] outputArray = output.getData();
-		System.out.println("Output: "+Util.arrayToString(outputArray));
+	FeedForwardLayer(Matrix weights, Vector biases, NonLinearity n) {
+		Weights = weights;
+		Biases = biases;
+		nonLin = n;
+		//zDash = new double[Biases.getSize()];
+		//delta = new double[Biases.getSize()];
+		//derivativeOfCostWithRespectToWeight = new double[Weights.getSize()];
+		//costForBiases = new double[Biases.getSize()];
+		outputSize = Biases.getSize();
+		inputSize = Weights.getSize() / Biases.getSize();
+		//derivativeWithRespectToInput = new double[outputSize];
+
+		derivativeOfCostWithRespectToOutput = new double[outputSize];
+		derivativeOfCostWithRespectToWeight = new double[Weights.getSize()];
+		derivativeOfCostWithRespectToBias = new double[outputSize];
+		derivativeOfNonLinWithRespectToTotal = new double[outputSize];
+		derivativeOfCostWithRespectToTotal = new double[outputSize];
+		derivativeOfCostWithRespectToInput = new double[inputSize];
+
 	}
 	
 	private Vector Biases;
@@ -88,143 +97,35 @@ public class FeedForwardLayer implements Layer, Model{
 		derivativeOfCostWithRespectToInput= new double[inputSize];
 
 	}
+
+	public static void main(String[] args) {
+		double[] weights = {1, -2, 3, -4, 5, -6, 7, -8, 9};
+		System.out.println("Weights: " + Utilities.arrayToString(weights));
+		double[] biases = {1, -2, 3};
+		System.out.println("Biases: " + Utilities.arrayToString(biases));
+		double[] input = {1, 2, 3};
+		System.out.println("Input: " + Utilities.arrayToString(input));
+		FeedForwardLayer layer = new FeedForwardLayer(weights, biases, new RoughTanhUnit());
+		Vector output = new Vector(3);
+		DataStep step = new DataStep(input);
+		layer.run(step, output);
+		double[] outputArray = output.getData();
+		System.out.println("Output: " + Utilities.arrayToString(outputArray));
+	}
 	
-	public FeedForwardLayer(Matrix weights, Vector biases, NonLinearity n) {
-		Weights = weights;
-		Biases = biases;
-		nonLin = n;
-		//zDash = new double[Biases.getSize()];
-		//delta = new double[Biases.getSize()];
-		//derivativeOfCostWithRespectToWeight = new double[Weights.getSize()];
-		//costForBiases = new double[Biases.getSize()];
-		outputSize = Biases.getSize();
-		inputSize = Weights.getSize()/Biases.getSize();
-		//derivativeWithRespectToInput = new double[outputSize];
-		
-		derivativeOfCostWithRespectToOutput = new double[outputSize];
-		derivativeOfCostWithRespectToWeight = new double[Weights.getSize()];
-		derivativeOfCostWithRespectToBias = new double[outputSize];
-		derivativeOfNonLinWithRespectToTotal = new double[outputSize];
-		derivativeOfCostWithRespectToTotal= new double[outputSize];
-		derivativeOfCostWithRespectToInput= new double[inputSize];
+	@Override
+	public void run(DataStep input, Vector Output) {
+		run(input.getInputVector(), Output);
+	}
+
+	@Override
+	public void runAndDecideImprovements(DataStep input, Vector Output, Vector targetOutput) {
+		runWithBackProp(input.getInputVector(), Output, targetOutput);
 
 	}
-	
-	@Override
-	public void forward(Vector input, Vector Output) {
-		//System.out.print("Doing forward pass");
-		int indexA = Weights.getSize()-1;
-        double total;
-        //System.out.println(input.getSize()+"\t"+Output.getSize()+"\t"+weightRows+"\t"+weightCols);
 
-        
-        
-        for( int i = outputSize-1; i >=0; i-- ) {
-            total = Biases.get(i);
-            //System.out.print(Biases.get(i)+" ");
-            for( int j = inputSize-1; j >=0; j-- ) {
-            	
-            	//System.out.print(Weights.get(indexA)+"*"+input.get(j)+" ");
-                total += Weights.get(indexA--) * input.get(j);
-            }
-            //System.out.println(total+"-->"+nonLin.forward(total));
-            Output.set(i ,  nonLin.forward(total) );
-        }
-	}
 	@Override
-	public void forwardWithBackProp(Vector input, Vector Output, Vector targetOutput) {
-		//System.out.println(derivativeWithRespectToInput.length+" "+targetOutput.getSize()+" "+weightRows+" "+weightCols);
-		
-		//System.out.println("\nThis backprop");
-		
-		/*System.out.println(input.toString());
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			
-			e.printStackTrace();
-		}*/
-		int indexA = Weights.getSize()-1;
-        double total;
-        double outputValue;
-        for( int i = outputSize-1; i >=0; i-- ) {
-            total = Biases.get(i);
-            //System.out.print(Biases.get(i)+" ");
-            for( int j = inputSize-1; j >=0; j-- ) {
-            	//if(input.get(j)!=0.0) {
-            		//System.out.print(input.get(j));
-            	//}
-            	//double test = input.get(j);
-            	//System.out.println(Weights.get(indexA)+","+input.get(j));
-            	
-            	//if(Double.isNaN(Weights.get(indexA)*input.get(j) )) {
-            		//StringBuilder builder = new StringBuilder();
-            		//input.toString(builder);
-            		//System.out.println(builder.toString());
-    				//System.out.println(Weights.get(indexA--)+" _ "+input.get(j));
-    				//System.out.println(1/0);
-    			//}
-            	//System.out.print(Weights.get(indexA)+"*"+input.get(j)+" ");
-                total += Weights.get(indexA--) * input.get(j);
-            }
-            //System.out.println(total);
-            
-            //if(Double.isNaN(total)) {
-            	//System.out.println("total is NaN");
-            	//System.out.println(1/0);
-            //}
-            
-            //System.out.println(total+"-->"+outputValue+" ?= "+targetOutput.get(i));
-            //System.out.println(outputValue+","+targetOutput.get(i)+","+nonLin.backward(total));
-            //System.out.println((outputValue-targetOutput.get(i))*nonLin.backward(total));
-            
-            
-            //if(Double.isNaN((outputValue-targetOutput.get(i))*nonLin.backward(total))) {
-				//System.out.println(outputValue+" "+targetOutput.get(i)+" "+nonLin.backward(total));
-				//System.out.println();
-				//System.out.println(1/0);
-			//}
-            
-            
-            
-            
-            //derivativeWithRespectToInput[i] = (outputValue-targetOutput.get(i))*nonLin.backward(total);
-            //costForBiases[i] += derivativeWithRespectToInput[i];
-            //int startingPos = i*weightRows;
-            //System.out.println(startingPos);
-            //for(int j=weightRows-1; j >=0; j--) {
-            	//derivativeOfCostWithRespectToWeight[startingPos+j] += input.get(j)*derivativeWithRespectToInput[i];
-            	
-            	//System.out.print(costForWeight[startingPos+j]+" "+costForBiases[j]+"\t");
-            	
-            	//System.out.println(targetOutput.get(i)+" "+outputValue+" "+delta+" "+input.get(j)*delta+" "+total);
-            	//System.out.println(outputValue+" "+targetOutput.get(i)+" "+(outputValue-targetOutput.get(i))+" "+total+" "+nonLin.backward(total)+" "+delta);
-            //}
-            //System.out.println();
-            //System.out.println(delta[i]);
-            
-            //System.out.print(outputValue+" ?= "+targetOutput.get(i)+"\t");
-            outputValue = nonLin.forward(total);
-            derivativeOfCostWithRespectToOutput[i] = outputValue-targetOutput.get(i);
-            derivativeOfNonLinWithRespectToTotal[i] = nonLin.backward(total);
-            derivativeOfCostWithRespectToTotal[i] = derivativeOfCostWithRespectToOutput[i]*derivativeOfNonLinWithRespectToTotal[i];
-            derivativeOfCostWithRespectToBias[i] += derivativeOfCostWithRespectToTotal[i];
-            Output.set(i ,  outputValue );
-        }
-        
-        for(int i=0;i<outputSize;i++) {
-        	int startingPos = i*inputSize;
-        	for(int j=0;j<inputSize;j++) {
-        		derivativeOfCostWithRespectToWeight[startingPos+j] +=  input.get(j)*derivativeOfCostWithRespectToTotal[i];
-        		derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos+j)*derivativeOfCostWithRespectToTotal[i];
-        	}
-        }
-        //calculateDerivativeForCost(input);
-        //System.out.println();
-	}
-	
-	@Override
-	public void forwardWithBackProp(Vector input, Vector output) {
+	public void runWithBackProp(Vector input, Vector output) {
 		//int indexA = Weights.getSize()-1;
         double total;
         //System.out.println(input.getSize()+"\t"+Output.getSize()+"\t"+weightRows+"\t"+weightCols);
@@ -233,27 +134,127 @@ public class FeedForwardLayer implements Layer, Model{
         
         for( int i = outputSize-1; i >=0; i-- ) {
             total = Biases.get(i);
-			int startingPos = i*inputSize;
+			int startingPos = i * inputSize;
             //System.out.print(Biases.get(i)+" ");
             for( int j = inputSize-1; j >=0; j-- ) {
             	
             	//System.out.print(Weights.get(indexA)+"*"+input.get(j)+" ");
-                total += Weights.get(startingPos+j) * input.get(j);
-            }
-            derivativeOfNonLinWithRespectToTotal[i] = nonLin.backward(total);
-            output.set(i ,  nonLin.forward(total) );
-        }
-        
-        for(int i=0;i<outputSize;i++) {
-        	int startingPos = i*inputSize;
-        	for(int j=0;j<inputSize;j++) {
-        		derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos+j)*derivativeOfCostWithRespectToTotal[i];
-        	}
-        }
-		
+				total += Weights.get(startingPos + j) * input.get(j);
+			}
+			derivativeOfNonLinWithRespectToTotal[i] = nonLin.backward(total);
+			output.set(i, nonLin.forward(total));
+		}
+
+		for (int i = 0; i < outputSize; i++) {
+			int startingPos = i * inputSize;
+			for (int j = 0; j < inputSize; j++) {
+				derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];
+			}
+		}
+
+	}
+
+	@Override
+	public void runWithBackProp(Vector input, Vector Output, Vector targetOutput) {
+		int indexA = Weights.getSize()-1;
+		double total;
+		double outputValue;
+		for (int i = outputSize - 1; i >= 0; i--) {
+			total = Biases.get(i);
+			//System.out.print(Biases.get(i)+" ");
+			for (int j = inputSize - 1; j >= 0; j--) {
+				//if(input.get(j)!=0.0) {
+				//System.out.print(input.get(j));
+				//}
+				//double test = input.get(j);
+				//System.out.println(Weights.get(indexA)+","+input.get(j));
+
+				//if(Double.isNaN(Weights.get(indexA)*input.get(j) )) {
+				//StringBuilder builder = new StringBuilder();
+				//input.toString(builder);
+				//System.out.println(builder.toString());
+				//System.out.println(Weights.get(indexA--)+" _ "+input.get(j));
+				//System.out.println(1/0);
+				//}
+				//System.out.print(Weights.get(indexA)+"*"+input.get(j)+" ");
+				total += Weights.get(indexA--) * input.get(j);
+			}
+			//System.out.println(total);
+
+			//if(Double.isNaN(total)) {
+			//System.out.println("total is NaN");
+			//System.out.println(1/0);
+			//}
+
+			//System.out.println(total+"-->"+outputValue+" ?= "+targetOutput.get(i));
+			//System.out.println(outputValue+","+targetOutput.get(i)+","+nonLin.backward(total));
+			//System.out.println((outputValue-targetOutput.get(i))*nonLin.backward(total));
+
+
+			//if(Double.isNaN((outputValue-targetOutput.get(i))*nonLin.backward(total))) {
+			//System.out.println(outputValue+" "+targetOutput.get(i)+" "+nonLin.backward(total));
+			//System.out.println();
+			//System.out.println(1/0);
+			//}
+
+
+			//derivativeWithRespectToInput[i] = (outputValue-targetOutput.get(i))*nonLin.backward(total);
+			//costForBiases[i] += derivativeWithRespectToInput[i];
+			//int startingPos = i*weightRows;
+			//System.out.println(startingPos);
+			//for(int j=weightRows-1; j >=0; j--) {
+			//derivativeOfCostWithRespectToWeight[startingPos+j] += input.get(j)*derivativeWithRespectToInput[i];
+
+			//System.out.print(costForWeight[startingPos+j]+" "+costForBiases[j]+"\t");
+
+			//System.out.println(targetOutput.get(i)+" "+outputValue+" "+delta+" "+input.get(j)*delta+" "+total);
+			//System.out.println(outputValue+" "+targetOutput.get(i)+" "+(outputValue-targetOutput.get(i))+" "+total+" "+nonLin.backward(total)+" "+delta);
+			//}
+			//System.out.println();
+			//System.out.println(delta[i]);
+
+			//System.out.print(outputValue+" ?= "+targetOutput.get(i)+"\t");
+			outputValue = nonLin.forward(total);
+			derivativeOfCostWithRespectToOutput[i] = outputValue - targetOutput.get(i);
+			derivativeOfNonLinWithRespectToTotal[i] = nonLin.backward(total);
+			derivativeOfCostWithRespectToTotal[i] = derivativeOfCostWithRespectToOutput[i] * derivativeOfNonLinWithRespectToTotal[i];
+			derivativeOfCostWithRespectToBias[i] += derivativeOfCostWithRespectToTotal[i];
+			Output.set(i, outputValue);
+		}
+
+		for (int i = 0; i < outputSize; i++) {
+			int startingPos = i * inputSize;
+			for (int j = 0; j < inputSize; j++) {
+				derivativeOfCostWithRespectToWeight[startingPos + j] += input.get(j) * derivativeOfCostWithRespectToTotal[i];
+				derivativeOfCostWithRespectToInput[j] += Weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];
+			}
+		}
+		//calculateDerivativeForCost(input);
+		//System.out.println();
+	}
+
+	@Override
+	public void run(Vector input, Vector Output) {
+//System.out.print("Doing run pass");
+		int indexA = Weights.getSize() - 1;
+		double total;
+		//System.out.println(input.getSize()+"\t"+Output.getSize()+"\t"+weightRows+"\t"+weightCols);
+
+
+		for (int i = outputSize - 1; i >= 0; i--) {
+			total = Biases.get(i);
+			//System.out.print(Biases.get(i)+" ");
+			for (int j = inputSize - 1; j >= 0; j--) {
+
+				//System.out.print(Weights.get(indexA)+"*"+input.get(j)+" ");
+				total += Weights.get(indexA--) * input.get(j);
+			}
+			//System.out.println(total+"-->"+nonLin.run(total));
+			Output.set(i, nonLin.forward(total));
+		}
 	}
 	
-	/*public void forwardWithBackProp(Vector input, Vector Output) {
+	/*public void runAndDecideImprovements(Vector input, Vector Output) {
 		
 		
 		int indexA = Weights.getSize()-1;
@@ -290,14 +291,14 @@ public class FeedForwardLayer implements Layer, Model{
             //	System.out.println(1/0);
             //}
             
-            //if(nonLin.forward(total)!=0.0) {
-            	//System.out.println(nonLin.forward(total));
+            //if(nonLin.run(total)!=0.0) {
+            	//System.out.println(nonLin.run(total));
             //}
             
             zDash[i] = nonLin.backward(total);
             
-            //System.out.println(nonLin.forward(total));
-            Output.set(i ,  nonLin.forward(total) );
+            //System.out.println(nonLin.run(total));
+            Output.set(i ,  nonLin.run(total) );
         }
 	}*/
 	
@@ -351,7 +352,7 @@ public class FeedForwardLayer implements Layer, Model{
 
 
 	@Override
-	public void updateModelParams(double momentum,double beta1,double beta2, double alpha, double OneMinusBeta1, double OneMinusBeta2) {
+	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1, double OneMinusBeta2) {
 		
 		double gradient,value;
 		for(int i=0;i<derivativeOfCostWithRespectToWeight.length;i++) {
@@ -396,16 +397,6 @@ public class FeedForwardLayer implements Layer, Model{
 		}
 	}
 
-	@Override
-	public void getParams(StringBuilder builder) {
-		
-		builder.append("Biases: ");
-		Biases.toString(builder);
-		builder.append("\n");
-		builder.append("Weights: ");
-		Weights.toString(builder);
-		builder.append("\n");
-	}
 
 	/*@Override
 	public double getWeight(int index) {
@@ -469,8 +460,8 @@ public class FeedForwardLayer implements Layer, Model{
 			}
 		}
 		//System.out.println();
-		
-		//System.out.println(Util.arrayToString(derivativeOfCostWithRespectToWeight));
+
+		//System.out.println(Utilities.arrayToString(derivativeOfCostWithRespectToWeight));
 		
 	}
 
@@ -486,6 +477,20 @@ public class FeedForwardLayer implements Layer, Model{
 	}
 
 
+	@Override
+	public String description() {
+		StringBuilder stringBuilder = new StringBuilder();
+		description(stringBuilder);
+		return stringBuilder.toString();
+	}
 
-	
+	@Override
+	public void description(StringBuilder stringBuilder) {
+		stringBuilder.append("Biases: ");
+		Biases.description(stringBuilder);
+		stringBuilder.append("\n");
+		stringBuilder.append("Weights: ");
+		Weights.description(stringBuilder);
+		stringBuilder.append("\n");
+	}
 }

@@ -1,26 +1,18 @@
 package dataSplitting;
 
+import dataStructures.DataStep;
+import training.DataProcessing;
+
 import java.util.ArrayList;
 
-import dataStructures.DataStep;
-import matrices.Vector;
-import training.DataPreparation;
-
-public class ContainPhrase implements DataSplitOp{
+public class ContainPhrase extends DataSplitOperation {
 
 	private String phrase;
-	private DataPreparation dataPrep;
-	private double valueOfOp = -1.0;
-	
-	public ContainPhrase(String Phrase, DataPreparation DataPrep) {
-		phrase = Phrase;
-		dataPrep = DataPrep;
-	}
-	
-	public ContainPhrase(ArrayList<DataStep> list1,ArrayList<DataStep> list2, DataPreparation dataPreparation) {
-		dataPrep = dataPreparation;
+
+
+    ContainPhrase(ArrayList<DataStep> list1, ArrayList<DataStep> list2, DataProcessing dataProcessing) {
 		String bestStringSoFar = "";
-		for(String string: dataPrep.getPhrases()) {
+        for (String string : dataProcessing.getPhrases()) {
 			int list1LabelledList1=0,list1LabelledList2=0,list2LabelledList1=0,list2LabelledList2=0;
 			for(DataStep step:list1) {
 				//System.out.println(isInSet(step.getInputText(),string));
@@ -60,8 +52,8 @@ public class ContainPhrase implements DataSplitOp{
 	}
 	
 	@Override
-	public boolean isInSet(Vector step) {
-		String input = dataPrep.doubleArrayToString(step.getData());
+    public boolean isInSet(DataStep step) {
+        String input = step.getInputText();
 		for(int i=0;i<input.length()-phrase.length();i++) {
 			if( input.substring(i, i+phrase.length()).equals(phrase) ) {
 				return true;
@@ -72,13 +64,12 @@ public class ContainPhrase implements DataSplitOp{
 	}
 
 	@Override
-	public void toString(StringBuilder builder) {
-		builder.append("Contains Phrase: ").append(phrase);
+    public String description() {
+        return "Contains Phrase: " + phrase;
 	}
 
 	@Override
-	public double getValue() {
-		return valueOfOp;
+    public void description(StringBuilder stringBuilder) {
+        stringBuilder.append("Contains Phrase: ").append(phrase);
 	}
-
 }

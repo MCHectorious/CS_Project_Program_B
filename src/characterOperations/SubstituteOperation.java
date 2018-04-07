@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 public class SubstituteOperation implements CharacterOperation {
 
-    final public static int ID = 3;
-
-    char input;
-    char output;
+    private char input;
+    private char output;
 
     public SubstituteOperation(char i, char o) {
         input = i;
@@ -24,16 +22,6 @@ public class SubstituteOperation implements CharacterOperation {
     }
 
     @Override
-    public void toString(StringBuilder builder) {
-        builder.append("Substitute ").append(input).append(" for ").append(output).append("\t");
-    }
-
-    @Override
-    public int getTypeID() {
-        return ID;
-    }
-
-    @Override
     public ArrayList<Character> getInputs() {
         ArrayList<Character> output = new ArrayList<>();
         output.add(input);
@@ -47,4 +35,13 @@ public class SubstituteOperation implements CharacterOperation {
         return outputs;
     }
 
+    @Override
+    public String description() {
+        return "Substitute " + input + " for " + output;
+    }
+
+    @Override
+    public void description(StringBuilder stringBuilder) {
+        stringBuilder.append("Substitute ").append(input).append(" for ").append(output);
+    }
 }

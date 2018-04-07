@@ -1,11 +1,10 @@
 package training;
 
-import java.util.ArrayList;
-
 import dataStructures.FlashcardDataSet;
-import models.*;
 import generalUtilities.CustomRandom;
-import training.Trainer;
+import models.*;
+
+import java.util.ArrayList;
 
 public class MainTrainer {
 	
@@ -28,16 +27,16 @@ public class MainTrainer {
 		int numOfLayers = 5;
 		int hiddenDimension = 20;
 	
-		NeuralNetwork model;
+		NeuralNetworkModel model;
 		if(initFromSaved) {
-			model = NeuralNetwork.importFromSaved(savePath);
+			model = NeuralNetworkModel.importFromSaved(savePath);
 		}else {
-			model = new NeuralNetwork(numOfLayers, DataPreparation.FIXED_VECTOR_SIZE, hiddenDimension,DataPreparation.FIXED_VECTOR_SIZE, util);
+			model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension,DataProcessing.FIXED_VECTOR_SIZE, util);
 		}
 		
 		
 		//Copy model = new Copy();
-		AdvancedCopying model = new AdvancedCopying(3, DataPreparation.FIXED_VECTOR_SIZE);
+		AdvancedCopyingModel model = new AdvancedCopyingModel(3, DataProcessing.FIXED_VECTOR_SIZE);
 		
 		*/
 		
@@ -46,7 +45,7 @@ public class MainTrainer {
 		
 		int[] layerTypes = {1,1,1,0};
 		int[] hiddenDimensions = {50,10,100};
-		NeuralNetwork model = new NeuralNetwork(layerTypes, DataPreparation.FIXED_VECTOR_SIZE, hiddenDimensions, DataPreparation.FIXED_VECTOR_SIZE, util);
+		NeuralNetworkModel model = new NeuralNetworkModel(layerTypes, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimensions, DataProcessing.FIXED_VECTOR_SIZE, util);
 		int trainingEpochs = 100000000;
 		int displayReportPeriod = 10;
 		int showEpochPeriod = 1;
@@ -67,22 +66,22 @@ public class MainTrainer {
 		int hiddenDimension = 10;
 	
 		ArrayList<Model> models = new ArrayList<>();
-		
-		//models.add(new NeuralNetwork(6, DataPreparation.FIXED_VECTOR_SIZE, 3, DataPreparation.FIXED_VECTOR_SIZE,util));
 
-		//models.add(new NeuralNetwork(3, DataPreparation.FIXED_VECTOR_SIZE, 150, DataPreparation.FIXED_VECTOR_SIZE, util));
+		//models.add(new NeuralNetworkModel(6, DataProcessing.FIXED_VECTOR_SIZE, 3, DataProcessing.FIXED_VECTOR_SIZE,util));
+
+		//models.add(new NeuralNetworkModel(3, DataProcessing.FIXED_VECTOR_SIZE, 150, DataProcessing.FIXED_VECTOR_SIZE, util));
 		
 		//for(int i=0;i<3;i++) {
-		//	models.add(new NeuralNetwork(numOfLayers, DataPreparation.FIXED_VECTOR_SIZE, hiddenDimension,DataPreparation.FIXED_VECTOR_SIZE, util));
+		//	models.add(new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension,DataProcessing.FIXED_VECTOR_SIZE, util));
 		//}
-		models.add(new BasicCopying());
+		models.add(new BasicCopyingModel());
 		//System.out.println("Got this far 3");
-		models.add(new AdvancedCopying(2,DataPreparation.FIXED_VECTOR_SIZE));
+		models.add(new AdvancedCopyingModel(2, DataProcessing.FIXED_VECTOR_SIZE));
 		//System.out.println("Got this far 2");
-		models.add(new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
+		models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
 		
 		//System.out.println("Got this far 1");
-		AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataPreparation.FIXED_VECTOR_SIZE);
+		AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE);
 
 		
 		//Copy model = new Copy();

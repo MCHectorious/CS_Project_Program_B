@@ -1,34 +1,32 @@
 package dataSplitting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import dataStructures.DataStep;
+import generalUtilities.Utilities;
 import lossFunctions.Loss;
 import lossFunctions.LossSumOfSquares;
 import matrices.Vector;
 import models.Model;
-import training.DataPreparation;
-import generalUtilities.Util;
+import training.DataProcessing;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Splitter {
 
-	public static DataSplitOp getBestDataSplit(List<DataStep> steps, Model model, DataPreparation dataPrep) {
-		//Map<DataStep, Double> map = new HashMap<>();
+    public static DataSplitOperation getBestDataSplit(List<DataStep> steps, Model model, DataProcessing dataPrep) {
 		ArrayList<Double> losses = new ArrayList<>();
 		
 		Loss getLoss = new LossSumOfSquares();
-		Vector tempOutput = new Vector(DataPreparation.FIXED_VECTOR_SIZE);
-		for(int i=0;i<steps.size();i++) {
-			DataStep step = steps.get(i);
-			model.forward(step.getInputVector(), tempOutput);
+        Vector tempOutput = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
+
+        for (DataStep step : steps) {
+            model.run(step, tempOutput);
 			double loss = getLoss.measure(tempOutput, step.getTargetOutputVector());
 			losses.add(loss);
 		}
-		
-		double upperQuartile = Util.getUpperQuartile(losses);
+
+
+        double upperQuartile = Utilities.getUpperQuartile(losses);
 		System.out.println("Upper Quartile: "+upperQuartile);
 		
 		ArrayList<DataStep> goodLosses = new ArrayList<>();
@@ -50,21 +48,21 @@ public class Splitter {
 		return (containsPhrase.getValue()>withinCertainInterval.getValue())? containsPhrase : withinCertainInterval;
 		
 	}
-	
-	public static ArrayList<DataStep> getStepsInSplit(List<DataStep> list, DataSplitOp split) {
+
+    public static ArrayList<DataStep> getStepsInSplit(List<DataStep> list, DataSplitOperation split) {
 		ArrayList<DataStep> output = new ArrayList<>();
 		for(DataStep step: list) {
-			if(split.isInSet(step.getInputVector())) {
+            if (split.isInSet(step)) {
 				output.add(step);
 			}
 		}
 		return output;
 	}
 
-	public static ArrayList<DataStep> getStepsNotInSplit(List<DataStep> steps, DataSplitOp split) {
+    public static ArrayList<DataStep> getStepsNotInSplit(List<DataStep> steps, DataSplitOperation split) {
 		ArrayList<DataStep> output = new ArrayList<>();
 		for(DataStep step: steps) {
-			if(!split.isInSet(step.getInputVector())) {
+            if (!split.isInSet(step)) {
 				output.add(step);
 			}
 		}

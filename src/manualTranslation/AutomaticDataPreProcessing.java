@@ -1,38 +1,19 @@
 package manualTranslation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import fileManipulation.DataExport;
-import fileManipulation.DataImport;
-import training.DataPreparation;
-import generalUtilities.Util;
 import dataStructures.DataStep;
 import dataStructures.Flashcard;
+import fileManipulation.DataExport;
+import fileManipulation.DataImport;
+import generalUtilities.Utilities;
+import training.DataProcessing;
 
-public class AutoDataIncrease {
+import java.util.ArrayList;
+import java.util.HashSet;
 
-	public static void addCapitalisationVariation(ArrayList<Flashcard> input, String file) {
-		for(Flashcard card: input) {
-			if( checkNormalWord(card.getFront()) ) { 
-				DataExport.appendToTextFile(Flashcard.withSep(reverseFirstChar(card.getFront()), card.getBack(), card.getTranslation()), file);
-			}
-			
-			if( checkNormalWord(card.getBack()) ) {
-				DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), reverseFirstChar(card.getBack()), card.getTranslation()), file);
-			}
-		
-			if( checkNormalWord(card.getFront()) && checkNormalWord(card.getBack())) {
-				DataExport.appendToTextFile(Flashcard.withSep(reverseFirstChar(card.getFront()), reverseFirstChar(card.getBack()), card.getTranslation()), file);
-			}
-		}
-			
-	
-		
-	}
-	
-	public static ArrayList<DataStep> addCapitalisationVariation(String front, String back, DataPreparation dataPrep, double[] output,  String outputText) {
+public class AutomaticDataPreProcessing {
+
+
+    public static ArrayList<DataStep> addCapitalisationVariation(String front, String back, DataProcessing dataPrep, double[] output, String outputText) {
 		ArrayList<DataStep> steps = new ArrayList<>();
 		if( checkNormalWord(front) ) { 
 			//System.out.print("*a*");
@@ -78,37 +59,9 @@ public class AutoDataIncrease {
 		}
 		return newFirstLetter + s.substring(1);
 	}
-	
-	public static void addOneWordTranslations(ArrayList<Flashcard> input, String file) {
-		for(Flashcard card:input) {
-			
-			if(!card.getBack().contains(" ")) {
-				if(!card.getFront().contains(" "))  {
-					DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), card.getBack(), "\"" + card.getFront() + "\" means \"" + card.getBack() + "\""), file);
-				}else{
-					String afterSpace = card.getFront().substring(card.getFront().indexOf(" ")+1);
-					String beforeSpace = card.getFront().substring(0, card.getFront().indexOf(" "));
-					if(afterSpace.equals("(m)")) {
-						DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), card.getBack(), "\"" + beforeSpace + "\" is the male word for \"" + card.getBack() + "\""), file);
-					}
-					if(afterSpace.equals("(f)")) {
-						DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), card.getBack(), "\"" + beforeSpace + "\" is the female word for \"" + card.getBack() + "\""), file);
-					}
-					if(afterSpace.equals("(n)")) {
-						DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), card.getBack(), "\"" + beforeSpace + "\" is the neuter word for \"" + card.getBack() + "\""), file);
-					}
-					if(!afterSpace.contains(" ")) {
-						if( beforeSpace.equals("el")||beforeSpace.equals("le")||beforeSpace.equals("la")||beforeSpace.equals("die")||beforeSpace.equals("der")||beforeSpace.equals("das") ) {
-							DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), card.getBack(), "\"" + card.getFront() + "\" means \"the " + card.getBack() + "\""), file);
-						}
-						
-					}
-				}
-			}
-		}
-	}
-	
-	public static String autoTranslate(String flashcardFront, String flashcardBack) {
+
+
+    private static String autoTranslate(String flashcardFront, String flashcardBack) {
         String front = flashcardFront.trim();
         if(front.contains("(") && front.contains(")")) {
             if ( front.substring(front.lastIndexOf("(")+1, front.lastIndexOf(")")).matches("[0-9]+") ){
@@ -158,7 +111,7 @@ public class AutoDataIncrease {
         
         if(!frontToTest.contains(" ")){
             return front+" means "+back;
-        }else if(Util.countOfCharInString(' ',frontToTest)==1){
+        } else if (Utilities.countOfCharInString(' ', frontToTest) == 1) {
             return front+" means "+back;
         }
         
@@ -408,26 +361,21 @@ public class AutoDataIncrease {
 	
 	public static void deleteDuplicates(String file) {
 		HashSet<String> uniqueCards = DataImport.getUniqueLines(file);
-		HashSet<String> finalCards = uniqueCards;
-		
-		ArrayList<String> cards = new ArrayList<>();
-		
-		for(String s: uniqueCards) {
-			cards.add(s);
-		}
+
+        ArrayList<String> cards = new ArrayList<>(uniqueCards);
 		
 		for(int i =0;i<cards.size();i++) {
 			for(int j =i+1;j<cards.size();j++) {
 				if(cards.get(i).toLowerCase().equals(cards.get(j).toLowerCase())) {
-					finalCards.remove(cards.get(j));
+                    uniqueCards.remove(cards.get(j));
 				}
 			}
 		}
-		
-		DataExport.overwriteToTextFile(finalCards, file);
-	}
-	
-	public static void removeTranslatedCards(String rawFile, String translatedFile) {
+
+        DataExport.overwriteToTextFile(uniqueCards, file);
+    }
+
+    static void removeTranslatedCards(String rawFile, String translatedFile) {
 		HashSet<String> rawCards = DataImport.getUniqueLines(rawFile);
 		HashSet<String> translatedCards = DataImport.getUniqueLines(translatedFile);
 		HashSet<String> translatedCardsNoTranslation = new HashSet<>();

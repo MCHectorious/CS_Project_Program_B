@@ -1,32 +1,26 @@
 package dataStructures;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import fileManipulation.DataExport;
 import fileManipulation.DataImport;
+import generalUtilities.CustomRandom;
+import generalUtilities.Utilities;
 import lossFunctions.LossStringDistance;
 import matrices.Vector;
 import models.Model;
-import nonlinearityFunctions.NonLinearity;
-import nonlinearityFunctions.RoughTanhUnit;
-import training.DataPreparation;
-import generalUtilities.CustomRandom;
-import generalUtilities.Util;
+import training.DataProcessing;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlashcardDataSet implements DataSet{
 	
 	private DataSequence training = new DataSequence();
 	private DataSequence testing = new DataSequence();
-	private DataPreparation dataPrep;
-	private final String border = "==============================================================================================";
+    private final static String border = "==============================================================================================";
+    private final double ReciprocalOfTrainingSize;
 	private CustomRandom util;
-	private Vector modelOutput = new Vector(DataPreparation.FIXED_VECTOR_SIZE);
-	private Vector modelInput = new Vector(DataPreparation.FIXED_VECTOR_SIZE);
-	private RoughTanhUnit roughTanhUnit = new RoughTanhUnit();
-	private final double ReciprocalOfTrainingSize, ReciprocalOfTestingSize;
+    private DataProcessing dataPrep;
+    private Vector modelOutput = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
+    private Vector modelInput = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
 	private LossStringDistance stringLoss;
 	
 	public int getTrainingSize() {
@@ -35,10 +29,6 @@ public class FlashcardDataSet implements DataSet{
 	
 	public double getReciprocalOfTrainingSize() {
 		return ReciprocalOfTrainingSize;
-	}
-
-	public double getReciprocalOfTestingSize() {
-		return ReciprocalOfTestingSize;
 	}
 
 	public List<DataStep> getTrainingDataSteps() {
@@ -53,25 +43,21 @@ public class FlashcardDataSet implements DataSet{
 		return testing.getSize();
 	}
 	
-	public DataPreparation getDataPrep() {
-		return dataPrep;
-	}
-	
 	public FlashcardDataSet(String path, CustomRandom utility) {
 		util = utility;
-		
+
 		ArrayList<String> lines = DataImport.getLines(path);
-		dataPrep = new DataPreparation(lines);
+        dataPrep = new DataProcessing(lines);
 		stringLoss = new LossStringDistance(dataPrep);
-		
+
 		//ArrayList<Map<Character,Integer>> flashcardCounts = new ArrayList<>();
 		//ArrayList<Map<Character,Integer>> translationCounts = new ArrayList<>();
 
-		
+
 		//int tempCounter = 0;
 		for(String line: lines) {
 			//System.out.println(line);
-			
+
 			/*String flashcard = Flashcard.getFlashcard(line);
 			String translation = Flashcard.getFlashcard(line);
 			for(int i=0;i<flashcard.length();i++) {
@@ -110,25 +96,25 @@ public class FlashcardDataSet implements DataSet{
 					translationCounts.get(i).put(translation.charAt(i), 1);
 				}
 			}*/
-			
+
 			/*for(int i=0;i<3;i++) {
 				double[] FlashcardDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getFlashcard(line));
-				System.out.println("Input: "+Util.arrayToString(FlashcardDoubleArray));
+				System.out.println("Input: "+Utilities.arrayToString(FlashcardDoubleArray));
 			}
 			for(int i=0;i<3;i++) {
 				double[] TranslationDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getFlashcard(line));
-				System.out.println("Output: "+Util.arrayToString(TranslationDoubleArray));
+				System.out.println("Output: "+Utilities.arrayToString(TranslationDoubleArray));
 			}*/
 			double[] FlashcardDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getFlashcard(line));
 			double[] TranslationDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getTranslation(line));
-			//DataExport.appendToTextFile(Util.padArrayWithTabs(FlashcardDoubleArray)+"\t"+Util.padArrayWithTabs(TranslationDoubleArray), "Models/Data Numerical.txt");
+            //DataExport.appendToTextFile(Utilities.padArrayWithTabs(FlashcardDoubleArray)+"\t"+Utilities.padArrayWithTabs(TranslationDoubleArray), "Models/Data Numerical.txt");
 			if(util.randomBoolean() || util.randomBoolean()) {
 				//DataStep dataStep = new DataStep()//System.out.println( new Vector(FlashcardDoubleArray).toString() );
 				//training.addDataStep(FlashcardDoubleArray, TranslationDoubleArray,Flashcard.getFlashcard(line),Flashcard.getTranslation(line));
 				//System.out.print(Flashcard.getFlashcard(line)+Flashcard.getTranslation(line));
 				training.addDataStepsWithCapitilisationVariation(FlashcardDoubleArray, TranslationDoubleArray,Flashcard.getFlashcard(line),Flashcard.getTranslation(line),dataPrep);
 				//System.out.println("Training: "+line);
-				
+
 				//System.out.println(tempCounter++);
 				//System.out.println( new DataStep(FlashcardDoubleArray,TranslationDoubleArray).input.toString());
 				//System.out.println( (new Vector(FlashcardDoubleArray)).toString() );
@@ -143,24 +129,21 @@ public class FlashcardDataSet implements DataSet{
 		ReciprocalOfTrainingSize = 1.0/training.getSize();
 		//System.out.println("Training Size: "+training.getSize());
 		//System.out.println(String.format("%.15f", ReciprocalOfTrainingSize));
-		ReciprocalOfTestingSize = 1.0/testing.getSize();
-		
-		//for(int i=0;i<training.getSize();i++) {
+
+        //for(int i=0;i<training.getSize();i++) {
 			//StringBuilder builder = new StringBuilder();
 			//training.getDataSteps().get(i).getInputVector().toString(builder);
 			//System.out.println(builder.toString());
-		
-		//}
-		
-		lines = null;//For garbage collection
-		
+
+        //}
+
 		/*DataExport.appendToTextFile("Flashcard Values:\n", "Models/Temp.txt");
 		for(int i=0;i<flashcardCounts.size();i++) {
 			StringBuilder tempBuilder = new StringBuilder();
 			for(Character c: flashcardCounts.get(i).keySet()) {
 				tempBuilder.append(c).append("\t").append(flashcardCounts.get(i).get(c)).append("\t");
 			}
-			
+
 			DataExport.appendToTextFile(tempBuilder.toString(), "Models/Temp.txt");
 		}
 		DataExport.appendToTextFile("Translation Values:\n", "Models/Temp.txt");
@@ -169,12 +152,16 @@ public class FlashcardDataSet implements DataSet{
 			for(Character c: translationCounts.get(i).keySet()) {
 				tempBuilder.append(c).append("\t").append(translationCounts.get(i).get(c)).append("\t");
 			}
-			
+
 			DataExport.appendToTextFile(tempBuilder.toString(), "Models/Temp.txt");
 		}*/
-		
-		
-	}
+
+
+    }
+
+    public DataProcessing getDataPrep() {
+        return dataPrep;
+    }
 	
 	@Override
 	public void DisplayReport(Model model) {
@@ -187,23 +174,23 @@ public class FlashcardDataSet implements DataSet{
 
 		builder.append("Input: ").append(example.getInputText()).append("\n");
 
-		builder.append(Util.arrayToString(example.getInput())).append("\n");
+        builder.append(Utilities.arrayToString(example.getInput())).append("\n");
 		
 		builder.append("Expected Output: \t").append( example.getOutputText()).append("\n");
 
-		builder.append(Util.arrayToString(example.getTargetOutput())).append("\n");
+        builder.append(Utilities.arrayToString(example.getTargetOutput())).append("\n");
 
 		
 		modelInput.setData(example.getInput());
-		
 
-		model.forward( modelInput, modelOutput);
+
+        model.run(new DataStep(modelInput), modelOutput);
 		
 		String modelOutputString = dataPrep.doubleArrayToString(modelOutput.getData());
 
 		builder.append("Actual Output: \t\t").append(modelOutputString ).append("\n");
 
-		builder.append(Util.arrayToString(modelOutput.getData())).append("\n");
+        builder.append(Utilities.arrayToString(modelOutput.getData())).append("\n");
 		
 				
 		builder.append("String Distance: ").append(stringLoss.measure(modelOutputString, example.getOutputText()));
@@ -215,9 +202,5 @@ public class FlashcardDataSet implements DataSet{
 		
 	}
 
-	@Override
-	public NonLinearity getDataSetNonLinearity() {
-		return roughTanhUnit;
-	}
 
 }

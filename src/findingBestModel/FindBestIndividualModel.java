@@ -1,17 +1,11 @@
 package findingBestModel;
 
-import java.util.ArrayList;
-
-import dataStructures.DataStep;
 import dataStructures.FlashcardDataSet;
 import fileManipulation.DataExport;
-import matrices.Vector;
-import models.*;
-import nonlinearityFunctions.RoughTanhUnit;
-import training.DataPreparation;
-import training.Trainer;
 import generalUtilities.CustomRandom;
-import generalUtilities.Util;
+import models.AverageModel;
+import models.Model;
+import training.Trainer;
 
 public class FindBestIndividualModel {
 
@@ -36,7 +30,7 @@ public class FindBestIndividualModel {
 		for(int size=0;size<5;size++) {
 			total = 0.0;
 			for(int i=0;i<attempts;i++) {
-				Model model = new AdvancedCopying(size, DataPreparation.FIXED_VECTOR_SIZE);
+				Model model = new AdvancedCopyingModel(size, DataProcessing.FIXED_VECTOR_SIZE);
 				total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 			}
 			average = total/(double) attempts;
@@ -60,7 +54,7 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new BasicCopying();
+			Model model = new BasicCopyingModel();
 			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
@@ -73,7 +67,7 @@ public class FindBestIndividualModel {
 		for(int size=0;size<10;size++) {
 			total = 0.0;
 			for(int i=0;i<attempts;i++) {
-				Model model = new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), size, data.getDataPrep(), util);
+				Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), size, data.getDataPrep(), util);
 				total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 			}
 			average = total/(double) attempts;
@@ -85,7 +79,7 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new CharacterManipulationFromStringDistance(data.getTrainingDataSteps(), data.getDataPrep(), util);
+			Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
 			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
@@ -98,7 +92,7 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new FeedForwardLayer(DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, new RoughTanhUnit(), util);
+			Model model = new FeedForwardLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, new RoughTanhUnit(), util);
 			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
@@ -111,7 +105,7 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new LinearLayer(DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, util);
+			Model model = new LinearLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, util);
 			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
@@ -148,13 +142,13 @@ public class FindBestIndividualModel {
 				for(int b=0;b<hiddenDims.length;b++) {
 					total = 0.0;
 					
-					//.out.println(Util.arrayToString(hiddenDims[b]));
+					//.out.println(Utilities.arrayToString(hiddenDims[b]));
 					for(int i=0;i<attempts;i++) {
-						Model model = new NeuralNetwork(layerTypes[a],DataPreparation.FIXED_VECTOR_SIZE,hiddenDims[b],DataPreparation.FIXED_VECTOR_SIZE,util);
+						Model model = new NeuralNetworkModel(layerTypes[a],DataProcessing.FIXED_VECTOR_SIZE,hiddenDims[b],DataProcessing.FIXED_VECTOR_SIZE,util);
 						total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 					}
 					average = total/(double) attempts;
-					tempString = "Neural Network with layers "+Util.arrayToString(layerTypes[a])+"and hidden dimensions "+Util.arrayToString(hiddenDims[b])+"  Model:\t"+average; 
+					tempString = "Neural Network with layers "+Utilities.arrayToString(layerTypes[a])+"and hidden dimensions "+Utilities.arrayToString(hiddenDims[b])+"  Model:\t"+average;
 					System.out.println(tempString);
 					DataExport.appendToTextFile(tempString, "Models/ParameterTuning.txt");
 					System.gc();

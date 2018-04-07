@@ -4,9 +4,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class CustomRandom {
-	int s1;
-	int s2;
-	ThreadLocalRandom random;
+    private int s1;
+    private int s2;
+
+    private ThreadLocalRandom random;
 	public CustomRandom() {
 		random = ThreadLocalRandom.current();
     	s1 = random.nextInt();

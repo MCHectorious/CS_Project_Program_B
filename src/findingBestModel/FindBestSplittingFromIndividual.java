@@ -1,20 +1,18 @@
 package findingBestModel;
 
-import java.util.ArrayList;
-
-import dataSplitting.DataSplitOp;
+import dataSplitting.DataSplitOperation;
 import dataSplitting.Splitter;
 import dataStructures.DataStep;
 import dataStructures.FlashcardDataSet;
 import fileManipulation.DataExport;
 import fileManipulation.DataImport;
+import generalUtilities.CustomRandom;
 import models.*;
 import nonlinearityFunctions.RoughTanhUnit;
-import training.DataPreparation;
+import training.DataProcessing;
 import training.Trainer;
-import generalUtilities.CustomRandom;
-import generalUtilities.Util;
 
+import java.util.ArrayList;
 
 
 public class FindBestSplittingFromIndividual {
@@ -33,13 +31,13 @@ public class FindBestSplittingFromIndividual {
 		ArrayList<Model> modelList = new ArrayList<>();
 		
 		int attempts = 3;
-		
-		Model bestTempModel = new BasicCopying();
+
+        Model bestTempModel;
 		double minLoss;
 		
 		ArrayList<String> lineFromTextFile = DataImport.getLines("bestModel/BestLinearLayerWeights.txt");
 		double[] weights = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(0) );
-		bestTempModel = new LinearLayer(weights, DataPreparation.FIXED_VECTOR_SIZE);
+        bestTempModel = new LinearLayer(weights, DataProcessing.FIXED_VECTOR_SIZE);
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
@@ -52,13 +50,13 @@ public class FindBestSplittingFromIndividual {
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
-		
-		bestTempModel = new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 9, data.getDataPrep(), util);
+
+        bestTempModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 9, data.getDataPrep(), util);
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
-		
-		bestTempModel = new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 4, data.getDataPrep(), util);
+
+        bestTempModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 4, data.getDataPrep(), util);
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
@@ -74,7 +72,7 @@ public class FindBestSplittingFromIndividual {
 		double[] biases2 = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(4) );
 		double[] weights2 = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(5) );
 		layers.add(new FeedForwardLayer(weights2, biases2, new RoughTanhUnit()));
-		bestTempModel = new NeuralNetwork(layers);		
+        bestTempModel = new NeuralNetworkModel(layers);
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
@@ -89,8 +87,8 @@ public class FindBestSplittingFromIndividual {
 		layersFor3NN.add(new FeedForwardLayer(weights2For3NN, biases2For3NN, new RoughTanhUnit()));
 		double[] biases3For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(7) );
 		double[] weights3For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(8) );
-		layersFor3NN.add(new FeedForwardLayer(weights3For3NN, biases3For3NN, new RoughTanhUnit()));		
-		bestTempModel = new NeuralNetwork(layersFor3NN);		
+        layersFor3NN.add(new FeedForwardLayer(weights3For3NN, biases3For3NN, new RoughTanhUnit()));
+        bestTempModel = new NeuralNetworkModel(layersFor3NN);
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
@@ -99,8 +97,8 @@ public class FindBestSplittingFromIndividual {
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
-		
-		bestTempModel = new CharacterManipulationFromStringDistance(data.getTrainingDataSteps(), data.getDataPrep(), util);
+
+        bestTempModel = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
 		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(bestTempModel.toString()+" : "+minLoss);
 		modelList.add(bestTempModel);
@@ -113,7 +111,7 @@ public class FindBestSplittingFromIndividual {
 		double total, average;
 		
 		for(Model originalModel: models) {
-			DataSplitOp splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataPrep());
+            DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataPrep());
 			ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 			
 			for(int i=0;i<=9;i++) {
@@ -128,7 +126,7 @@ public class FindBestSplittingFromIndividual {
 				average = total / (double) attempts;
 
 				StringBuilder tempBuilder = new StringBuilder();
-				splitOp.toString(tempBuilder);
+                splitOp.description(tempBuilder);
 				String tempString = "Splitting Model with split "+tempBuilder.toString()+" with good model "+originalModel.toString()+" and bad model "+otherModel.toString()+": "+average; 
 				tempBuilder.append(tempString);
 				System.out.println(tempBuilder.toString());
@@ -145,31 +143,31 @@ public class FindBestSplittingFromIndividual {
 		
 	}
 
-	public static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataPreparation dataPrep, CustomRandom rand) {
+    private static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataProcessing dataPrep, CustomRandom rand) {
 		switch(index) {
 		case 0:
-			return new AdvancedCopying(1, DataPreparation.FIXED_VECTOR_SIZE);
+            return new AdvancedCopyingModel(1, DataProcessing.FIXED_VECTOR_SIZE);
 		case 1:
 			return new AverageModel(trainingData);
 		case 2:
-			return new BasicCopying();
+            return new BasicCopyingModel();
 		case 3:
-			return new CategoricPortionProbabilityModelForCharacter(trainingData, 4, dataPrep, rand);
+            return new ProportionProbabilityForCharacterModel(trainingData, 4, dataPrep, rand);
 		case 4:
-			return new CharacterManipulationFromStringDistance(trainingData, dataPrep, rand);
+            return new CharacterManipulationFromStringDistanceModel(trainingData, dataPrep, rand);
 		case 5:
-			return new FeedForwardLayer(DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, new RoughTanhUnit(), rand);
+            return new FeedForwardLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, new RoughTanhUnit(), rand);
 		case 6:
-			return new LinearLayer(DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, rand);
+            return new LinearLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, rand);
 		case 7:
-			return new NeuralNetwork(new int[] {1,0}, DataPreparation.FIXED_VECTOR_SIZE, new int[] {20}, DataPreparation.FIXED_VECTOR_SIZE, rand);
+            return new NeuralNetworkModel(new int[]{1, 0}, DataProcessing.FIXED_VECTOR_SIZE, new int[]{20}, DataProcessing.FIXED_VECTOR_SIZE, rand);
 		case 8:
-			return new NeuralNetwork(new int[] {0,0}, DataPreparation.FIXED_VECTOR_SIZE, new int[] {2}, DataPreparation.FIXED_VECTOR_SIZE, rand);
+            return new NeuralNetworkModel(new int[]{0, 0}, DataProcessing.FIXED_VECTOR_SIZE, new int[]{2}, DataProcessing.FIXED_VECTOR_SIZE, rand);
 		case 9:
-			return new NeuralNetwork(new int[] {0,0,0}, DataPreparation.FIXED_VECTOR_SIZE, new int[] {3,2}, DataPreparation.FIXED_VECTOR_SIZE, rand);
+            return new NeuralNetworkModel(new int[]{0, 0, 0}, DataProcessing.FIXED_VECTOR_SIZE, new int[]{3, 2}, DataProcessing.FIXED_VECTOR_SIZE, rand);
 
 		default:
-			return new BasicCopying();
+            return new BasicCopyingModel();
 		}
 	}
 	
@@ -204,7 +202,7 @@ public class FindBestSplittingFromIndividual {
 		
 		
 		for(Model originalModel: models) {
-			DataSplitOp splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataPrep());
+			DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataPrep());
 			ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 			
 			for(int i=0;i<=7;i++) {
@@ -229,26 +227,26 @@ public class FindBestSplittingFromIndividual {
 		
 	}
 
-	public static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataPreparation dataPrep, CustomRandom rand) {
+	public static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataProcessing dataPrep, CustomRandom rand) {
 		switch(index) {
 		case 0:
-			return new AdvancedCopying(2, DataPreparation.FIXED_VECTOR_SIZE);
+			return new AdvancedCopyingModel(2, DataProcessing.FIXED_VECTOR_SIZE);
 		case 1:
 			return new AverageModel(trainingData);
 		case 2:
-			return new BasicCopying();
+			return new BasicCopyingModel();
 		case 3:
-			return new CategoricPortionProbabilityModelForCharacter(trainingData, 3, dataPrep, rand);
+			return new ProportionProbabilityForCharacterModel(trainingData, 3, dataPrep, rand);
 		case 4:
-			return new CharacterManipulationFromStringDistance(trainingData, dataPrep, rand);
+			return new CharacterManipulationFromStringDistanceModel(trainingData, dataPrep, rand);
 		case 5:
-			return new FeedForwardLayer(DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, new RoughTanhUnit(), rand);
+			return new FeedForwardLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, new RoughTanhUnit(), rand);
 		case 6:
-			return new LinearLayer(DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, rand);
+			return new LinearLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, rand);
 		case 7:
-			return new NeuralNetwork(2, DataPreparation.FIXED_VECTOR_SIZE, 10, DataPreparation.FIXED_VECTOR_SIZE, rand);	
+			return new NeuralNetworkModel(2, DataProcessing.FIXED_VECTOR_SIZE, 10, DataProcessing.FIXED_VECTOR_SIZE, rand);
 		default:
-			return new BasicCopying();
+			return new BasicCopyingModel();
 		}
 	}
 	

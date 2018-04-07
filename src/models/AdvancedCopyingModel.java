@@ -1,10 +1,11 @@
 package models;
 
-import matrices.Vector;
+import dataStructures.DataStep;
 import generalUtilities.CustomRandom;
-import generalUtilities.Util;
+import generalUtilities.Utilities;
+import matrices.Vector;
 
-public class AdvancedCopying implements Model {
+public class AdvancedCopyingModel implements Model {
 
 	private int windowSize, inputSize;
 	private double[] valuesForWindowPositions;
@@ -13,8 +14,8 @@ public class AdvancedCopying implements Model {
 	private Vector randomDoubles;
 	private int[] relativePositionForWindow;
 	private double[] windowSizes;
-	
-	public AdvancedCopying(int size, int inputDimension) {
+
+	public AdvancedCopyingModel(int size, int inputDimension) {
 		windowSize=2*size+1;
 		valuesForWindowPositions = new double[windowSize];
 		randomDoubles = new Vector(inputDimension);
@@ -41,9 +42,9 @@ public class AdvancedCopying implements Model {
 	}
 	
 	@Override
-	public void forward(Vector input, Vector output) {
+	public void run(DataStep input, Vector output) {
 		randomDoubles.setData(rand.randomDoublesBetween0and1(inputSize));
-		//System.out.println(Util.arrayToString(randomDoubles.getData()) );
+		//System.out.println(Utilities.arrayToString(randomDoubles.getData()) );
 		double RandomValue;
 		int positionToCopy;
 		for(int i=inputSize-1;i>=0;i--) {
@@ -54,9 +55,9 @@ public class AdvancedCopying implements Model {
 				if(RandomValue>=valuesForWindowPositions[j]) {
 					positionToCopy = i+relativePositionForWindow[j];
 					if(positionToCopy<0 || positionToCopy>=inputSize) {
-						output.set(i, input.get(i));//For empty String
+						output.set(i, input.getInputVector().get(i));//For empty String
 					}else {
-						output.set(i, input.get(positionToCopy));						
+						output.set(i, input.getInputVector().get(positionToCopy));
 						//System.out.print(i+", ");
 					}
 					break;
@@ -67,7 +68,7 @@ public class AdvancedCopying implements Model {
 	}
 
 	@Override
-	public void forwardWithBackProp(Vector input, Vector output, Vector targetOutput) {
+	public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
 		randomDoubles.setData(rand.randomDoublesBetween0and1(inputSize));
 		double RandomValue,value,target;
 		int positionToCopy;
@@ -78,9 +79,9 @@ public class AdvancedCopying implements Model {
 				if(RandomValue>valuesForWindowPositions[j]) {
 					positionToCopy = i+relativePositionForWindow[j];
 					if(positionToCopy<0 || positionToCopy>=inputSize) {
-						value = input.get(i);
+						value = input.getInputVector().get(i);
 					}else {
-						value = input.get(positionToCopy);
+						value = input.getInputVector().get(positionToCopy);
 					}
 					output.set(i, value);
 					
@@ -95,7 +96,7 @@ public class AdvancedCopying implements Model {
 				if(positionToCopy<0 || positionToCopy>=inputSize) {
 					positionToCopy = i;
 				}
-				deltaForWindowPositions[j] += (input.get(positionToCopy)>target)? input.get(positionToCopy)-target:target-input.get(positionToCopy);
+				deltaForWindowPositions[j] += (input.getInputVector().get(positionToCopy) > target) ? input.getInputVector().get(positionToCopy) - target : target - input.getInputVector().get(positionToCopy);
 				//System.out.print(deltaForWindowPositions[j]+" ");
 			}
 			//System.out.println();
@@ -105,18 +106,12 @@ public class AdvancedCopying implements Model {
 	}
 
 	@Override
-	public void getParams(StringBuilder builder) {
-		new Vector(valuesForWindowPositions).toString(builder);
-
-	}
-
-	@Override
-	public void updateModelParams(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
-			double OneMinusBeta2) {
+	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
+									  double OneMinusBeta2) {
 		double totalDelta = 0, totalReciprocalOfDelta = 0;
-		
-		for(int i=0;i<deltaForWindowPositions.length;i++) {
-			totalDelta += deltaForWindowPositions[i];
+
+		for (double deltaForWindowPosition : deltaForWindowPositions) {
+			totalDelta += deltaForWindowPosition;
 			//System.out.println(deltaForWindowPositions[i]);
 		}
 		
@@ -160,4 +155,13 @@ public class AdvancedCopying implements Model {
 		
 	}
 
+	@Override
+	public String description() {
+		return Utilities.arrayToString(valuesForWindowPositions);
+	}
+
+	@Override
+	public void description(StringBuilder stringBuilder) {
+		new Vector(valuesForWindowPositions).description(stringBuilder);
+	}
 }

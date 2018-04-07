@@ -1,17 +1,16 @@
 package training;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Set;
-
 import dataStructures.DataStep;
 import dataStructures.Flashcard;
 import dataStructures.FlashcardDataSet;
 import fileManipulation.DataExport;
 import generalUtilities.CustomRandom;
 
-public class DataPreparation {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
+public class DataProcessing {
 	
 	final private static int countThreshold = 50000;
 	final private static int maxWordPiece = 5;
@@ -62,8 +61,8 @@ public class DataPreparation {
 	public ArrayList<String> getPhrases(){
 		return sortedPhrases;
 	}
-	
-	public DataPreparation(ArrayList<String> lines) {
+
+	public DataProcessing(ArrayList<String> lines) {
 		ArrayList<String> fragments = new ArrayList<>();
 		
 		for(String line: lines) {
@@ -76,8 +75,8 @@ public class DataPreparation {
 			//System.out.println("Expected Output: "+tempArray[1]);
 
 		}
-		
-		int total = DataPreparation.FIXED_VECTOR_SIZE*fragments.size();
+
+		int total = DataProcessing.FIXED_VECTOR_SIZE * fragments.size();
 		
 		HashMap<String, Integer> phrasesAndCount = new HashMap<>();
 
@@ -110,14 +109,8 @@ public class DataPreparation {
 		}
 		
 		tempPhrases.add(Flashcard.FRONT_BACK_SEPARATOR);
-		
-		tempPhrases.sort( new Comparator<String>() {
-			@Override
-			public int compare(String string1, String string2) {
-				return string2.length()-string1.length();
-			}
-			
-		});
+
+		tempPhrases.sort((string1, string2) -> string2.length() - string1.length());
 		
 		//ArrayList<String> phrasesUnsorted = new ArrayList<>();
 		
@@ -125,19 +118,17 @@ public class DataPreparation {
 		
 		for(String line:lines) {
 			for(int i=0;i<line.length();) {
-				for(int j=0;j<tempPhrases.size();j++) {
-					String phrase = tempPhrases.get(j);
-					
-					if(i+phrase.length()<=line.length()) {
-						if(phrase.equals( line.substring(i, i+phrase.length()) )) {
-							if(finalPhrasesCount.containsKey(phrase)) {
+				for (String phrase : tempPhrases) {
+					if (i + phrase.length() <= line.length()) {
+						if (phrase.equals(line.substring(i, i + phrase.length()))) {
+							if (finalPhrasesCount.containsKey(phrase)) {
 								int previousValue = finalPhrasesCount.get(phrase);
 								finalPhrasesCount.remove(phrase);
-								finalPhrasesCount.put(phrase, previousValue+1);
-							}else {
+								finalPhrasesCount.put(phrase, previousValue + 1);
+							} else {
 								finalPhrasesCount.put(phrase, 1);
 							}
-							i+= phrase.length();
+							i += phrase.length();
 							break;
 						}
 					}
@@ -151,12 +142,8 @@ public class DataPreparation {
 			phrasesSortedInSize.add(phrase);
 			sortedPhrases.add(phrase);
 		}
-		
-		int totalCounts = 0;
-		for(String phrase: sortedPhrases) {
-			totalCounts += finalPhrasesCount.get(phrase);
-		}
-		
+
+
 		valuesForSortedPhrases = new double[sortedPhrases.size()+1];
 		double previousValue = -1.0;
 		//valuesForSortedPhrases[0] = previousValue;
@@ -170,21 +157,15 @@ public class DataPreparation {
 		
 		positionForEmptyString = previousValue;
 		valuesForSortedPhrases[sortedPhrases.size()] = positionForEmptyString;
-		
-		phrasesSortedInSize.sort( new Comparator<String>() {
-			@Override
-			public int compare(String string1, String string2) {
-				return string2.length()-string1.length();
-			}
-			
-		});
+
+		phrasesSortedInSize.sort((string1, string2) -> string2.length() - string1.length());
 		
 		phrasesSize = sortedPhrases.size();
 		
 		StringBuilder tempBuilder = new StringBuilder();
 		for(int i = 0;i<phrasesSize;i++) {
 			System.out.println(sortedPhrases.get(i)+" - "+valuesForSortedPhrases[i]+" - "+finalPhrasesCount.get( sortedPhrases.get(i) ));
-			tempBuilder.append(sortedPhrases.get(i)+" - "+valuesForSortedPhrases[i]+"\n");
+			tempBuilder.append(sortedPhrases.get(i)).append(" - ").append(valuesForSortedPhrases[i]).append("\n");
 		}
 		DataExport.overwriteToTextFile(tempBuilder, "Models/Phrases and Values.txt");
 		System.out.println("Position For Empty String - "+positionForEmptyString);
@@ -196,15 +177,14 @@ public class DataPreparation {
 	
 	public double[] stringToDoubleArray(String string) {
 		double[] output = new double[FIXED_VECTOR_SIZE];
-		String message = string;
 		int index =0;
 		//System.out.println(message + message.length());
-		for(int i=0;i<message.length();) {
+		for (int i = 0; i < string.length(); ) {
 			for(int j=0;j<phrasesSize;j++) {
 				String phrase = phrasesSortedInSize.get(j);
 				//System.out.println(phrase + "\t" + message.substring(i, i+phrase.length()));
-				if(i+phrase.length()<=message.length()) {
-					if(phrase.equals(message.substring(i, i+phrase.length()))) {
+				if (i + phrase.length() <= string.length()) {
+					if (phrase.equals(string.substring(i, i + phrase.length()))) {
 						//System.out.println(phrase);
 						output[index++] = valuesForSortedPhrases[sortedPhrases.indexOf(phrase)]+0.0000001*rand.randomDouble()*(valuesForSortedPhrases[sortedPhrases.indexOf(phrase)+1]-valuesForSortedPhrases[sortedPhrases.indexOf(phrase)]);
 						
@@ -236,28 +216,27 @@ public class DataPreparation {
 			//System.out.print(input[i]+"\t");
 		//}
 		//System.out.println();
-		for(int i=0;i<input.length;i++) {
+		for (double value : input) {
 			//System.out.print(input[i]+" ");
-			if(input[i]>=positionForEmptyString || input[i]<-1.0) {
+			if (value >= positionForEmptyString || value < -1.0) {
 				continue;
 			}
-			double value = input[i];
 			int low = 0;
-			int high = phrasesSize-1;
+			int high = phrasesSize - 1;
 			boolean found = false;
-			while(!found) {
-				int middle = (low+high)/2;
-				if(value>=valuesForSortedPhrases[middle] && value<valuesForSortedPhrases[middle+1]) {
+			while (!found) {
+				int middle = (low + high) / 2;
+				if (value >= valuesForSortedPhrases[middle] && value < valuesForSortedPhrases[middle + 1]) {
 					builder.append(sortedPhrases.get(middle));
 					//System.out.println(sortedPhrases.get(middle));
 					found = true;
-				} else if(value < valuesForSortedPhrases[middle]) {
-					high = middle -1;
-				}else {
-					low = middle+1;
+				} else if (value < valuesForSortedPhrases[middle]) {
+					high = middle - 1;
+				} else {
+					low = middle + 1;
 				}
 			}
-			
+
 		}
 		return builder.toString();
 	}

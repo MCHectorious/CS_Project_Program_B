@@ -1,17 +1,18 @@
 package models;
 
-import java.util.ArrayList;
-
+import dataStructures.DataStep;
+import generalUtilities.CustomRandom;
 import matrices.Vector;
 import nonlinearityFunctions.RoughTanhUnit;
-import generalUtilities.CustomRandom;
+
+import java.util.ArrayList;
 
 public class StackingEnsembleModel implements Model {
 
-	private ArrayList<Model> subModels = new ArrayList<>();
+	private ArrayList<Model> subModels;
 	private final Model combiningModel;
 	private ArrayList<Vector> subModelOutputs = new ArrayList<>();
-	private Vector combiningModelInput;
+	private DataStep combiningModelInput;
 	
 	
 	public StackingEnsembleModel(ArrayList<Model> models, int inputDimension, int outputDimension, CustomRandom util) {
@@ -19,10 +20,10 @@ public class StackingEnsembleModel implements Model {
 		for(int i=0;i<models.size();i++) {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
-		//combiningModel = new NeuralNetwork(3,subModels.size()*inputDimension,100,outputDimension,util);
+		//combiningModel = new NeuralNetworkModel(3,subModels.size()*inputDimension,100,outputDimension,util);
 		combiningModel = new FeedForwardLayer(subModels.size()*inputDimension, outputDimension, new RoughTanhUnit(), util);
-		
-		combiningModelInput = new Vector(subModels.size()*outputDimension);
+
+		combiningModelInput = new DataStep(new Vector(subModels.size() * outputDimension));
 		
 	}
 	
@@ -31,52 +32,40 @@ public class StackingEnsembleModel implements Model {
 		for(int i=0;i<models.size();i++) {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
-		//combiningModel = new NeuralNetwork(3,subModels.size()*inputDimension,100,outputDimension,util);
+		//combiningModel = new NeuralNetworkModel(3,subModels.size()*inputDimension,100,outputDimension,util);
 		combiningModel = model;
-		
-		combiningModelInput = new Vector(subModels.size()*outputDimension);
+
+		combiningModelInput = new DataStep(new Vector(subModels.size() * outputDimension));
 		
 	}
 	
 	@Override
-	public void forward(Vector input, Vector output) {
+	public void run(DataStep input, Vector output) {
 		for(int i=subModels.size()-1;i>=0;i--) {
-			subModels.get(i).forward(input, subModelOutputs.get(i) );
+			subModels.get(i).run(input, subModelOutputs.get(i));
 		}
-		Vector.concatenateVector(subModelOutputs, combiningModelInput);
-		combiningModel.forward( combiningModelInput, output);
+		Vector.concatenateVector(subModelOutputs, combiningModelInput.getInputVector());
+		combiningModel.run(combiningModelInput, output);
 
 	}
 
 	@Override
-	public void forwardWithBackProp(Vector input, Vector output, Vector targetOutput) {
+	public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
 		for(int i=subModels.size()-1;i>=0;i--) {
-			subModels.get(i).forwardWithBackProp(input, subModelOutputs.get(i), targetOutput);
+			subModels.get(i).runAndDecideImprovements(input, subModelOutputs.get(i), targetOutput);
 		}
-		Vector.concatenateVector(subModelOutputs, combiningModelInput);
+		Vector.concatenateVector(subModelOutputs, combiningModelInput.getInputVector());
 
-		combiningModel.forwardWithBackProp(combiningModelInput , output, targetOutput);
+		combiningModel.runAndDecideImprovements(combiningModelInput, output, targetOutput);
 	}
 
 	@Override
-	public void getParams(StringBuilder builder) {
-		builder.append("Stacking Combining Model \n\r");
-		combiningModel.getParams(builder);
-		builder.append("\n\r");
-		for(Model model:subModels) {
-			model.getParams(builder);
-			builder.append("\n\r");
-		}
-
-	}
-
-	@Override
-	public void updateModelParams(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
-			double OneMinusBeta2) {
+	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
+									  double OneMinusBeta2) {
 		for(Model model: subModels) {
-			model.updateModelParams(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
+			model.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
 		}
-		combiningModel.updateModelParams(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
+		combiningModel.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
 
 	}
 
@@ -85,8 +74,25 @@ public class StackingEnsembleModel implements Model {
 		for(Model model: subModels) {
 			model.resetState();
 		}
-		combiningModel.resetState();;
+		combiningModel.resetState();
 		
 	}
 
+	@Override
+	public String description() {
+		StringBuilder stringBuilder = new StringBuilder();
+		description(stringBuilder);
+		return stringBuilder.toString();
+	}
+
+	@Override
+	public void description(StringBuilder stringBuilder) {
+		stringBuilder.append("Stacking Combining Model \n\r");
+		combiningModel.description(stringBuilder);
+		stringBuilder.append("\n\r");
+		for (Model model : subModels) {
+			model.description(stringBuilder);
+			stringBuilder.append("\n\r");
+		}
+	}
 }

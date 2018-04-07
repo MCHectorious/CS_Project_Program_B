@@ -4,28 +4,17 @@ import matrices.Vector;
 
 public interface Layer extends Model{
 
-	//public double getWeight(int index);
-	
-	//public double getDelta(int index);
-	
-	
-	public int getWeightCols();
-	
-	//public int getWeightRows();
+	int getWeightCols();
 
-	public void backProp(Vector input, Vector output, double[] derivativeOfCostWithRespectToInputFromNextLayer);
-	
-	//public void backProp(Vector input, Vector output);
-	
-	public double[] getDerivativeWithRespectToInput();
+	void backProp(Vector input, Vector output, double[] derivativeOfCostWithRespectToInputFromNextLayer);
 
-	public void forwardWithBackProp(Vector input, Vector output);
-	
-	//public void calculateDelta(Layer layer);
+	double[] getDerivativeWithRespectToInput();
 
-	//public void calculateDerivativeForCost(Vector input);
+	void runWithBackProp(Vector input, Vector output);
 
-	
+	void runWithBackProp(Vector input, Vector output, Vector targetOutput);
 
-	
+
+	void run(Vector input, Vector output);
+
 }

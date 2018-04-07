@@ -12,7 +12,15 @@ public class DataStep {
 		//System.out.println(new Vector(input).toString());
 		this.targetOutput = new Vector(targetOutput);
 	}
-	
+
+    public DataStep(double[] input) {
+        this.input = new Vector(input);
+    }
+
+    public DataStep(Vector input) {
+        this.input = input;
+    }
+
 	public DataStep(double[] input, double[] targetOutput, String inputText, String outputText) {
 		this.input = new Vector(input);
 		//System.out.println(new Vector(input).toString());

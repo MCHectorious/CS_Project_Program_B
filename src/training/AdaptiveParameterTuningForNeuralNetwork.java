@@ -2,11 +2,11 @@ package training;
 
 import dataStructures.FlashcardDataSet;
 import fileManipulation.DataExport;
-import models.Model;
-import models.NeuralNetwork;
 import generalUtilities.CustomRandom;
+import models.Model;
+import models.NeuralNetworkModel;
 
-public class AdaptiveParameterTuning {
+public class AdaptiveParameterTuningForNeuralNetwork {
 	
 	private double alpha = 0.001,beta1 = 0.9,beta2 = 0.999, momentum = 0.5;
 	private int numOfLayers = 3;
@@ -91,7 +91,7 @@ public class AdaptiveParameterTuning {
 		double parameterSetLoss = 0.0;
 		for(int iteration = 0;iteration<numOfIterations;iteration++) {
 			Trainer trainer = new Trainer(alpha, beta1,  beta2,momentum);
-			Model model = new NeuralNetwork(numOfLayers, DataPreparation.FIXED_VECTOR_SIZE, hiddenDimension, DataPreparation.FIXED_VECTOR_SIZE, util );
+			Model model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension, DataProcessing.FIXED_VECTOR_SIZE, util);
 			parameterSetLoss += trainer.train(trainingEpochs, model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, util);
 		}
 		System.out.println("Set Of Parameters Completed:\t"+alpha+"\t"+beta1+"\t"+beta2+"\t"+momentum+"\t"+numOfLayers+"\t"+hiddenDimension+"\t"+parameterSetLoss/numOfIterations);

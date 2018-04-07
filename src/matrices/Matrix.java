@@ -6,22 +6,14 @@ public class Matrix extends GeneralMatrix{
 
     private int numRows;
     private int numCols;
-    
-    public int getNumRows() {
-		return numRows;
-	}
-
-	public int getNumCols() {
-		return numCols;
-	}
 
 	public Matrix(double[] array, int cols) {
 		data = array;
 		numCols = cols;
 		numRows = array.length/cols;
 	}
-	
-	public Matrix(int rows, int cols) {
+
+	private Matrix(int rows, int cols) {
     	numRows = rows;
     	numCols = cols;
     }

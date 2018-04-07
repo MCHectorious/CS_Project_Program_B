@@ -18,14 +18,16 @@ public class DataImport {
 		    while ((line = br.readLine()) != null){
 		    	output.add(line);
 		    }
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch (IOException exception) {
+			System.out.println("Error trying to access file: " + file);
+			System.out.println(exception.getMessage());
 		}finally {
 			if (br != null){
 				try {
 					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();//TODO: handle appropriately
+				} catch (IOException exception) {
+					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println(exception.getMessage());
 				}
 			}
 		}
@@ -48,14 +50,16 @@ public class DataImport {
 		    while ((line = br.readLine()) != null){
 		    	output = Double.parseDouble(line);
 		    }
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch (IOException exception) {
+			System.out.println("Error trying to get double from file: " + file);
+			System.out.println(exception.getMessage());
 		}finally {
 			if (br != null){
 				try {
 					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();//TODO: handle appropriately
+				} catch (IOException exception) {
+					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println(exception.getMessage());
 				}
 			}
 		}
@@ -71,14 +75,16 @@ public class DataImport {
 		    while ((line = br.readLine()) != null){
 		    	output.add(line);
 		    }
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch (IOException exception) {
+			System.out.println("Error trying to access file: " + file);
+			System.out.println(exception.getMessage());
 		}finally {
 			if (br != null){
 				try {
 					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();//TODO: handle appropriately
+				} catch (IOException exception) {
+					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println(exception.getMessage());
 				}
 			}
 		}
@@ -96,14 +102,16 @@ public class DataImport {
 			while ((line = br.readLine()) != null){
 				output.add(new Flashcard(line));
 			}
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch (IOException exception) {
+			System.out.println("Error trying to get flashcard list from file: " + file);
+			System.out.println(exception.getMessage());
 		}finally {
 			if (br != null){
 				try {
 					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();//TODO: handle appropriately
+				} catch (IOException exception) {
+					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println(exception.getMessage());
 				}
 			}
 		}

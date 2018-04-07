@@ -1,14 +1,11 @@
 package characterOperations;
 
+import generalUtilities.HasDescription;
+
 import java.util.ArrayList;
 
-public interface CharacterOperation {
+public interface CharacterOperation extends HasDescription {
     void convertCharacter(char c, StringBuilder builder);
-
-    void toString(StringBuilder builder);
-
-    int getTypeID();
-
 
     ArrayList<Character> getInputs();
     ArrayList<Character> getOutputs();

@@ -1,24 +1,22 @@
 package dataStructures;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import fileManipulation.DataImport;
 import generalUtilities.CustomRandom;
 import lossFunctions.LossStringDistance;
 import matrices.Vector;
-
 import models.Model;
-import nonlinearityFunctions.NonLinearity;
 import nonlinearityFunctions.RoughTanhUnit;
-import training.DataPreparation;
+import training.DataProcessing;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestingDataSet implements DataSet {
 
 	private static final String border = "--------------------------------------------------------------";
 	private DataSequence training = new DataSequence();
 	private DataSequence testing = new DataSequence();
-	private DataPreparation dataPrep;
+    private DataProcessing dataPrep;
 	private double ReciprocalOfTrainingSize;
 	private double ReciprocalOfTestingSize;
 	private CustomRandom random;
@@ -35,7 +33,7 @@ public class TestingDataSet implements DataSet {
 
 		
 		ArrayList<String> lines = DataImport.getLines("DataSets/TranslatedFlashcards.txt");
-		dataPrep = new DataPreparation(lines);
+        dataPrep = new DataProcessing(lines);
 		stringLoss = new LossStringDistance(dataPrep);
 		
 		training.addDataStep( new double[]{0.25,-0.75,-0.25} , new double[] {-0.9493670886075949, -0.9646017699115044, -0.9767441860465116}, "man", "anm");
@@ -51,9 +49,7 @@ public class TestingDataSet implements DataSet {
 		System.out.println(testing.getSize() + " steps in testing set");
 		ReciprocalOfTrainingSize = 1.0/training.getSize();
 		ReciprocalOfTestingSize = 1.0/testing.getSize();
-		
-		lines = null;
-		
+
 	}
 	
 	@Override
@@ -66,7 +62,7 @@ public class TestingDataSet implements DataSet {
 		modelInput.setData(example.getInput());
 		//modelInput.toString(builder);
 		//builder.append("\n");
-		model.forward( modelInput, modelOutput);
+        model.run(new DataStep(modelInput), modelOutput);
 		//modelOutput.toString(builder);
 		//builder.append("\n");
 		String modelOutputString = dataPrep.doubleArrayToString(modelOutput.getData());
@@ -74,12 +70,6 @@ public class TestingDataSet implements DataSet {
 		builder.append("String Distance: ").append(stringLoss.measure(modelOutputString, example.getOutputText()));
 		builder.append("\n").append(border);
 		System.out.println(builder.toString());
-	}
-
-	@Override
-	public NonLinearity getDataSetNonLinearity() {
-		
-		return roughTanhUnit;
 	}
 
 	public int getTrainingSize() {
@@ -90,9 +80,6 @@ public class TestingDataSet implements DataSet {
 		return ReciprocalOfTrainingSize;
 	}
 
-	public double getReciprocalOfTestingSize() {
-		return ReciprocalOfTestingSize;
-	}
 
 	public List<DataStep> getTrainingDataSteps() {
 		return training.getDataSteps();
@@ -106,8 +93,5 @@ public class TestingDataSet implements DataSet {
 		return testing.getSize();
 	}
 	
-	public DataPreparation getDataPrep() {
-		return dataPrep;
-	}
 
 }

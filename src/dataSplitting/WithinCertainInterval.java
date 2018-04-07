@@ -1,23 +1,22 @@
 package dataSplitting;
 
-import java.util.ArrayList;
-
 import dataStructures.DataStep;
 import matrices.Vector;
-import training.DataPreparation;
+import training.DataProcessing;
 
-public class WithinCertainInterval implements DataSplitOp {
+import java.util.ArrayList;
+
+public class WithinCertainInterval extends DataSplitOperation {
 
 	private int index;
 	private double pivot;
 	private double interval;
-	private double valueOfOp=-1;
-	
-	public WithinCertainInterval(ArrayList<DataStep> list1,ArrayList<DataStep> list2) {
+
+    WithinCertainInterval(ArrayList<DataStep> list1, ArrayList<DataStep> list2) {
 		double[] intervalSet = {0.01,0.1,0.25,0.5};
-		for(int tempIndex =0;tempIndex < DataPreparation.FIXED_VECTOR_SIZE;tempIndex++) {
-			for(int intervalSetIndex = 0; intervalSetIndex<intervalSet.length;intervalSetIndex++) {
-				double tempInterval = intervalSet[intervalSetIndex];
+        for (int tempIndex = 0; tempIndex < DataProcessing.FIXED_VECTOR_SIZE; tempIndex++) {
+
+            for (double tempInterval : intervalSet) {
 				for(double tempValue = -1.0;tempValue<=1.0;tempValue=tempValue+0.1) {
 					int list1LabelledList1=0,list1LabelledList2=0,list2LabelledList1=0,list2LabelledList2=0;
 					for(DataStep step:list1) {
@@ -27,7 +26,7 @@ public class WithinCertainInterval implements DataSplitOp {
 							list1LabelledList2++;
 						}
 					}
-					
+
 					for(DataStep step:list2) {
 						if(isInSet(step.getInputVector(),tempIndex,tempValue,tempInterval)) {
 							list2LabelledList1++;
@@ -35,9 +34,9 @@ public class WithinCertainInterval implements DataSplitOp {
 							list2LabelledList2++;
 						}
 					}
-					
-					double value = (double)list1LabelledList1/(double)(list1LabelledList1+list1LabelledList2) + (double)list2LabelledList2/(double)(list2LabelledList1+list2LabelledList2);	
-					
+
+                    double value = (double) list1LabelledList1 / (double) (list1LabelledList1 + list1LabelledList2) + (double) list2LabelledList2 / (double) (list2LabelledList1 + list2LabelledList2);
+
 					if(value>valueOfOp) {
 						valueOfOp = value;
 						index = tempIndex;
@@ -55,14 +54,9 @@ public class WithinCertainInterval implements DataSplitOp {
 	}	
 	
 	@Override
-	public boolean isInSet(Vector step) {
-		double testingValue = step.get(index);
+    public boolean isInSet(DataStep step) {
+        double testingValue = step.getInputVector().get(index);
 		return (testingValue-interval)>pivot && (testingValue+interval)<pivot;
-	}
-
-	@Override
-	public void toString(StringBuilder builder) {
-		builder.append("At index "+index+", within +/- "+interval+" of "+pivot);
 	}
 
 	@Override
@@ -70,4 +64,13 @@ public class WithinCertainInterval implements DataSplitOp {
 		return valueOfOp;
 	}
 
+    @Override
+    public String description() {
+        return "At index " + index + ", within +/- " + interval + " of " + pivot;
+    }
+
+    @Override
+    public void description(StringBuilder stringBuilder) {
+        stringBuilder.append("At index ").append(index).append(", within +/- ").append(interval).append(" of ").append(pivot);
+    }
 }

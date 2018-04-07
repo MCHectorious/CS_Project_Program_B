@@ -1,12 +1,17 @@
 package matrices;
 
-public class GeneralMatrix {
+import generalUtilities.HasDescription;
+import generalUtilities.Utilities;
+
+public class GeneralMatrix implements HasDescription {
 	protected double[] data;
-	
-    public void toString(StringBuilder builder) {
-    	for(double d: data) {
-    		builder.append(d+"\t");
-    	}
+
+    public String description() {
+        return Utilities.arrayToString(data);
+    }
+
+    public void description(StringBuilder builder) {
+        builder.append(Utilities.arrayToString(data));
     }
 	
 

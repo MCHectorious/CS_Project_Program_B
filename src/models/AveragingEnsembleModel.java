@@ -1,18 +1,18 @@
 package models;
 
-import java.util.ArrayList;
-
+import dataStructures.DataStep;
+import generalUtilities.Utilities;
 import lossFunctions.Loss;
 import lossFunctions.LossSumOfSquares;
 import matrices.Vector;
-import generalUtilities.Util;
+
+import java.util.ArrayList;
 
 public class AveragingEnsembleModel implements Model {
 
-	private ArrayList<Model> subModels = new ArrayList<>();
+	private ArrayList<Model> subModels;
 	private ArrayList<Vector> subModelOutputs = new ArrayList<>();
 	private int outputSize;
-	private double reciprocalOfModelSize;
 	private int modelSizeMinus1;
 	private double[] weightings;
 	private double[] subModelLosses;
@@ -25,7 +25,7 @@ public class AveragingEnsembleModel implements Model {
 		for(int i=0;i<models.size();i++) {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
-		reciprocalOfModelSize = 1.0/(double)models.size();
+		double reciprocalOfModelSize = 1.0 / (double) models.size();
 		//System.out.println(reciprocalOfModelSize+" "+subModels.size());
 		modelSizeMinus1 = models.size()-1;
 		outputSize = outputDimension;
@@ -37,10 +37,10 @@ public class AveragingEnsembleModel implements Model {
 	}
 	
 	@Override
-	public void forward(Vector input, Vector output) {
-		//System.out.println("forward");
+	public void run(DataStep input, Vector output) {
+		//System.out.println("run");
 		for(int i=subModels.size()-1;i>=0;i--) {
-			subModels.get(i).forward(input, subModelOutputs.get(i) );
+			subModels.get(i).run(input, subModelOutputs.get(i));
 		}
 		
 		for(int i=outputSize-1;i>=0;i--) {
@@ -57,10 +57,10 @@ public class AveragingEnsembleModel implements Model {
 	}
 
 	@Override
-	public void forwardWithBackProp(Vector input, Vector output, Vector targetOutput) {
+	public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
 		
 		for(int i=subModels.size()-1; i >= 0; i--) {
-			subModels.get(i).forwardWithBackProp(input, subModelOutputs.get(i) , targetOutput);
+			subModels.get(i).runAndDecideImprovements(input, subModelOutputs.get(i), targetOutput);
 			subModelLosses[i] += loss.measure(subModelOutputs.get(i), targetOutput);
 		}
 		for(int i=outputSize-1;i>=0;i--) {
@@ -77,20 +77,10 @@ public class AveragingEnsembleModel implements Model {
 	}
 
 	@Override
-	public void getParams(StringBuilder builder) {
-		builder.append(Util.arrayToString(weightings)).append("\n\r");
-		for(Model model:subModels) {
-			model.getParams(builder);
-			builder.append("\n\r");
-		}
-
-	}
-
-	@Override
-	public void updateModelParams(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
-			double OneMinusBeta2) {
+	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
+									  double OneMinusBeta2) {
 		for(Model model: subModels) {
-			model.updateModelParams(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
+			model.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
 		}
 		double totalLoss = 0.0;
 		for(int i=modelSizeMinus1;i>=0;i--) {
@@ -120,4 +110,23 @@ public class AveragingEnsembleModel implements Model {
 		}	
 	}
 
+	@Override
+	public String description() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(Utilities.arrayToString(weightings)).append("\n\r");
+		for (Model model : subModels) {
+			model.description(stringBuilder);
+			stringBuilder.append("\n\r");
+		}
+		return stringBuilder.toString();
+	}
+
+	@Override
+	public void description(StringBuilder stringBuilder) {
+		stringBuilder.append(Utilities.arrayToString(weightings)).append("\n\r");
+		for (Model model : subModels) {
+			model.description(stringBuilder);
+			stringBuilder.append("\n\r");
+		}
+	}
 }

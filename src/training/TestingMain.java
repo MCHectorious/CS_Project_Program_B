@@ -1,16 +1,5 @@
 package training;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import dataSplitting.DataSplitOp;
-import dataSplitting.Splitter;
-import dataStructures.DataStep;
-import dataStructures.FlashcardDataSet;
-import dataStructures.TestingDataSet;
-import matrices.Vector;
-import models.*;
-
 
 public class TestingMain {
 
@@ -39,7 +28,7 @@ public class TestingMain {
 			}
 			
 			for(int i=0;i<layerTypes.length;i++) {
-				System.out.println(Util.arrayToString(layerTypes[i]));
+				System.out.println(Utilities.arrayToString(layerTypes[i]));
 			}
 			
 			int[][] hiddenDims = new int[(int) Math.pow(hiddenDimensionSet.length, j-1)][j-1];
@@ -50,7 +39,7 @@ public class TestingMain {
 			}
 			
 			for(int i=0;i<hiddenDims.length;i++) {
-				System.out.println(Util.arrayToString(hiddenDims[i]));
+				System.out.println(Utilities.arrayToString(hiddenDims[i]));
 			}
 			
 		}
@@ -71,42 +60,42 @@ public class TestingMain {
 		
 		String savePath = "Models/CardToSentence.txt";
 
-		//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataPreparation.FIXED_VECTOR_SIZE);
+		//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataProcessing.FIXED_VECTOR_SIZE);
 		
 		//ArrayList<Layer> layers = new ArrayList<>();
-		//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataPreparation.FIXED_VECTOR_SIZE));
+		//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataProcessing.FIXED_VECTOR_SIZE));
 		
 		//layers.add(new FeedForwardLayer(new double[] {1.01,2.01,2.01,3.01,3.01,3.01,4.01,4.01,4.01}, new double[] {-1.01,2.01,-3.01}, new RoughTanhUnit()));
 		
-		//Model model = new NeuralNetwork(layers);
+		//Model model = new NeuralNetworkModel(layers);
 		
-		//Model model = new NeuralNetwork(4, DataPreparation.FIXED_VECTOR_SIZE, 15, DataPreparation.FIXED_VECTOR_SIZE, util);
+		//Model model = new NeuralNetworkModel(4, DataProcessing.FIXED_VECTOR_SIZE, 15, DataProcessing.FIXED_VECTOR_SIZE, util);
 		
 		//Model model = new AverageModel(data.getTrainingDataSteps());
 		
-		Model model = new CharacterManipulationFromStringDistance(data.getTrainingDataSteps(), data.getDataPrep(), util);
+		Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
 		
 		
 		/*StringBuilder builder  = new StringBuilder();
 		
 		Vector output = new Vector(3);
 		
-		model.forward(new Vector(new double[] {0.25,-0.75,-0.25}), output );
+		model.run(new Vector(new double[] {0.25,-0.75,-0.25}), output );
 		output.toString(builder);
 		builder.append("\n");
-		model.forward(new Vector(new double[] {-0.25,-0.75,-0.25}), output );
+		model.run(new Vector(new double[] {-0.25,-0.75,-0.25}), output );
 		output.toString(builder);
 		builder.append("\n");
-		model.forward(new Vector(new double[] {-0.15,-0.65,-0.95}), output );
+		model.run(new Vector(new double[] {-0.15,-0.65,-0.95}), output );
 		output.toString(builder);
 		builder.append("\n");
-		model.forward(new Vector(new double[] {-0.85,-0.35,-0.995}), output );
+		model.run(new Vector(new double[] {-0.85,-0.35,-0.995}), output );
 		output.toString(builder);
 		builder.append("\n");
-		model.forward(new Vector(new double[] {-0.65,-0.765,-0.765}), output );
+		model.run(new Vector(new double[] {-0.65,-0.765,-0.765}), output );
 		output.toString(builder);
 		builder.append("\n");
-		model.forward(new Vector(new double[] {-0.125,-0.715,-0.85}), output );
+		model.run(new Vector(new double[] {-0.125,-0.715,-0.85}), output );
 		output.toString(builder);
 		builder.append("\n");
 		System.out.println(builder.toString());
@@ -115,21 +104,21 @@ public class TestingMain {
 		//FeedForwardLayer model = new FeedForwardLayer(3, 3, new RoughTanhUnit(), util);
 		
 		/*ArrayList<Model> models = new ArrayList<>();
-		AdvancedCopying model1 = new AdvancedCopying(1, DataPreparation.FIXED_VECTOR_SIZE);
+		AdvancedCopyingModel model1 = new AdvancedCopyingModel(1, DataProcessing.FIXED_VECTOR_SIZE);
 		models.add(model1);
-		models.add(new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
-		models.add(new BasicCopying());
+		models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
+		models.add(new BasicCopyingModel());
 		
-		Model model = new StackingEnsembleModel(models, DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, util);
+		Model model = new StackingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, util);
 		*/
-		
-		//NeuralNetwork model2 = new NeuralNetwork(3, DataPreparation.FIXED_VECTOR_SIZE, 10, DataPreparation.FIXED_VECTOR_SIZE, util);
+
+        //NeuralNetworkModel model2 = new NeuralNetworkModel(3, DataProcessing.FIXED_VECTOR_SIZE, 10, DataProcessing.FIXED_VECTOR_SIZE, util);
 		//models.add(model2);
-		
-		//AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataPreparation.FIXED_VECTOR_SIZE);
-		
-		
-		//Model model = new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 1, data.getDataPrep(), util);
+
+        //AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE);
+
+
+        //Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util);
 		
 		/*
 		int numOfTrainingEpochs = 1000;
@@ -142,14 +131,14 @@ public class TestingMain {
 		
 		//System.out.println("Original Loss: "+lossOriginal);
 		
-		DataSplitOp splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataPrep());
+		DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataPrep());
 		
 		ArrayList<DataStep> goodValues = Splitter.getStepsInSplit(data.getTrainingDataSteps(), splitOp);
 		ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 	
 		
-		Model model1 = new CharacterManipulationFromStringDistance(goodValues, data.getDataPrep(), util);
-		Model model2 = new CategoricPortionProbabilityModelForCharacter(badValues, 2, data.getDataPrep(), util);
+		Model model1 = new CharacterManipulationFromStringDistanceModel(goodValues, data.getDataPrep(), util);
+		Model model2 = new ProportionProbabilityForCharacterModel(badValues, 2, data.getDataPrep(), util);
 		
 		double loss1 = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model1, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		
@@ -166,11 +155,9 @@ public class TestingMain {
 		*/
 		
 	}
-	
-	
-    public static String convertFlashcardToSentence(String flashcardFront, String flashcardBack){
-        //TODO: Fix capitililsation 
-    	//TODO: optimise
+
+
+    private static String convertFlashcardToSentence(String flashcardFront, String flashcardBack) {
 
         String front = flashcardFront.trim();
         if (front.charAt(front.length()-1)=='?'){
@@ -342,10 +329,10 @@ public class TestingMain {
         String input = flashcardFront+"<F_B_S>"+flashcardBack;
         String extra= (input.length()>100)? input.substring(100):"";
 
-        //double[] inputArray = DataPreparation.stringToDoubleArray(input);
-        //double[] outputArray = LinearLayer.forward(inputArray);
+        //double[] inputArray = DataProcessing.stringToDoubleArray(input);
+        //double[] outputArray = LinearLayer.run(inputArray);
 
-        //return DataPreparation.doubleArrayToString(outputArray)+extra;
+        //return DataProcessing.doubleArrayToString(outputArray)+extra;
 
         return "Failed";
         
@@ -370,7 +357,7 @@ public class TestingMain {
 		}
 		
 		for(int i=0;i<layerTypes.length;i++) {
-			System.out.println(Util.arrayToString(layerTypes[i]));
+			System.out.println(Utilities.arrayToString(layerTypes[i]));
 		}
 		
 		int[][] hiddenDims = new int[(int) Math.pow(hiddenDimensionSet.length, j-1)][j-1];
@@ -381,7 +368,7 @@ public class TestingMain {
 		}
 		
 		for(int i=0;i<hiddenDims.length;i++) {
-			System.out.println(Util.arrayToString(hiddenDims[i]));
+			System.out.println(Utilities.arrayToString(hiddenDims[i]));
 		}
 		
 	}
@@ -402,42 +389,42 @@ public class TestingMain {
 	
 	String savePath = "Models/CardToSentence.txt";
 
-	//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataPreparation.FIXED_VECTOR_SIZE);
+	//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataProcessing.FIXED_VECTOR_SIZE);
 	
 	//ArrayList<Layer> layers = new ArrayList<>();
-	//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataPreparation.FIXED_VECTOR_SIZE));
+	//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataProcessing.FIXED_VECTOR_SIZE));
 	
 	//layers.add(new FeedForwardLayer(new double[] {1.01,2.01,2.01,3.01,3.01,3.01,4.01,4.01,4.01}, new double[] {-1.01,2.01,-3.01}, new RoughTanhUnit()));
 	
-	//Model model = new NeuralNetwork(layers);
+	//Model model = new NeuralNetworkModel(layers);
 	
-	//Model model = new NeuralNetwork(4, DataPreparation.FIXED_VECTOR_SIZE, 15, DataPreparation.FIXED_VECTOR_SIZE, util);
+	//Model model = new NeuralNetworkModel(4, DataProcessing.FIXED_VECTOR_SIZE, 15, DataProcessing.FIXED_VECTOR_SIZE, util);
 	
 	//Model model = new AverageModel(data.getTrainingDataSteps());
 	
-	Model model = new CharacterManipulationFromStringDistance(data.getTrainingDataSteps(), data.getDataPrep(), util);
+	Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
 	
 	
 	/*StringBuilder builder  = new StringBuilder();
 	
 	Vector output = new Vector(3);
 	
-	model.forward(new Vector(new double[] {0.25,-0.75,-0.25}), output );
+	model.run(new Vector(new double[] {0.25,-0.75,-0.25}), output );
 	output.toString(builder);
 	builder.append("\n");
-	model.forward(new Vector(new double[] {-0.25,-0.75,-0.25}), output );
+	model.run(new Vector(new double[] {-0.25,-0.75,-0.25}), output );
 	output.toString(builder);
 	builder.append("\n");
-	model.forward(new Vector(new double[] {-0.15,-0.65,-0.95}), output );
+	model.run(new Vector(new double[] {-0.15,-0.65,-0.95}), output );
 	output.toString(builder);
 	builder.append("\n");
-	model.forward(new Vector(new double[] {-0.85,-0.35,-0.995}), output );
+	model.run(new Vector(new double[] {-0.85,-0.35,-0.995}), output );
 	output.toString(builder);
 	builder.append("\n");
-	model.forward(new Vector(new double[] {-0.65,-0.765,-0.765}), output );
+	model.run(new Vector(new double[] {-0.65,-0.765,-0.765}), output );
 	output.toString(builder);
 	builder.append("\n");
-	model.forward(new Vector(new double[] {-0.125,-0.715,-0.85}), output );
+	model.run(new Vector(new double[] {-0.125,-0.715,-0.85}), output );
 	output.toString(builder);
 	builder.append("\n");
 	System.out.println(builder.toString());
@@ -446,21 +433,21 @@ public class TestingMain {
 	//FeedForwardLayer model = new FeedForwardLayer(3, 3, new RoughTanhUnit(), util);
 	
 	/*ArrayList<Model> models = new ArrayList<>();
-	AdvancedCopying model1 = new AdvancedCopying(1, DataPreparation.FIXED_VECTOR_SIZE);
+	AdvancedCopyingModel model1 = new AdvancedCopyingModel(1, DataProcessing.FIXED_VECTOR_SIZE);
 	models.add(model1);
-	models.add(new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
-	models.add(new BasicCopying());
+	models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
+	models.add(new BasicCopyingModel());
 	
-	Model model = new StackingEnsembleModel(models, DataPreparation.FIXED_VECTOR_SIZE, DataPreparation.FIXED_VECTOR_SIZE, util);
+	Model model = new StackingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, util);
 	*/
-	
-	//NeuralNetwork model2 = new NeuralNetwork(3, DataPreparation.FIXED_VECTOR_SIZE, 10, DataPreparation.FIXED_VECTOR_SIZE, util);
+
+    //NeuralNetworkModel model2 = new NeuralNetworkModel(3, DataProcessing.FIXED_VECTOR_SIZE, 10, DataProcessing.FIXED_VECTOR_SIZE, util);
 	//models.add(model2);
-	
-	//AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataPreparation.FIXED_VECTOR_SIZE);
-	
-	
-	//Model model = new CategoricPortionProbabilityModelForCharacter(data.getTrainingDataSteps(), 1, data.getDataPrep(), util);
+
+    //AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE);
+
+
+    //Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util);
 	
 	/*
 	int numOfTrainingEpochs = 1000;
@@ -473,14 +460,14 @@ public class TestingMain {
 	
 	//System.out.println("Original Loss: "+lossOriginal);
 	
-	DataSplitOp splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataPrep());
+	DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataPrep());
 	
 	ArrayList<DataStep> goodValues = Splitter.getStepsInSplit(data.getTrainingDataSteps(), splitOp);
 	ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 
 	
-	Model model1 = new CharacterManipulationFromStringDistance(goodValues, data.getDataPrep(), util);
-	Model model2 = new CategoricPortionProbabilityModelForCharacter(badValues, 2, data.getDataPrep(), util);
+	Model model1 = new CharacterManipulationFromStringDistanceModel(goodValues, data.getDataPrep(), util);
+	Model model2 = new ProportionProbabilityForCharacterModel(badValues, 2, data.getDataPrep(), util);
 	
 	double loss1 = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model1, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 	

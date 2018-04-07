@@ -1,11 +1,5 @@
 package dataStructures;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-
-
-
 public class Flashcard {
 
 	public static final String FRONT_BACK_SEPARATOR = "<F_B_S>";
@@ -52,9 +46,9 @@ public class Flashcard {
 		}
 		
 	}
-	
-	
-	public static String getFlashcard(String string) {
+
+
+    static String getFlashcard(String string) {
 		return string.substring(0, string.indexOf(CARD_SENTENCE_SEPERATOR));
 	}
 	
@@ -65,16 +59,8 @@ public class Flashcard {
 	public static String withSep(String front, String back, String translation) {
 		return front + FRONT_BACK_SEPARATOR + back + CARD_SENTENCE_SEPERATOR + translation;
 	}
-	
-	public static String getFront(String string) {
-		return string.substring(0, string.indexOf(FRONT_BACK_SEPARATOR));
-	}
-	
-	public static String getBack(String string) {
-		return string.substring(string.indexOf(Flashcard.FRONT_BACK_SEPARATOR)+ FRONT_BACK_SEPARATOR.length(), string.indexOf(CARD_SENTENCE_SEPERATOR));
-	}
-	
-	public static String getTranslation(String string) {
+
+    static String getTranslation(String string) {
 		return string.substring(string.indexOf(CARD_SENTENCE_SEPERATOR)+ CARD_SENTENCE_SEPERATOR.length());
 	}
 	

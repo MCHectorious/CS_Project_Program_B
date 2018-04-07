@@ -1,16 +1,16 @@
 package lossFunctions;
 
+import generalUtilities.Utilities;
 import matrices.Vector;
-import generalUtilities.Util;
 
 public class LossSumOfSquares implements Loss{
 
 	public static void main(String[] args) {
 		double[] actualOutputArray = {0.1,-0.1, -0.9};
-		System.out.println("Actual Output: "+Util.arrayToString(actualOutputArray));
+        System.out.println("Actual Output: " + Utilities.arrayToString(actualOutputArray));
 		Vector actualOutput = new Vector(actualOutputArray );
 		double[] targetOutputArray = {0.01,0, -0.89};
-		System.out.println("Target Output: "+Util.arrayToString(targetOutputArray));		
+        System.out.println("Target Output: " + Utilities.arrayToString(targetOutputArray));
 		Vector targetOutput = new Vector(targetOutputArray);
 		double loss = new LossSumOfSquares().measure(actualOutput,targetOutput);
 		System.out.println("Loss: "+loss);
