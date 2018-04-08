@@ -5,11 +5,10 @@ import matrices.Vector;
 public class DataStep {
 	private Vector input;
 	private Vector targetOutput;
-	private String inputText, outputText;
+	private String inputText, targetOutputText;
 	
 	public DataStep(double[] input, double[] targetOutput) {
 		this.input = new Vector(input);
-		//System.out.println(new Vector(input).toString());
 		this.targetOutput = new Vector(targetOutput);
 	}
 
@@ -21,16 +20,15 @@ public class DataStep {
         this.input = input;
     }
 
-	public DataStep(double[] input, double[] targetOutput, String inputText, String outputText) {
+	public DataStep(double[] input, double[] targetOutput, String inputText, String targetOutputText) {
 		this.input = new Vector(input);
-		//System.out.println(new Vector(input).toString());
 		this.targetOutput = new Vector(targetOutput);
 		this.inputText = inputText;
-		this.outputText = outputText;
+		this.targetOutputText = targetOutputText;
 	}
 	
-	public String getOutputText() {
-		return outputText;
+	public String getTargetOutputText() {
+		return targetOutputText;
 	}
 	
 	public String getInputText() {

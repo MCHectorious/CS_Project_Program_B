@@ -11,12 +11,12 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 
-class MemRiseScraper implements RevisionWebsiteScraper {
+class MemriseScraper implements RevisionWebsiteScraper {
 
     @Override
-    public ArrayList<String> getRelatedCourses(ArrayList<String> strings) {
+    public ArrayList<String> getRelatedCourses(ArrayList<String> courseSearchStrings) {
 		ArrayList<String> relatedWebsites = new ArrayList<>();
-		for ( String string: strings) {
+		for ( String string: courseSearchStrings) {
 
             String courseColloquialName = "";
             if(string.contains("AQA GCSE ")) {
@@ -61,8 +61,8 @@ class MemRiseScraper implements RevisionWebsiteScraper {
 	}
 
     @Override
-    public void getFlashcards(ArrayList<String> strings) {
-		for (String url: strings) {
+    public void getFlashcards(ArrayList<String> relatedCoursesURLs) {
+		for (String url: relatedCoursesURLs) {
             try {
             	//System.out.println(url);
             	Document courseWebsite = Jsoup.connect("https://www.memrise.com"+url).timeout(1000000).get();
@@ -73,8 +73,8 @@ class MemRiseScraper implements RevisionWebsiteScraper {
                     for(Element div:informationSection){
                         String front = div.select("div[class=col_a col text]").select("div[class=text]").first().text();
                         String back = div.select("div[class=col_b col text]").select("div[class=text]").first().text();
-            			DataExport.appendToTextFile(Flashcard.withSep(front, back), "DataSets/RawFlashcards.txt");
-            			//System.out.println(Flashcard.withSep(front, back));
+            			DataExport.appendToTextFile(Flashcard.withSeparator(front, back), "DataSets/RawFlashcards.txt");
+            			//System.out.println(Flashcard.withSeparator(front, back));
 
             			
                     }

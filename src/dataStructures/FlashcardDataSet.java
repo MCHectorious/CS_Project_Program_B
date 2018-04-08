@@ -13,192 +13,95 @@ import java.util.List;
 
 public class FlashcardDataSet implements DataSet{
 	
-	private DataSequence training = new DataSequence();
-	private DataSequence testing = new DataSequence();
-    private final static String border = "==============================================================================================";
-    private final double ReciprocalOfTrainingSize;
-	private CustomRandom util;
-    private DataProcessing dataPrep;
-    private Vector modelOutput = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
-    private Vector modelInput = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
-	private LossStringDistance stringLoss;
+	private DataSequence trainingDataSequence = new DataSequence();
+	private DataSequence testingDataSequence = new DataSequence();
+    private final static String borderForReport = "==============================================================================================";
+    private final double reciprocalOfTrainingSize;
+	private CustomRandom random;
+    private DataProcessing dataProcessing;
+    private Vector modelOutput = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
+    private Vector modelInput = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
+	private LossStringDistance stringDistanceLoss;
 	
-	public int getTrainingSize() {
-		return training.getSize();
+	public int getTrainingDataStepsSize() {
+		return trainingDataSequence.getSize();
 	}
 	
 	public double getReciprocalOfTrainingSize() {
-		return ReciprocalOfTrainingSize;
+		return reciprocalOfTrainingSize;
 	}
 
 	public List<DataStep> getTrainingDataSteps() {
-		return training.getDataSteps();
+		return trainingDataSequence.getDataSteps();
 	}
 	
 	public List<DataStep> getTestingDataSteps() {
-		return testing.getDataSteps();
+		return testingDataSequence.getDataSteps();
 	}
 	
-	public int getTestingSize() {
-		return testing.getSize();
+	public int getTestingDataStepsSize() {
+		return testingDataSequence.getSize();
 	}
 	
-	public FlashcardDataSet(String path, CustomRandom utility) {
-		util = utility;
+	public FlashcardDataSet(String dataFilePath, CustomRandom random) {
+		this.random = random;
 
-		ArrayList<String> lines = DataImport.getLines(path);
-        dataPrep = new DataProcessing(lines);
-		stringLoss = new LossStringDistance(dataPrep);
+		ArrayList<String> linesFromTextFile = DataImport.getLinesFromTextFile(dataFilePath);
+        dataProcessing = new DataProcessing(linesFromTextFile);
+		stringDistanceLoss = new LossStringDistance(dataProcessing);
 
-		//ArrayList<Map<Character,Integer>> flashcardCounts = new ArrayList<>();
-		//ArrayList<Map<Character,Integer>> translationCounts = new ArrayList<>();
+		for(String line: linesFromTextFile) {
 
-
-		//int tempCounter = 0;
-		for(String line: lines) {
-			//System.out.println(line);
-
-			/*String flashcard = Flashcard.getFlashcard(line);
-			String translation = Flashcard.getFlashcard(line);
-			for(int i=0;i<flashcard.length();i++) {
-				if(flashcardCounts.size()==i) {
-					flashcardCounts.add(new HashMap<Character,Integer>());
-				}
-				boolean found = false;
-				for(Character c:flashcardCounts.get(i).keySet()) {
-					if(c.charValue()==flashcard.charAt(i)) {
-						int prevValue = flashcardCounts.get(i).get(c);
-						flashcardCounts.get(i).remove(c);
-						flashcardCounts.get(i).put(c, prevValue+1);
-						found = true;
-						break;
-					}
-				}
-				if(!found) {
-					flashcardCounts.get(i).put(flashcard.charAt(i), 1);
-				}
-			}
-			for(int i=0;i<translation.length();i++) {
-				if(translationCounts.size()==i) {
-					translationCounts.add(new HashMap<Character,Integer>());
-				}
-				boolean found = false;
-				for(Character c:translationCounts.get(i).keySet()) {
-					if(c.charValue()==translation.charAt(i)) {
-						int prevValue = translationCounts.get(i).get(c);
-						translationCounts.get(i).remove(c);
-						translationCounts.get(i).put(c, prevValue+1);
-						found = true;
-						break;
-					}
-				}
-				if(!found) {
-					translationCounts.get(i).put(translation.charAt(i), 1);
-				}
-			}*/
-
-			/*for(int i=0;i<3;i++) {
-				double[] FlashcardDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getFlashcard(line));
-				System.out.println("Input: "+Utilities.arrayToString(FlashcardDoubleArray));
-			}
-			for(int i=0;i<3;i++) {
-				double[] TranslationDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getFlashcard(line));
-				System.out.println("Output: "+Utilities.arrayToString(TranslationDoubleArray));
-			}*/
-			double[] FlashcardDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getFlashcard(line));
-			double[] TranslationDoubleArray = dataPrep.stringToDoubleArray(Flashcard.getTranslation(line));
-            //DataExport.appendToTextFile(Utilities.padArrayWithTabs(FlashcardDoubleArray)+"\t"+Utilities.padArrayWithTabs(TranslationDoubleArray), "Models/Data Numerical.txt");
-			if(util.randomBoolean() || util.randomBoolean()) {
-				//DataStep dataStep = new DataStep()//System.out.println( new Vector(FlashcardDoubleArray).toString() );
-				//training.addDataStep(FlashcardDoubleArray, TranslationDoubleArray,Flashcard.getFlashcard(line),Flashcard.getTranslation(line));
-				//System.out.print(Flashcard.getFlashcard(line)+Flashcard.getTranslation(line));
-				training.addDataStepsWithCapitilisationVariation(FlashcardDoubleArray, TranslationDoubleArray,Flashcard.getFlashcard(line),Flashcard.getTranslation(line),dataPrep);
-				//System.out.println("Training: "+line);
-
-				//System.out.println(tempCounter++);
-				//System.out.println( new DataStep(FlashcardDoubleArray,TranslationDoubleArray).input.toString());
-				//System.out.println( (new Vector(FlashcardDoubleArray)).toString() );
+			double[] flashcardDoubleArray = dataProcessing.stringToDoubleArray(Flashcard.getFlashcard(line));
+			double[] sentenceDoubleArray = dataProcessing.stringToDoubleArray(Flashcard.getSentence(line));
+			if(this.random.randomBoolean() || this.random.randomBoolean()) {
+				trainingDataSequence.addDataStepsWithCapitalisationVariation(flashcardDoubleArray, sentenceDoubleArray,Flashcard.getFlashcard(line),Flashcard.getSentence(line), dataProcessing);
 			}else {
-				//System.out.println("Testing: "+line);
-				testing.addDataStep(FlashcardDoubleArray, TranslationDoubleArray,Flashcard.getFlashcard(line),Flashcard.getTranslation(line));
+				testingDataSequence.addDataStep(flashcardDoubleArray, sentenceDoubleArray,Flashcard.getFlashcard(line),Flashcard.getSentence(line));
 			}
 		}
-		System.out.println("Total phrases = " + dataPrep.getNumOfPhrases());
-		System.out.println(training.getSize() + " steps in training set");
-		System.out.println(testing.getSize() + " steps in testing set");
-		ReciprocalOfTrainingSize = 1.0/training.getSize();
-		//System.out.println("Training Size: "+training.getSize());
-		//System.out.println(String.format("%.15f", ReciprocalOfTrainingSize));
-
-        //for(int i=0;i<training.getSize();i++) {
-			//StringBuilder builder = new StringBuilder();
-			//training.getDataSteps().get(i).getInputVector().toString(builder);
-			//System.out.println(builder.toString());
-
-        //}
-
-		/*DataExport.appendToTextFile("Flashcard Values:\n", "Models/Temp.txt");
-		for(int i=0;i<flashcardCounts.size();i++) {
-			StringBuilder tempBuilder = new StringBuilder();
-			for(Character c: flashcardCounts.get(i).keySet()) {
-				tempBuilder.append(c).append("\t").append(flashcardCounts.get(i).get(c)).append("\t");
-			}
-
-			DataExport.appendToTextFile(tempBuilder.toString(), "Models/Temp.txt");
-		}
-		DataExport.appendToTextFile("Translation Values:\n", "Models/Temp.txt");
-		for(int i=0;i<translationCounts.size();i++) {
-			StringBuilder tempBuilder = new StringBuilder();
-			for(Character c: translationCounts.get(i).keySet()) {
-				tempBuilder.append(c).append("\t").append(translationCounts.get(i).get(c)).append("\t");
-			}
-
-			DataExport.appendToTextFile(tempBuilder.toString(), "Models/Temp.txt");
-		}*/
-
+		System.out.println("Total phrases = " + dataProcessing.getNumOfPhrases());
+		System.out.println(trainingDataSequence.getSize() + " steps in trainingDataSequence set");
+		System.out.println(testingDataSequence.getSize() + " steps in testingDataSequence set");
+		reciprocalOfTrainingSize = 1.0/ trainingDataSequence.getSize();
 
     }
 
-    public DataProcessing getDataPrep() {
-        return dataPrep;
+    public DataProcessing getDataProcessing() {
+        return dataProcessing;
     }
 	
 	@Override
-	public void DisplayReport(Model model) {
-		DataStep example =  testing.getRandom(util) ;
+	public void displayReport(Model model) {
+		DataStep exampleTestingDataStep =  testingDataSequence.getRandom(random) ;
 
+		StringBuilder reportBuilder = new StringBuilder(300);
 
-		StringBuilder builder = new StringBuilder(300);
+		reportBuilder.append(borderForReport).append("\nReport:\n");
 
-		builder.append(border+"\nReport:\n");
+		reportBuilder.append("Input: ").append(exampleTestingDataStep.getInputText()).append("\n");
 
-		builder.append("Input: ").append(example.getInputText()).append("\n");
-
-        builder.append(Utilities.arrayToString(example.getInput())).append("\n");
+        reportBuilder.append(Utilities.arrayToString(exampleTestingDataStep.getInput())).append("\n");
 		
-		builder.append("Expected Output: \t").append( example.getOutputText()).append("\n");
+		reportBuilder.append("Expected Output: \t").append( exampleTestingDataStep.getTargetOutputText()).append("\n");
 
-        builder.append(Utilities.arrayToString(example.getTargetOutput())).append("\n");
-
+        reportBuilder.append(Utilities.arrayToString(exampleTestingDataStep.getTargetOutput())).append("\n");
 		
-		modelInput.setData(example.getInput());
-
+		modelInput.setData(exampleTestingDataStep.getInput());
 
         model.run(new DataStep(modelInput), modelOutput);
 		
-		String modelOutputString = dataPrep.doubleArrayToString(modelOutput.getData());
+		String modelOutputString = dataProcessing.doubleArrayToString(modelOutput.getData());
 
-		builder.append("Actual Output: \t\t").append(modelOutputString ).append("\n");
+		reportBuilder.append("Actual Output: \t").append(modelOutputString ).append("\n");
 
-        builder.append(Utilities.arrayToString(modelOutput.getData())).append("\n");
+        reportBuilder.append(Utilities.arrayToString(modelOutput.getData())).append("\n");
+
+		reportBuilder.append("String Distance: ").append(stringDistanceLoss.measure(modelOutputString, exampleTestingDataStep.getTargetOutputText()));
 		
-				
-		builder.append("String Distance: ").append(stringLoss.measure(modelOutputString, example.getOutputText()));
-		
-		builder.append("\n").append(border);
+		reportBuilder.append("\n").append(borderForReport);
 
-
-		System.out.println(builder.toString());
+		System.out.println(reportBuilder.toString());
 		
 	}
 

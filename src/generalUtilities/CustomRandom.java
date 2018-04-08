@@ -4,14 +4,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class CustomRandom {
-    private int s1;
-    private int s2;
+    private int stateVariable1, stateVariable2;
 
     private ThreadLocalRandom random;
 	public CustomRandom() {
 		random = ThreadLocalRandom.current();
-    	s1 = random.nextInt();
-    	s2 = random.nextInt();
+    	stateVariable1 = random.nextInt();
+    	stateVariable2 = random.nextInt();
 	}
 	
 	public double[] randomDoubleArray(int length) {
@@ -35,12 +34,12 @@ public class CustomRandom {
 	}
 	
 	public int randomInt(int bound) {
-		int z0 = s1;
-	    int z1 = s2;
+		int z0 = stateVariable1;
+	    int z1 = stateVariable2;
 	    int result = Math.abs(z0 + z1);
         z1 ^= z0;
-        s1 = Integer.rotateLeft(z0, 55) ^ z1 ^ (z1 << 14); 
-        s2 = Integer.rotateLeft(z1, 36);
+        stateVariable1 = Integer.rotateLeft(z0, 55) ^ z1 ^ (z1 << 14);
+        stateVariable2 = Integer.rotateLeft(z1, 36);
         return result % (bound+1);
 	    
 	}

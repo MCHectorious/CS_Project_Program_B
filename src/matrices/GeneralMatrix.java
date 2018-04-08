@@ -6,18 +6,18 @@ import generalUtilities.Utilities;
 public class GeneralMatrix implements HasDescription {
 	protected double[] data;
 
-    public String description() {
+    public String provideDescription() {
         return Utilities.arrayToString(data);
     }
 
-    public void description(StringBuilder builder) {
+    public void provideDescription(StringBuilder builder) {
         builder.append(Utilities.arrayToString(data));
     }
 	
 
     
-	public void addToData(int index, double val) {
-		data[index] += val;
+	public void addToData(int index, double value) {
+		data[index] += value;
 	}
 	
 
@@ -39,15 +39,8 @@ public class GeneralMatrix implements HasDescription {
         return data[index];
     }
     
-    public double set( int index , double val ) {
-        return data[index] = val;
+    public double set( int index , double value ) {
+        return data[index] = value;
     }
-    
-    
-    public void println() {
-    	System.out.println(toString());
-    }
-    
-    
-    
+
 }

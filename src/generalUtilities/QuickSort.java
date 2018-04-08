@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 class QuickSort {
 
-    private ArrayList<Double> numbers;
+    private ArrayList<Double> doubles;
 
     @SuppressWarnings("unchecked")
     ArrayList<Double> sort(ArrayList<Double> values) {
@@ -13,47 +13,47 @@ class QuickSort {
         }
         try {
 
-            this.numbers = (ArrayList<Double>) values.clone();
+            this.doubles = (ArrayList<Double>) values.clone();
         } catch (ClassCastException exception) {
             System.out.println("Error trying to cast the ro an ArrayList<Double>");
             System.out.print(Utilities.arrayToString(values.toArray(new Double[0])));
             System.out.println(exception.getMessage());
             return null;
         }
-        quickSort(0, values.size() - 1);
-        return numbers;
+        sort(0, values.size() - 1);
+        return doubles;
     }
 
-    private void quickSort(int low, int high) {
-        int i = low, j = high;
-        double pivot = numbers.get(low + (high - low) / 2);
+    private void sort(int lowerIndex, int upperIndex) {
+        int i = lowerIndex, j = upperIndex;
+        double pivot = doubles.get(lowerIndex + (upperIndex - lowerIndex) / 2);
 
         while (i <= j) {
 
-            while (numbers.get(i) < pivot) {
+            while (doubles.get(i) < pivot) {
                 i++;
             }
 
-            while (numbers.get(j) > pivot) {
+            while (doubles.get(j) > pivot) {
                 j--;
             }
 
             if (i <= j) {
-                exchange(i, j);
+                exchangeValue(i, j);
                 i++;
                 j--;
             }
         }
-        if (low < j)
-            quickSort(low, j);
-        if (i < high)
-            quickSort(i, high);
+        if (lowerIndex < j)
+            sort(lowerIndex, j);
+        if (i < upperIndex)
+            sort(i, upperIndex);
     }
 
-    private void exchange(int i, int j) {
-        double temp = numbers.get(i);
-        numbers.set(i, numbers.get(j));
-        numbers.set(j, temp);
+    private void exchangeValue(int oldIndex, int newIndex) {
+        double temp = doubles.get(oldIndex);
+        doubles.set(oldIndex, doubles.get(newIndex));
+        doubles.set(newIndex, temp);
     }
 
 }

@@ -3,65 +3,65 @@ package dataStructures;
 public class Flashcard {
 
 	public static final String FRONT_BACK_SEPARATOR = "<F_B_S>";
-	public static final String CARD_SENTENCE_SEPERATOR = "<Fc_S_S>";
+	public static final String CARD_SENTENCE_SEPARATOR = "<Fc_S_S>";
 	
-	private final String front;
-	private final String back;
-	private String translation;
+	private final String flashcardFront;
+	private final String flashcardBack;
+	private String sentence;
 	
-	public void setTranslation(String string) {
-		translation = string;
+	public void setSentence(String string) {
+		sentence = string;
 	}
 	
-	public String getTranslation() {
-		return translation;
+	public String getSentence() {
+		return sentence;
 	}
 
-	public String getFront() {
-		return front;
+	public String getFlashcardFront() {
+		return flashcardFront;
 	}
 
-	public String getBack() {
-		return back;
+	public String getFlashcardBack() {
+		return flashcardBack;
 	}
 
-	public Flashcard(String combined){
-		this.front = combined.substring(0, combined.indexOf(FRONT_BACK_SEPARATOR)).trim();
-		if(combined.contains(CARD_SENTENCE_SEPERATOR)) {
-			this.back = combined.substring(combined.indexOf(Flashcard.FRONT_BACK_SEPARATOR)+ FRONT_BACK_SEPARATOR.length(), combined.indexOf(CARD_SENTENCE_SEPERATOR)).trim();
-			this.translation = combined.substring(combined.indexOf(CARD_SENTENCE_SEPERATOR)+ CARD_SENTENCE_SEPERATOR.length()).trim();
+	public Flashcard(String combinedFlashcardComponents){
+		this.flashcardFront = combinedFlashcardComponents.substring(0, combinedFlashcardComponents.indexOf(FRONT_BACK_SEPARATOR)).trim();
+		if(combinedFlashcardComponents.contains(CARD_SENTENCE_SEPARATOR)) {
+			this.flashcardBack = combinedFlashcardComponents.substring(combinedFlashcardComponents.indexOf(Flashcard.FRONT_BACK_SEPARATOR)+ FRONT_BACK_SEPARATOR.length(), combinedFlashcardComponents.indexOf(CARD_SENTENCE_SEPARATOR)).trim();
+			this.sentence = combinedFlashcardComponents.substring(combinedFlashcardComponents.indexOf(CARD_SENTENCE_SEPARATOR)+ CARD_SENTENCE_SEPARATOR.length()).trim();
 		}else {
-			this.back= combined.substring(combined.indexOf(FRONT_BACK_SEPARATOR) + FRONT_BACK_SEPARATOR.length()).trim();
-			this.translation = "";
+			this.flashcardBack = combinedFlashcardComponents.substring(combinedFlashcardComponents.indexOf(FRONT_BACK_SEPARATOR) + FRONT_BACK_SEPARATOR.length()).trim();
+			this.sentence = "";
 		}
 		
 	}
 	
 	@Override
 	public String toString() {
-		if(translation.equals("")) {
-			return front+FRONT_BACK_SEPARATOR+back;	
+		if(sentence.equals("")) {
+			return flashcardFront +FRONT_BACK_SEPARATOR+ flashcardBack;
 		}else {
-			return front+FRONT_BACK_SEPARATOR+back+CARD_SENTENCE_SEPERATOR+translation;
+			return flashcardFront +FRONT_BACK_SEPARATOR+ flashcardBack + CARD_SENTENCE_SEPARATOR + sentence;
 		}
 		
 	}
 
 
     static String getFlashcard(String string) {
-		return string.substring(0, string.indexOf(CARD_SENTENCE_SEPERATOR));
+		return string.substring(0, string.indexOf(CARD_SENTENCE_SEPARATOR));
 	}
 	
-	public static String withSep(String f,String b) {
+	public static String withSeparator(String f, String b) {
 		return f + FRONT_BACK_SEPARATOR + b;
 	}
 	
-	public static String withSep(String front, String back, String translation) {
-		return front + FRONT_BACK_SEPARATOR + back + CARD_SENTENCE_SEPERATOR + translation;
+	public static String withSeparator(String front, String back, String translation) {
+		return front + FRONT_BACK_SEPARATOR + back + CARD_SENTENCE_SEPARATOR + translation;
 	}
 
-    static String getTranslation(String string) {
-		return string.substring(string.indexOf(CARD_SENTENCE_SEPERATOR)+ CARD_SENTENCE_SEPERATOR.length());
+    static String getSentence(String string) {
+		return string.substring(string.indexOf(CARD_SENTENCE_SEPARATOR)+ CARD_SENTENCE_SEPARATOR.length());
 	}
 	
 

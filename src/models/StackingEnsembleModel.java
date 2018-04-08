@@ -20,7 +20,6 @@ public class StackingEnsembleModel implements Model {
 		for(int i=0;i<models.size();i++) {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
-		//combiningModel = new NeuralNetworkModel(3,subModels.size()*inputDimension,100,outputDimension,util);
 		combiningModel = new FeedForwardLayer(subModels.size()*inputDimension, outputDimension, new RoughTanhUnit(), util);
 
 		combiningModelInput = new DataStep(new Vector(subModels.size() * outputDimension));
@@ -32,7 +31,6 @@ public class StackingEnsembleModel implements Model {
 		for(int i=0;i<models.size();i++) {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
-		//combiningModel = new NeuralNetworkModel(3,subModels.size()*inputDimension,100,outputDimension,util);
 		combiningModel = model;
 
 		combiningModelInput = new DataStep(new Vector(subModels.size() * outputDimension));
@@ -62,8 +60,8 @@ public class StackingEnsembleModel implements Model {
 	@Override
 	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
 									  double OneMinusBeta2) {
-		for(Model model: subModels) {
-			model.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
+		for(Model subModel: subModels) {
+			subModel.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
 		}
 		combiningModel.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
 
@@ -71,27 +69,27 @@ public class StackingEnsembleModel implements Model {
 
 	@Override
 	public void resetState() {
-		for(Model model: subModels) {
-			model.resetState();
+		for(Model subModel: subModels) {
+			subModel.resetState();
 		}
 		combiningModel.resetState();
 		
 	}
 
 	@Override
-	public String description() {
+	public String provideDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		description(stringBuilder);
+		provideDescription(stringBuilder);
 		return stringBuilder.toString();
 	}
 
 	@Override
-	public void description(StringBuilder stringBuilder) {
+	public void provideDescription(StringBuilder stringBuilder) {
 		stringBuilder.append("Stacking Combining Model \n\r");
-		combiningModel.description(stringBuilder);
+		combiningModel.provideDescription(stringBuilder);
 		stringBuilder.append("\n\r");
 		for (Model model : subModels) {
-			model.description(stringBuilder);
+			model.provideDescription(stringBuilder);
 			stringBuilder.append("\n\r");
 		}
 	}

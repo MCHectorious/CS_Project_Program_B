@@ -11,17 +11,17 @@ import training.DataProcessing;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Splitter {
+public class DataSplitter {
 
     public static DataSplitOperation getBestDataSplit(List<DataStep> steps, Model model, DataProcessing dataPrep) {
 		ArrayList<Double> losses = new ArrayList<>();
 		
 		Loss getLoss = new LossSumOfSquares();
-        Vector tempOutput = new Vector(DataProcessing.FIXED_VECTOR_SIZE);
+        Vector temporaryOutput = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 
         for (DataStep step : steps) {
-            model.run(step, tempOutput);
-			double loss = getLoss.measure(tempOutput, step.getTargetOutputVector());
+            model.run(step, temporaryOutput);
+			double loss = getLoss.measureLoss(temporaryOutput, step.getTargetOutputVector());
 			losses.add(loss);
 		}
 
@@ -49,24 +49,14 @@ public class Splitter {
 		
 	}
 
-    public static ArrayList<DataStep> getStepsInSplit(List<DataStep> list, DataSplitOperation split) {
-		ArrayList<DataStep> output = new ArrayList<>();
-		for(DataStep step: list) {
-            if (split.isInSet(step)) {
-				output.add(step);
-			}
-		}
-		return output;
-	}
-
     public static ArrayList<DataStep> getStepsNotInSplit(List<DataStep> steps, DataSplitOperation split) {
-		ArrayList<DataStep> output = new ArrayList<>();
+		ArrayList<DataStep> stepsNotInSplit = new ArrayList<>();
 		for(DataStep step: steps) {
             if (!split.isInSet(step)) {
-				output.add(step);
+				stepsNotInSplit.add(step);
 			}
 		}
-		return output;
+		return stepsNotInSplit;
 	}
 	
 }

@@ -17,25 +17,25 @@ public class AutomaticDataPreProcessing {
 		ArrayList<DataStep> steps = new ArrayList<>();
 		if( checkNormalWord(front) ) { 
 			//System.out.print("*a*");
-			//DataExport.appendToTextFile(Flashcard.withSep(reverseFirstChar(card.getFront()), card.getBack(), card.getTranslation()), file);
-			String input = Flashcard.withSep(reverseFirstChar(front), back);
+			//DataExport.appendToTextFile(Flashcard.withSeparator(switchCapitalisationOfFirstCharacterInString(card.getFlashcardFront()), card.getFlashcardBack(), card.getSentence()), file);
+			String input = Flashcard.withSeparator(switchCapitalisationOfFirstCharacterInString(front), back);
 			steps.add(new DataStep(dataPrep.stringToDoubleArray(input), output, input, outputText));
 		}
 		if( checkNormalWord(back) ) {
 			//System.out.print("*b*");
-			//DataExport.appendToTextFile(Flashcard.withSep(card.getFront(), reverseFirstChar(card.getBack()), card.getTranslation()), file);
-			String input = Flashcard.withSep(front, reverseFirstChar(back));
+			//DataExport.appendToTextFile(Flashcard.withSeparator(card.getFlashcardFront(), switchCapitalisationOfFirstCharacterInString(card.getFlashcardBack()), card.getSentence()), file);
+			String input = Flashcard.withSeparator(front, switchCapitalisationOfFirstCharacterInString(back));
 			steps.add(new DataStep(dataPrep.stringToDoubleArray(input), output, input, outputText));
 		}
 		if( checkNormalWord(front) && checkNormalWord(back)) {	
-			String input = Flashcard.withSep(reverseFirstChar(front), reverseFirstChar(back));
+			String input = Flashcard.withSeparator(switchCapitalisationOfFirstCharacterInString(front), switchCapitalisationOfFirstCharacterInString(back));
 			steps.add(new DataStep(dataPrep.stringToDoubleArray(input), output, input, outputText));
 	
 		}		
 		return steps;
 	}
 	
-	private static Boolean checkNormalWord(String s) {
+	private static boolean checkNormalWord(String s) {
 		switch(s.charAt(0)) {
 		case 'á': return false;
 		case 'â': return false;
@@ -49,7 +49,7 @@ public class AutomaticDataPreProcessing {
 		}
 	}
 	
-	private static String reverseFirstChar(String s) {
+	private static String switchCapitalisationOfFirstCharacterInString(String s) {
 		String newFirstLetter;
 		char oldFirstLetter = s.charAt(0) ;
 		if( Character.isLowerCase( oldFirstLetter ) ) {
@@ -61,7 +61,7 @@ public class AutomaticDataPreProcessing {
 	}
 
 
-    private static String autoTranslate(String flashcardFront, String flashcardBack) {
+    private static String automaticallyTranslate(String flashcardFront, String flashcardBack) {
         String front = flashcardFront.trim();
         if(front.contains("(") && front.contains(")")) {
             if ( front.substring(front.lastIndexOf("(")+1, front.lastIndexOf(")")).matches("[0-9]+") ){
@@ -111,7 +111,7 @@ public class AutomaticDataPreProcessing {
         
         if(!frontToTest.contains(" ")){
             return front+" means "+back;
-        } else if (Utilities.countOfCharInString(' ', frontToTest) == 1) {
+        } else if (Utilities.countOfCharacterInString(' ', frontToTest) == 1) {
             return front+" means "+back;
         }
         
@@ -324,34 +324,34 @@ public class AutomaticDataPreProcessing {
         return "";
 	}
 	
-	public static void autoTranslateRawFlashcards(ArrayList<Flashcard> inputs, String file) {
+	public static void automaticallyTranslateRawFlashcards(ArrayList<Flashcard> inputs, String file) {
 		for(Flashcard card: inputs) {
 			String sentence;
 			try {
-				sentence = autoTranslate(card.getFront(),card.getBack());
+				sentence = automaticallyTranslate(card.getFlashcardFront(),card.getFlashcardBack());
 
-			}catch(Exception e) {
-				System.out.println(e.getMessage());
+			}catch(IndexOutOfBoundsException exception) {
+				System.out.println(exception.getMessage());
 				continue;
 			}
 			
 			if(sentence.equals("")) {
 				
 				try {
-					sentence = autoTranslate(card.getBack(),card.getFront());
+					sentence = automaticallyTranslate(card.getFlashcardBack(),card.getFlashcardFront());
 
-				}catch(Exception e) {
-					System.out.println(e.getMessage());
+				}catch(IndexOutOfBoundsException exception) {
+					System.out.println(exception.getMessage());
 					continue;
 				}
 				
 				if(!sentence.equals("")) {
-					String line = Flashcard.withSep(card.getBack(), card.getFront(), sentence);
+					String line = Flashcard.withSeparator(card.getFlashcardBack(), card.getFlashcardFront(), sentence);
 					DataExport.appendToTextFile(line, file);
 				}
 
 			}else {
-				String line = Flashcard.withSep(card.getFront(), card.getBack(), sentence);
+				String line = Flashcard.withSeparator(card.getFlashcardFront(), card.getFlashcardBack(), sentence);
 				DataExport.appendToTextFile(line, file);
 			}
 		}
@@ -359,53 +359,53 @@ public class AutomaticDataPreProcessing {
 	
 	
 	
-	public static void deleteDuplicates(String file) {
-		HashSet<String> uniqueCards = DataImport.getUniqueLines(file);
+	public static void deleteDuplicateFlashcards(String filePath) {
+		HashSet<String> uniqueFlashcards = DataImport.getUniqueLinesFromTextFile(filePath);
 
-        ArrayList<String> cards = new ArrayList<>(uniqueCards);
+        ArrayList<String> flashcards = new ArrayList<>(uniqueFlashcards);
 		
-		for(int i =0;i<cards.size();i++) {
-			for(int j =i+1;j<cards.size();j++) {
-				if(cards.get(i).toLowerCase().equals(cards.get(j).toLowerCase())) {
-                    uniqueCards.remove(cards.get(j));
+		for(int i =0;i<flashcards.size();i++) {
+			for(int j =i+1;j<flashcards.size();j++) {
+				if(flashcards.get(i).toLowerCase().equals(flashcards.get(j).toLowerCase())) {
+                    uniqueFlashcards.remove(flashcards.get(j));
 				}
 			}
 		}
 
-        DataExport.overwriteToTextFile(uniqueCards, file);
+        DataExport.overwriteTextFile(uniqueFlashcards, filePath);
     }
 
-    static void removeTranslatedCards(String rawFile, String translatedFile) {
-		HashSet<String> rawCards = DataImport.getUniqueLines(rawFile);
-		HashSet<String> translatedCards = DataImport.getUniqueLines(translatedFile);
-		HashSet<String> translatedCardsNoTranslation = new HashSet<>();
-		for(String card:translatedCards) {
-			translatedCardsNoTranslation.add(card.substring(0, card.indexOf(Flashcard.CARD_SENTENCE_SEPERATOR)));
+    static void removeTranslatedCards(String rawFlashcardsFilePath, String translatedFlashcardsFilePath) {
+		HashSet<String> rawFlashcards = DataImport.getUniqueLinesFromTextFile(rawFlashcardsFilePath);
+		HashSet<String> translatedFlashcards = DataImport.getUniqueLinesFromTextFile(translatedFlashcardsFilePath);
+		HashSet<String> translatedFlashcardsNoTranslation = new HashSet<>();
+		for(String flashcard:translatedFlashcards) {
+			translatedFlashcardsNoTranslation.add(flashcard.substring(0, flashcard.indexOf(Flashcard.CARD_SENTENCE_SEPARATOR)));
 		}
 		
 		HashSet<String> output = new HashSet<>();
 		
-		for(String line : rawCards) {
+		for(String rawFlashcard : rawFlashcards) {
 			
-			if(!translatedCardsNoTranslation.contains(line)) {
-				output.add(line);
+			if(!translatedFlashcardsNoTranslation.contains(rawFlashcard)) {
+				output.add(rawFlashcard);
 			}
 		}
 		
-		DataExport.overwriteToTextFile(output, rawFile);
+		DataExport.overwriteTextFile(output, rawFlashcardsFilePath);
 		
 	}
 	
 	public static void removeFlashcardsWithUnknownCharacters(String file) {
-		ArrayList<String> lines = DataImport.getLines(file);
-		StringBuilder builder = new StringBuilder();
+		ArrayList<String> lines = DataImport.getLinesFromTextFile(file);
+		StringBuilder stringBuilder = new StringBuilder();
 		for(String line: lines) {
 			if(!line.contains("�")) {
-				builder.append(line).append("\n");
+				stringBuilder.append(line).append("\n");
 			}
 		}
 		
-		DataExport.overwriteToTextFile(builder, file);
+		DataExport.overwriteTextFile(stringBuilder, file);
 		
 		
 	}

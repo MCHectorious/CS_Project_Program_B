@@ -4,44 +4,44 @@ import java.util.ArrayList;
 
 public class SubstituteOperation implements CharacterOperation {
 
-    private char input;
-    private char output;
+    private char inputCharacter;
+    private char outputCharacter;
 
-    public SubstituteOperation(char i, char o) {
-        input = i;
-        output = o;
+    public SubstituteOperation(char input, char output) {
+        inputCharacter = input;
+        outputCharacter = output;
     }
 
     @Override
-    public void convertCharacter(char c, StringBuilder builder) {
-        if(c==input) {
-            builder.append(output);
+    public void convertCharacter(char character, StringBuilder outputTextBuilder) {
+        if(character == inputCharacter) {
+            outputTextBuilder.append(outputCharacter);
         }else {
-            builder.append(c);
+            outputTextBuilder.append(character);
         }
     }
 
     @Override
-    public ArrayList<Character> getInputs() {
-        ArrayList<Character> output = new ArrayList<>();
-        output.add(input);
-        return output;
+    public ArrayList<Character> getRelevantInputs() {
+        ArrayList<Character> relevantInputs = new ArrayList<>();
+        relevantInputs.add(inputCharacter);
+        return relevantInputs;
     }
 
     @Override
-    public ArrayList<Character> getOutputs() {
-        ArrayList<Character> outputs = new ArrayList<>();
-        outputs.add(output);
-        return outputs;
+    public ArrayList<Character> getRelevantOutputs() {
+        ArrayList<Character> relevantOutputs = new ArrayList<>();
+        relevantOutputs.add(outputCharacter);
+        return relevantOutputs;
     }
 
     @Override
-    public String description() {
-        return "Substitute " + input + " for " + output;
+    public String provideDescription() {
+        return "Substitute " + inputCharacter + " for " + outputCharacter;
     }
 
     @Override
-    public void description(StringBuilder stringBuilder) {
-        stringBuilder.append("Substitute ").append(input).append(" for ").append(output);
+    public void provideDescription(StringBuilder stringBuilder) {
+        stringBuilder.append("Substitute ").append(inputCharacter).append(" for ").append(outputCharacter);
     }
 }

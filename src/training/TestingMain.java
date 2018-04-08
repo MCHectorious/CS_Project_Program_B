@@ -60,20 +60,20 @@ public class TestingMain {
 		
 		String savePath = "Models/CardToSentence.txt";
 
-		//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataProcessing.FIXED_VECTOR_SIZE);
+		//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 		
 		//ArrayList<Layer> layers = new ArrayList<>();
-		//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataProcessing.FIXED_VECTOR_SIZE));
+		//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR));
 		
 		//layers.add(new FeedForwardLayer(new double[] {1.01,2.01,2.01,3.01,3.01,3.01,4.01,4.01,4.01}, new double[] {-1.01,2.01,-3.01}, new RoughTanhUnit()));
 		
 		//Model model = new NeuralNetworkModel(layers);
 		
-		//Model model = new NeuralNetworkModel(4, DataProcessing.FIXED_VECTOR_SIZE, 15, DataProcessing.FIXED_VECTOR_SIZE, util);
+		//Model model = new NeuralNetworkModel(4, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 15, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 		
 		//Model model = new AverageModel(data.getTrainingDataSteps());
 		
-		Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
+		Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataProcessing(), util);
 		
 		
 		/*StringBuilder builder  = new StringBuilder();
@@ -104,21 +104,21 @@ public class TestingMain {
 		//FeedForwardLayer model = new FeedForwardLayer(3, 3, new RoughTanhUnit(), util);
 		
 		/*ArrayList<Model> models = new ArrayList<>();
-		AdvancedCopyingModel model1 = new AdvancedCopyingModel(1, DataProcessing.FIXED_VECTOR_SIZE);
+		AdvancedCopyingModel model1 = new AdvancedCopyingModel(1, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 		models.add(model1);
-		models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
+		models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataProcessing(), util));
 		models.add(new BasicCopyingModel());
 		
-		Model model = new StackingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, util);
+		Model model = new StackingEnsembleModel(models, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 		*/
 
-        //NeuralNetworkModel model2 = new NeuralNetworkModel(3, DataProcessing.FIXED_VECTOR_SIZE, 10, DataProcessing.FIXED_VECTOR_SIZE, util);
+        //NeuralNetworkModel model2 = new NeuralNetworkModel(3, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 10, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 		//models.add(model2);
 
-        //AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE);
+        //AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 
 
-        //Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util);
+        //Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataProcessing(), util);
 		
 		/*
 		int numOfTrainingEpochs = 1000;
@@ -127,22 +127,22 @@ public class TestingMain {
 		int checkMinimumPeriod = 20;
 
 		
-		double lossOriginal = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod , savePath, util);
+		double lossOriginal = (new ModelTrainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod , savePath, util);
 		
 		//System.out.println("Original Loss: "+lossOriginal);
 		
-		DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataPrep());
+		DataSplitOperation splitOp = DataSplitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataProcessing());
 		
-		ArrayList<DataStep> goodValues = Splitter.getStepsInSplit(data.getTrainingDataSteps(), splitOp);
-		ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
+		ArrayList<DataStep> goodValues = DataSplitter.getStepsInSplit(data.getTrainingDataSteps(), splitOp);
+		ArrayList<DataStep> badValues = DataSplitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 	
 		
-		Model model1 = new CharacterManipulationFromStringDistanceModel(goodValues, data.getDataPrep(), util);
-		Model model2 = new ProportionProbabilityForCharacterModel(badValues, 2, data.getDataPrep(), util);
+		Model model1 = new CharacterManipulationFromStringDistanceModel(goodValues, data.getDataProcessing(), util);
+		Model model2 = new ProportionProbabilityForCharacterModel(badValues, 2, data.getDataProcessing(), util);
 		
-		double loss1 = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model1, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+		double loss1 = (new ModelTrainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model1, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		
-		double loss2 = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model2, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+		double loss2 = (new ModelTrainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model2, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		
 		//System.out.println("Good: "+goodValues.size()+"\t Bad: "+badValues.size());
 		System.out.println("Original Loss: "+lossOriginal);
@@ -389,20 +389,20 @@ public class TestingMain {
 	
 	String savePath = "Models/CardToSentence.txt";
 
-	//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataProcessing.FIXED_VECTOR_SIZE);
+	//LinearLayer model = new LinearLayer(new double[] {1.01,2.01,3.01,4.01,5.01,6.01,7.01,8.01,9.01}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 	
 	//ArrayList<Layer> layers = new ArrayList<>();
-	//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataProcessing.FIXED_VECTOR_SIZE));
+	//layers.add(new LinearLayer(new double[] {0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01,0.01}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR));
 	
 	//layers.add(new FeedForwardLayer(new double[] {1.01,2.01,2.01,3.01,3.01,3.01,4.01,4.01,4.01}, new double[] {-1.01,2.01,-3.01}, new RoughTanhUnit()));
 	
 	//Model model = new NeuralNetworkModel(layers);
 	
-	//Model model = new NeuralNetworkModel(4, DataProcessing.FIXED_VECTOR_SIZE, 15, DataProcessing.FIXED_VECTOR_SIZE, util);
+	//Model model = new NeuralNetworkModel(4, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 15, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 	
 	//Model model = new AverageModel(data.getTrainingDataSteps());
 	
-	Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
+	Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataProcessing(), util);
 	
 	
 	/*StringBuilder builder  = new StringBuilder();
@@ -433,21 +433,21 @@ public class TestingMain {
 	//FeedForwardLayer model = new FeedForwardLayer(3, 3, new RoughTanhUnit(), util);
 	
 	/*ArrayList<Model> models = new ArrayList<>();
-	AdvancedCopyingModel model1 = new AdvancedCopyingModel(1, DataProcessing.FIXED_VECTOR_SIZE);
+	AdvancedCopyingModel model1 = new AdvancedCopyingModel(1, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 	models.add(model1);
-	models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
+	models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataProcessing(), util));
 	models.add(new BasicCopyingModel());
 	
-	Model model = new StackingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, util);
+	Model model = new StackingEnsembleModel(models, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 	*/
 
-    //NeuralNetworkModel model2 = new NeuralNetworkModel(3, DataProcessing.FIXED_VECTOR_SIZE, 10, DataProcessing.FIXED_VECTOR_SIZE, util);
+    //NeuralNetworkModel model2 = new NeuralNetworkModel(3, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 10, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 	//models.add(model2);
 
-    //AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE);
+    //AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 
 
-    //Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util);
+    //Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataProcessing(), util);
 	
 	/*
 	int numOfTrainingEpochs = 1000;
@@ -456,22 +456,22 @@ public class TestingMain {
 	int checkMinimumPeriod = 20;
 
 	
-	double lossOriginal = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod , savePath, util);
+	double lossOriginal = (new ModelTrainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod , savePath, util);
 	
 	//System.out.println("Original Loss: "+lossOriginal);
 	
-	DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataPrep());
+	DataSplitOperation splitOp = DataSplitter.getBestDataSplit(data.getTrainingDataSteps(), model, data.getDataProcessing());
 	
-	ArrayList<DataStep> goodValues = Splitter.getStepsInSplit(data.getTrainingDataSteps(), splitOp);
-	ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
+	ArrayList<DataStep> goodValues = DataSplitter.getStepsInSplit(data.getTrainingDataSteps(), splitOp);
+	ArrayList<DataStep> badValues = DataSplitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 
 	
-	Model model1 = new CharacterManipulationFromStringDistanceModel(goodValues, data.getDataPrep(), util);
-	Model model2 = new ProportionProbabilityForCharacterModel(badValues, 2, data.getDataPrep(), util);
+	Model model1 = new CharacterManipulationFromStringDistanceModel(goodValues, data.getDataProcessing(), util);
+	Model model2 = new ProportionProbabilityForCharacterModel(badValues, 2, data.getDataProcessing(), util);
 	
-	double loss1 = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model1, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+	double loss1 = (new ModelTrainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model1, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 	
-	double loss2 = (new Trainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model2, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+	double loss2 = (new ModelTrainer(0.001,0.9999,0.99999,0.1)).train(numOfTrainingEpochs, model2, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 	
 	//System.out.println("Good: "+goodValues.size()+"\t Bad: "+badValues.size());
 	System.out.println("Original Loss: "+lossOriginal);

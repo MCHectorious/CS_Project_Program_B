@@ -20,38 +20,15 @@ public class MainTrainer {
 		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", util);
 		String savePath = "Models/CardToSentence.txt";
 		
-		//DecisionTree tree = new DecisionTree(data.getTrainingDataSteps(),1,data.getDataPrep());
-		
-		/*boolean initFromSaved = false;
-	
-		int numOfLayers = 5;
-		int hiddenDimension = 20;
-	
-		NeuralNetworkModel model;
-		if(initFromSaved) {
-			model = NeuralNetworkModel.importFromSaved(savePath);
-		}else {
-			model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension,DataProcessing.FIXED_VECTOR_SIZE, util);
-		}
-		
-		
-		//Copy model = new Copy();
-		AdvancedCopyingModel model = new AdvancedCopyingModel(3, DataProcessing.FIXED_VECTOR_SIZE);
-		
-		*/
-		
-		//CategoricPortionProbabilityModelForString model = new CategoricPortionProbabilityModelForString(data.getTrainingDataSteps(), 1,2, data.getDataPrep(), util);
-		
-		
 		int[] layerTypes = {1,1,1,0};
 		int[] hiddenDimensions = {50,10,100};
-		NeuralNetworkModel model = new NeuralNetworkModel(layerTypes, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimensions, DataProcessing.FIXED_VECTOR_SIZE, util);
+		NeuralNetworkModel model = new NeuralNetworkModel(layerTypes, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, hiddenDimensions, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 		int trainingEpochs = 100000000;
 		int displayReportPeriod = 10;
 		int showEpochPeriod = 1;
 		int checkMinimumPeriod = 30;
 		
-		(new Trainer()).train(trainingEpochs,  model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, util);
+		(new ModelTrainer()).train(trainingEpochs,  model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, util);
 		 
 	}
 	
@@ -67,21 +44,21 @@ public class MainTrainer {
 	
 		ArrayList<Model> models = new ArrayList<>();
 
-		//models.add(new NeuralNetworkModel(6, DataProcessing.FIXED_VECTOR_SIZE, 3, DataProcessing.FIXED_VECTOR_SIZE,util));
+		//models.add(new NeuralNetworkModel(6, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 3, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR,util));
 
-		//models.add(new NeuralNetworkModel(3, DataProcessing.FIXED_VECTOR_SIZE, 150, DataProcessing.FIXED_VECTOR_SIZE, util));
+		//models.add(new NeuralNetworkModel(3, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 150, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util));
 		
 		//for(int i=0;i<3;i++) {
-		//	models.add(new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension,DataProcessing.FIXED_VECTOR_SIZE, util));
+		//	models.add(new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, hiddenDimension,DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util));
 		//}
 		models.add(new BasicCopyingModel());
 		//System.out.println("Got this far 3");
-		models.add(new AdvancedCopyingModel(2, DataProcessing.FIXED_VECTOR_SIZE));
+		models.add(new AdvancedCopyingModel(2, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR));
 		//System.out.println("Got this far 2");
-		models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataPrep(), util));
+		models.add(new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 1, data.getDataProcessing(), util));
 		
 		//System.out.println("Got this far 1");
-		AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_VECTOR_SIZE);
+		AveragingEnsembleModel model = new AveragingEnsembleModel(models, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 
 		
 		//Copy model = new Copy();
@@ -94,7 +71,7 @@ public class MainTrainer {
 		int showEpochPeriod = 1;
 		int checkMinimumPeriod = 30;
 		System.out.println("Got this far");
-		(new Trainer()).train(trainingEpochs,  model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, util);
+		(new ModelTrainer()).train(trainingEpochs,  model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, util);
 
 	}
 	

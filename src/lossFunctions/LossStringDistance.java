@@ -8,19 +8,19 @@ import java.util.ArrayList;
 
 public class LossStringDistance implements Loss {
 
-	private DataProcessing dataPrep;
+	private DataProcessing dataProcessing;
 	
 	public static void main(String[] args) {
 		String[] strings1 = {"pleite<F_B_S>Skint/broke","Disco (m)<F_B_S>disc","tostada (f)<F_B_S>toast"};
 		String[] strings2 = {"\"pleite\" means \"skint/broke\"","\"disco\" is the male word for \"disc\"","\"tostada\" is the female word for \"toast\""};
-		String String1,String2;
+		String string1,string2;
 		ArrayList<String> instructions;
 		for(int i=0;i<strings1.length;i++) {
-			String1 = strings1[i];
-			String2 = strings2[i];
+			string1 = strings1[i];
+			string2 = strings2[i];
 			
-			instructions = generateInstructions(String1,String2);
-			System.out.println(String1+" --> "+String2);
+			instructions = generateInstructions(string1,string2);
+			System.out.println(string1+" --> "+string2);
 			for(int j=instructions.size()-1;j>=0;j--) {
 				System.out.print(instructions.get(j)+"\t");
 			}
@@ -29,26 +29,26 @@ public class LossStringDistance implements Loss {
 	}
 
 	public LossStringDistance(DataProcessing DataPrep) {
-		dataPrep = DataPrep;
+		dataProcessing = DataPrep;
 	}
 
 	public static ArrayList<CharacterOperation> generateCharacterOperations(String x, String y) {
-        int[][] dp = new int[x.length() + 1][y.length() + 1];
+        int[][] characterEditsArray = new int[x.length() + 1][y.length() + 1];
         
         for(int i=0;i<=x.length();i++) {
-        	dp[i][0] = i;
+        	characterEditsArray[i][0] = i;
         }
         for(int i=0;i<=y.length();i++) {
-        	dp[0][i] = i;
+        	characterEditsArray[0][i] = i;
         }
         
         for (int i = 1; i <= x.length(); i++) {
             for (int j = 1; j <= y.length(); j++) {
                 
-                dp[i][j] = min(dp[i - 1][j - 1] 
+                characterEditsArray[i][j] = min(characterEditsArray[i - 1][j - 1]
                      + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)), 
-                     dp[i - 1][j] + 1, 
-                     dp[i][j - 1] + 1);
+                     characterEditsArray[i - 1][j] + 1,
+                     characterEditsArray[i][j - 1] + 1);
                 
             }
 		}
@@ -57,9 +57,9 @@ public class LossStringDistance implements Loss {
         
         for(int i=x.length();i>0;) {
         	for(int j=y.length();j>0;) {
-        		int substitutionCost = dp[i-1][j-1];
-        		int deletionCost = dp[i-1][j];
-        		int insertionCost = dp[i][j-1];
+        		int substitutionCost = characterEditsArray[i-1][j-1];
+        		int deletionCost = characterEditsArray[i-1][j];
+        		int insertionCost = characterEditsArray[i][j-1];
         		
         		if(substitutionCost<insertionCost) {
                 	if(deletionCost<substitutionCost) {
@@ -93,27 +93,27 @@ public class LossStringDistance implements Loss {
 	}
 
 	private static ArrayList<String> generateInstructions(String x, String y) {
-        int[][] dp = new int[x.length() + 1][y.length() + 1];
+        int[][] characterEditsArray = new int[x.length() + 1][y.length() + 1];
 
         for(int i=0;i<=x.length();i++) {
-        	dp[i][0] = i;
+        	characterEditsArray[i][0] = i;
         }
         for(int i=0;i<=y.length();i++) {
-        	dp[0][i] = i;
+        	characterEditsArray[0][i] = i;
         }
 
         for (int i = 1; i <= x.length(); i++) {
             for (int j = 1; j <= y.length(); j++) {
 
-				dp[i][j] = min(dp[i - 1][j - 1]
+				characterEditsArray[i][j] = min(characterEditsArray[i - 1][j - 1]
 								+ costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)),
-						dp[i - 1][j] + 1,
-                     dp[i][j - 1] + 1);
+						characterEditsArray[i - 1][j] + 1,
+                     characterEditsArray[i][j - 1] + 1);
 
             }
 		}
 
-		System.out.println(dp[x.length()][y.length()]);
+		System.out.println(characterEditsArray[x.length()][y.length()]);
 
 		ArrayList<String> instructions = new ArrayList<>();
 
@@ -121,9 +121,9 @@ public class LossStringDistance implements Loss {
 
         for(int i=x.length();i>0;) {
         	for(int j=y.length();j>0;) {
-        		int substitutionCost = dp[i-1][j-1];
-        		int deletionCost = dp[i-1][j];
-        		int insertionCost = dp[i][j-1];
+        		int substitutionCost = characterEditsArray[i-1][j-1];
+        		int deletionCost = characterEditsArray[i-1][j];
+        		int insertionCost = characterEditsArray[i][j-1];
 
         		if(substitutionCost<insertionCost) {
                 	if(deletionCost<substitutionCost) {
@@ -157,15 +157,15 @@ public class LossStringDistance implements Loss {
 	}
 	
 	@Override
-	public double measure(Vector actualOutput, Vector targetOutput) {
-		String actualString = dataPrep.doubleArrayToString(actualOutput.getData());
-		String targetString = dataPrep.doubleArrayToString(targetOutput.getData());
+	public double measureLoss(Vector actualOutput, Vector targetOutput) {
+		String actualString = dataProcessing.doubleArrayToString(actualOutput.getData());
+		String targetString = dataProcessing.doubleArrayToString(targetOutput.getData());
 		
-		int MaxLength = Math.max(actualString.length(), targetString.length());
-		if(MaxLength == 0) {
+		int maxLength = Math.max(actualString.length(), targetString.length());
+		if(maxLength == 0) {
 			return 0.0;
 		}	
-		return (getDistance(actualString,targetString)/MaxLength);
+		return (getDistance(actualString,targetString)/maxLength);
 	}
 
 	private static int costOfSubstitution(char a, char b) {
@@ -174,64 +174,64 @@ public class LossStringDistance implements Loss {
 	
     private static double getDistance(String x, String y){
     	//System.out.println("Got this far");
-        int[][] dp = new int[x.length() + 1][y.length() + 1];
+        int[][] characterEditsArray = new int[x.length() + 1][y.length() + 1];
         
         for(int i=0;i<=x.length();i++) {
-        	dp[i][0] = i;
+        	characterEditsArray[i][0] = i;
         }
         for(int i=0;i<=y.length();i++) {
-        	dp[0][i] = i;
+        	characterEditsArray[0][i] = i;
         }
         
         for (int i = 1; i <= x.length(); i++) {
             for (int j = 1; j <= y.length(); j++) {
                 
-                int substitution = dp[i - 1][j - 1] 
+                int substitutionCost = characterEditsArray[i - 1][j - 1]
                         + costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1));
-                int insertion = dp[i - 1][j] + 1;
-                int deletion = dp[i][j - 1] + 1;
+                int insertionCost = characterEditsArray[i - 1][j] + 1;
+                int deletionCost = characterEditsArray[i][j - 1] + 1;
                 
-                if(substitution<insertion) {
-                	if(deletion<substitution) {
-                		dp[i][j] = deletion;
+                if(substitutionCost<insertionCost) {
+                	if(deletionCost<substitutionCost) {
+                		characterEditsArray[i][j] = deletionCost;
                 		//System.out.print("Delete "+x.charAt(i)+y.charAt(j)+" ");
                 	}else {
-                		dp[i][j] = substitution;
+                		characterEditsArray[i][j] = substitutionCost;
                 		//System.out.print("Substitution "+x.charAt(i)+y.charAt(j)+" ");
                 	}
                 }else {
-                	if(deletion<insertion) {
-                		dp[i][j] = deletion;
+                	if(deletionCost<insertionCost) {
+                		characterEditsArray[i][j] = deletionCost;
                 		//System.out.print("Delete "+x.charAt(i)+y.charAt(j)+" ");
                 	}else {
-                		dp[i][j] = insertion;
+                		characterEditsArray[i][j] = insertionCost;
                 		//System.out.print("Insertion "+x.charAt(i)+y.charAt(j)+" ");
                 	}
                 }
                 	
-                    //dp[i][j] = min(dp[i - 1][j - 1] 
+                    //characterEditsArray[i][j] = min(characterEditsArray[i - 1][j - 1]
                      //+ costOfSubstitution(x.charAt(i - 1), y.charAt(j - 1)), 
-                      //dp[i - 1][j] + 1, 
-                      //dp[i][j - 1] + 1);
+                      //characterEditsArray[i - 1][j] + 1,
+                      //characterEditsArray[i][j - 1] + 1);
                 
             }
         }
      
         //System.out.println();
         
-        return dp[x.length()][y.length()];
+        return characterEditsArray[x.length()][y.length()];
 
 
     }
 
 	public double measure(String actualOutput, String targetOutput) {
-		int MaxLength = Math.max(actualOutput.length(), targetOutput.length());
-		if (MaxLength == 0) {
+		int maxLength = Math.max(actualOutput.length(), targetOutput.length());
+		if (maxLength == 0) {
 			return 0.0;
 		}
 		//System.out.println("String Distance Being Calculated");
 		return getDistance(actualOutput, targetOutput);
-		//return (getDistance(actualOutput,targetOutput)/MaxLength);
+		//return (getDistance(actualOutput,targetOutput)/maxLength);
 	}
     
     private static int min(int a, int b, int c){

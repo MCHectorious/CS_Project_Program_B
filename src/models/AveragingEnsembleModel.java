@@ -14,7 +14,7 @@ public class AveragingEnsembleModel implements Model {
 	private ArrayList<Vector> subModelOutputs = new ArrayList<>();
 	private int outputSize;
 	private int modelSizeMinus1;
-	private double[] weightings;
+	private double[] weights;
 	private double[] subModelLosses;
 	
 	private Loss loss = new LossSumOfSquares();
@@ -26,19 +26,17 @@ public class AveragingEnsembleModel implements Model {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
 		double reciprocalOfModelSize = 1.0 / (double) models.size();
-		//System.out.println(reciprocalOfModelSize+" "+subModels.size());
 		modelSizeMinus1 = models.size()-1;
 		outputSize = outputDimension;
-		weightings = new double[models.size()];
+		weights = new double[models.size()];
 		for(int i=0;i<models.size();i++) {
-			weightings[i] = reciprocalOfModelSize;
+			weights[i] = reciprocalOfModelSize;
 		}
 		subModelLosses = new double[models.size()];
 	}
 	
 	@Override
 	public void run(DataStep input, Vector output) {
-		//System.out.println("run");
 		for(int i=subModels.size()-1;i>=0;i--) {
 			subModels.get(i).run(input, subModelOutputs.get(i));
 		}
@@ -46,8 +44,7 @@ public class AveragingEnsembleModel implements Model {
 		for(int i=outputSize-1;i>=0;i--) {
 			double total=0.0;
 			for(int j=modelSizeMinus1;j>=0;j--) {
-				//System.out.println(subModelOutputs.get(j).get(i)+"*"+weightings[j]);
-				total += subModelOutputs.get(j).get(i)*weightings[j];
+				total += subModelOutputs.get(j).get(i)* weights[j];
 			}
 			output.set(i, total);
 		}
@@ -61,16 +58,13 @@ public class AveragingEnsembleModel implements Model {
 		
 		for(int i=subModels.size()-1; i >= 0; i--) {
 			subModels.get(i).runAndDecideImprovements(input, subModelOutputs.get(i), targetOutput);
-			subModelLosses[i] += loss.measure(subModelOutputs.get(i), targetOutput);
+			subModelLosses[i] += loss.measureLoss(subModelOutputs.get(i), targetOutput);
 		}
 		for(int i=outputSize-1;i>=0;i--) {
-			//System.out.print(i);
 			double total=0.0;
 			for(int j=modelSizeMinus1;j>=0;j--) {
-				total += subModelOutputs.get(j).get(i) * weightings[j];
-				///System.out.print(total+" ");
+				total += subModelOutputs.get(j).get(i) * weights[j];
 			}
-			//System.out.println();
 			output.set(i, total );
 		}
 		
@@ -79,27 +73,19 @@ public class AveragingEnsembleModel implements Model {
 	@Override
 	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
 									  double OneMinusBeta2) {
-		for(Model model: subModels) {
-			model.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
+		for(Model subModel: subModels) {
+			subModel.updateModelParameters(momentum, beta1, beta2, alpha, OneMinusBeta1, OneMinusBeta2);
 		}
 		double totalLoss = 0.0;
 		for(int i=modelSizeMinus1;i>=0;i--) {
-			//System.out.print(subModelLosses[i]+" ");
-			//subModelLosses[i] *= subModelLosses[i];
 			totalLoss += subModelLosses[i];
 		}
-		//System.out.println();
-		//System.out.println(totalLoss);
+
 		for(int i=modelSizeMinus1;i>=0;i--) {
 			
-			weightings[i] = (totalLoss-subModelLosses[i])/(totalLoss*modelSizeMinus1);
-			//System.out.print(weightings[i]+" ");
-			//System.out.println(subModelLosses[i]+" "+ weightings[i]);
-			
+			weights[i] = (totalLoss-subModelLosses[i])/(totalLoss*modelSizeMinus1);
 			subModelLosses[i] *= momentum;
 		}
-		
-		//System.out.println();
 
 	}
 
@@ -111,22 +97,22 @@ public class AveragingEnsembleModel implements Model {
 	}
 
 	@Override
-	public String description() {
+	public String provideDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(Utilities.arrayToString(weightings)).append("\n\r");
-		for (Model model : subModels) {
-			model.description(stringBuilder);
+		stringBuilder.append(Utilities.arrayToString(weights)).append("\n\r");
+		for (Model subModel : subModels) {
+			subModel.provideDescription(stringBuilder);
 			stringBuilder.append("\n\r");
 		}
 		return stringBuilder.toString();
 	}
 
 	@Override
-	public void description(StringBuilder stringBuilder) {
-		stringBuilder.append(Utilities.arrayToString(weightings)).append("\n\r");
-		for (Model model : subModels) {
-			model.description(stringBuilder);
-			stringBuilder.append("\n\r");
+	public void provideDescription(StringBuilder stringBuilder) {
+		stringBuilder.append(Utilities.arrayToString(weights)).append("\n\r");
+		for (Model subModel : subModels) {
+			subModel.provideDescription(stringBuilder);
+			stringBuilder.append("\n");
 		}
 	}
 }

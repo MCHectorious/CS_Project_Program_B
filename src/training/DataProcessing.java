@@ -13,46 +13,45 @@ import java.util.Set;
 public class DataProcessing {
 	
 	final private static int countThreshold = 50000;
-	final private static int maxWordPiece = 5;
-	final public static int FIXED_VECTOR_SIZE = 100;
+	final private static int maxPhraseSize = 5;
+	final public static int FIXED_DATA_SIZE_FOR_VECTOR = 100;
 	private ArrayList<String> sortedPhrases = new ArrayList<>();
 	private double[] valuesForSortedPhrases;
 	private ArrayList<String> phrasesSortedInSize = new ArrayList<>();
 	final private double positionForEmptyString;
 	private final int phrasesSize;
-	private CustomRandom rand = new CustomRandom();
+	private CustomRandom random = new CustomRandom();
 	
 	public static void main(String[] args) {
-		//For testing
-		CustomRandom util = new CustomRandom();
+		CustomRandom random = new CustomRandom();
 
-		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", util);
+		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", random);
 		
 		for(DataStep step: data.getTrainingDataSteps()) {
-			String output = data.getDataPrep().doubleArrayToString(data.getDataPrep().stringToDoubleArray(step.getInputText()));
+			String output = data.getDataProcessing().doubleArrayToString(data.getDataProcessing().stringToDoubleArray(step.getInputText()));
 			if(! output.equals(step.getInputText())    ) {
 				System.out.println(step.getInputText()+"|||||"+output);
 			}
 			
 		}
 		for(DataStep step: data.getTestingDataSteps()) {
-			String output = data.getDataPrep().doubleArrayToString(data.getDataPrep().stringToDoubleArray(step.getInputText()));
+			String output = data.getDataProcessing().doubleArrayToString(data.getDataProcessing().stringToDoubleArray(step.getInputText()));
 			if(! output.equals(step.getInputText())    ) {
 				System.out.println(step.getInputText()+"|||||"+output);
 			}
 		}
 		for(DataStep step: data.getTrainingDataSteps()) {
-			String output = data.getDataPrep().doubleArrayToString(data.getDataPrep().stringToDoubleArray(step.getOutputText()));
-			if(! output.equals(step.getOutputText())    ) {
-				System.out.println(step.getOutputText()+"|||||"+output);
+			String output = data.getDataProcessing().doubleArrayToString(data.getDataProcessing().stringToDoubleArray(step.getTargetOutputText()));
+			if(! output.equals(step.getTargetOutputText())    ) {
+				System.out.println(step.getTargetOutputText()+"|||||"+output);
 			}
 			
 		}
 		
 		for(DataStep step: data.getTestingDataSteps()) {
-			String output = data.getDataPrep().doubleArrayToString(data.getDataPrep().stringToDoubleArray(step.getOutputText()));
-			if(! output.equals(step.getOutputText())    ) {
-				System.out.println(step.getOutputText()+"|||||"+output);
+			String output = data.getDataProcessing().doubleArrayToString(data.getDataProcessing().stringToDoubleArray(step.getTargetOutputText()));
+			if(! output.equals(step.getTargetOutputText())    ) {
+				System.out.println(step.getTargetOutputText()+"|||||"+output);
 			}
 			
 		}
@@ -66,21 +65,18 @@ public class DataProcessing {
 		ArrayList<String> fragments = new ArrayList<>();
 		
 		for(String line: lines) {
-			//System.out.println("Combined: "+line);
-			String[] tempArray = line.split(Flashcard.CARD_SENTENCE_SEPERATOR);
+			String[] tempArray = line.split(Flashcard.CARD_SENTENCE_SEPARATOR);
 			fragments.add(tempArray[0]);
-			//System.out.println("Input: "+tempArray[0]);
 
 			fragments.add(tempArray[1]);
-			//System.out.println("Expected Output: "+tempArray[1]);
 
 		}
 
-		int total = DataProcessing.FIXED_VECTOR_SIZE * fragments.size();
+		int total = DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR * fragments.size();
 		
 		HashMap<String, Integer> phrasesAndCount = new HashMap<>();
 
-		for(int i=1;i<maxWordPiece;i++) {
+		for(int i = 1; i< maxPhraseSize; i++) {
 			for(String fragment:fragments) {
 				for(int j=0;j<fragment.length()-i;j++) {
 					
@@ -101,24 +97,22 @@ public class DataProcessing {
 		}
 
 		Set<String> maxPhrases = phrasesAndCount.keySet();
-		ArrayList<String> tempPhrases = new ArrayList<>();
+		ArrayList<String> temporaryPhrases = new ArrayList<>();
 		for(String phrase:maxPhrases) {
 			if(phrase.length()==1 || phrasesAndCount.get(phrase) >= countThreshold ) {
-				tempPhrases.add(phrase);
+				temporaryPhrases.add(phrase);
 			}
 		}
 		
-		tempPhrases.add(Flashcard.FRONT_BACK_SEPARATOR);
+		temporaryPhrases.add(Flashcard.FRONT_BACK_SEPARATOR);
 
-		tempPhrases.sort((string1, string2) -> string2.length() - string1.length());
-		
-		//ArrayList<String> phrasesUnsorted = new ArrayList<>();
-		
+		temporaryPhrases.sort((string1, string2) -> string2.length() - string1.length());
+
 		HashMap<String,Integer> finalPhrasesCount = new HashMap<>();
 		
 		for(String line:lines) {
 			for(int i=0;i<line.length();) {
-				for (String phrase : tempPhrases) {
+				for (String phrase : temporaryPhrases) {
 					if (i + phrase.length() <= line.length()) {
 						if (phrase.equals(line.substring(i, i + phrase.length()))) {
 							if (finalPhrasesCount.containsKey(phrase)) {
@@ -162,12 +156,12 @@ public class DataProcessing {
 		
 		phrasesSize = sortedPhrases.size();
 		
-		StringBuilder tempBuilder = new StringBuilder();
+		StringBuilder phrasesListBuilder = new StringBuilder();
 		for(int i = 0;i<phrasesSize;i++) {
 			System.out.println(sortedPhrases.get(i)+" - "+valuesForSortedPhrases[i]+" - "+finalPhrasesCount.get( sortedPhrases.get(i) ));
-			tempBuilder.append(sortedPhrases.get(i)).append(" - ").append(valuesForSortedPhrases[i]).append("\n");
+			phrasesListBuilder.append(sortedPhrases.get(i)).append(" - ").append(valuesForSortedPhrases[i]).append("\n");
 		}
-		DataExport.overwriteToTextFile(tempBuilder, "Models/Phrases and Values.txt");
+		DataExport.overwriteTextFile(phrasesListBuilder, "Models/Phrases and Values.txt");
 		System.out.println("Position For Empty String - "+positionForEmptyString);
 		
 		System.out.println("Finished Data Preparation");
@@ -176,9 +170,8 @@ public class DataProcessing {
 
 	
 	public double[] stringToDoubleArray(String string) {
-		double[] output = new double[FIXED_VECTOR_SIZE];
+		double[] output = new double[FIXED_DATA_SIZE_FOR_VECTOR];
 		int index =0;
-		//System.out.println(message + message.length());
 		for (int i = 0; i < string.length(); ) {
 			for(int j=0;j<phrasesSize;j++) {
 				String phrase = phrasesSortedInSize.get(j);
@@ -186,7 +179,7 @@ public class DataProcessing {
 				if (i + phrase.length() <= string.length()) {
 					if (phrase.equals(string.substring(i, i + phrase.length()))) {
 						//System.out.println(phrase);
-						output[index++] = valuesForSortedPhrases[sortedPhrases.indexOf(phrase)]+0.0000001*rand.randomDouble()*(valuesForSortedPhrases[sortedPhrases.indexOf(phrase)+1]-valuesForSortedPhrases[sortedPhrases.indexOf(phrase)]);
+						output[index++] = valuesForSortedPhrases[sortedPhrases.indexOf(phrase)]+0.0000001* random.randomDouble()*(valuesForSortedPhrases[sortedPhrases.indexOf(phrase)+1]-valuesForSortedPhrases[sortedPhrases.indexOf(phrase)]);
 						
 						i+= phrase.length();
 						//System.out.print(output[index-1]+" - "+phrase+" "+i+" "+"\t");
@@ -197,12 +190,12 @@ public class DataProcessing {
 				
 				
 			}
-			if(index>=FIXED_VECTOR_SIZE) {
+			if(index>= FIXED_DATA_SIZE_FOR_VECTOR) {
 				break;
 			}
 		}
-		for(int i = index;i<FIXED_VECTOR_SIZE;i++) {
-			output[i] = positionForEmptyString+0.0000001*rand.randomDouble()*(1.0-positionForEmptyString);
+		for(int i = index; i< FIXED_DATA_SIZE_FOR_VECTOR; i++) {
+			output[i] = positionForEmptyString+0.0000001* random.randomDouble()*(1.0-positionForEmptyString);
 		}
 		
 		//System.out.println();
@@ -211,13 +204,9 @@ public class DataProcessing {
 	}
 	
 	public String doubleArrayToString(double[] input) {
-		StringBuilder builder = new StringBuilder();
-		//for(int i=0;i<input.length;i++) {
-			//System.out.print(input[i]+"\t");
-		//}
-		//System.out.println();
+		StringBuilder stringBuilder = new StringBuilder();
+
 		for (double value : input) {
-			//System.out.print(input[i]+" ");
 			if (value >= positionForEmptyString || value < -1.0) {
 				continue;
 			}
@@ -227,8 +216,7 @@ public class DataProcessing {
 			while (!found) {
 				int middle = (low + high) / 2;
 				if (value >= valuesForSortedPhrases[middle] && value < valuesForSortedPhrases[middle + 1]) {
-					builder.append(sortedPhrases.get(middle));
-					//System.out.println(sortedPhrases.get(middle));
+					stringBuilder.append(sortedPhrases.get(middle));
 					found = true;
 				} else if (value < valuesForSortedPhrases[middle]) {
 					high = middle - 1;
@@ -238,7 +226,7 @@ public class DataProcessing {
 			}
 
 		}
-		return builder.toString();
+		return stringBuilder.toString();
 	}
 	
 	public int getNumOfPhrases() {

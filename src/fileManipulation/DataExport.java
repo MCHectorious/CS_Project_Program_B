@@ -8,40 +8,40 @@ import java.util.HashSet;
 
 public class DataExport {
 
-	public static void overwriteToTextFile(StringBuilder builder, String file) {
+	public static void overwriteTextFile(StringBuilder stringBuilder, String file) {
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
-			out.print(builder.toString());
-        } catch (IOException e) {
+			out.print(stringBuilder.toString());
+        } catch (IOException exception) {
             System.out.println("Error trying to overwrite file: " + file);
-            System.out.println(e.getMessage());
+            System.out.println(exception.getMessage());
 		}
 	}
 	
-	public static void overwriteToTextFile(double value, String file) {
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
+	public static void overwriteTextFile(double value, String filePath) {
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)))) {
             out.print(Double.toString(value));
-        } catch (IOException e) {
-            System.out.println("Error trying to overwrite file: " + file);
-            System.out.println(e.getMessage());
+        } catch (IOException exception) {
+            System.out.println("Error trying to overwrite file: " + filePath);
+            System.out.println(exception.getMessage());
 		}
 	}
 	
-	public static void appendToTextFile(String data, String file) {
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)))) {
-			out.println(data);
-        } catch (IOException e) {
-            System.out.println("Error trying to append to file: " + file);
-            System.out.println(e.getMessage());
+	public static void appendToTextFile(String stringToAppend, String filePath) {
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, true)))) {
+			out.println(stringToAppend);
+        } catch (IOException exception) {
+            System.out.println("Error trying to append to file: " + filePath);
+            System.out.println(exception.getMessage());
 		}
 	}
 	
-	public static void overwriteToTextFile(HashSet<String> data, String file) {
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
-            for (String line : data) {
+	public static void overwriteTextFile(HashSet<String> stringHashSet, String filePath) {
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)))) {
+            for (String line : stringHashSet) {
 				out.println(line);
 			}
         } catch (IOException exception) {
-            System.out.println("Error trying to overwrite file: " + file);
+            System.out.println("Error trying to overwrite file: " + filePath);
             System.out.println(exception.getMessage());
 		}
 	}

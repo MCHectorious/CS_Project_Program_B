@@ -13,7 +13,7 @@ public class AdaptiveParameterTuningForNeuralNetwork {
 	private int hiddenDimension = 4;
 	
 	private static final int numOfIterations = 8;
-	private final static CustomRandom util = new CustomRandom();
+	private final static CustomRandom RANDOM = new CustomRandom();
 	private static final int trainingEpochs = 1000000;
 	private static FlashcardDataSet data;
 	private static final int displayReportPeriod = 20000;
@@ -24,7 +24,7 @@ public class AdaptiveParameterTuningForNeuralNetwork {
 	private static final String parameterSetSavePath = "Models/ParameterTuning.txt";
 	
 	public void run() {
-		data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", util);
+		data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", RANDOM);
 		
 		DataExport.appendToTextFile("Alpha"+"\t"+"Beta1"+"\t"+"Beta2"+"\t"+"Momentum"+"\t"+"Number Of Layers"+"\t"+"Hidden Dimension"+"\t"+"Accuracy", parameterSetSavePath);
 
@@ -90,9 +90,9 @@ public class AdaptiveParameterTuningForNeuralNetwork {
 	private static double getLoss(double alpha, double beta1, double beta2, double momentum, int numOfLayers, int hiddenDimension) {
 		double parameterSetLoss = 0.0;
 		for(int iteration = 0;iteration<numOfIterations;iteration++) {
-			Trainer trainer = new Trainer(alpha, beta1,  beta2,momentum);
-			Model model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension, DataProcessing.FIXED_VECTOR_SIZE, util);
-			parameterSetLoss += trainer.train(trainingEpochs, model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, util);
+			ModelTrainer modelTrainer = new ModelTrainer(alpha, beta1,  beta2,momentum);
+			Model model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, hiddenDimension, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, RANDOM);
+			parameterSetLoss += modelTrainer.train(trainingEpochs, model, data, displayReportPeriod, showEpochPeriod,checkMinimumPeriod, savePath, RANDOM);
 		}
 		System.out.println("Set Of Parameters Completed:\t"+alpha+"\t"+beta1+"\t"+beta2+"\t"+momentum+"\t"+numOfLayers+"\t"+hiddenDimension+"\t"+parameterSetLoss/numOfIterations);
 		DataExport.appendToTextFile(alpha+"\t"+beta1+"\t"+beta2+"\t"+momentum+"\t"+numOfLayers+"\t"+hiddenDimension+"\t"+parameterSetLoss/numOfIterations, parameterSetSavePath);

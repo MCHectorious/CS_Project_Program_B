@@ -9,29 +9,29 @@ import java.util.List;
 
 public class AverageModel implements Model{
 
-	private double[] average = new double[DataProcessing.FIXED_VECTOR_SIZE];
+	private double[] averages = new double[DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR];
 	
 	public AverageModel(List<DataStep> steps) {
-		double[] total = new double[DataProcessing.FIXED_VECTOR_SIZE];
+		double[] total = new double[DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR];
 		for(DataStep step: steps) {
 			double[] temp = step.getTargetOutput();
-			for (int i = 0; i < DataProcessing.FIXED_VECTOR_SIZE; i++) {
+			for (int i = 0; i < DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR; i++) {
 				total[i] += temp[i];
 			}
 		}
-		for (int i = 0; i < DataProcessing.FIXED_VECTOR_SIZE; i++) {
-			average[i] = total[i]/(double) steps.size();
+		for (int i = 0; i < DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR; i++) {
+			averages[i] = total[i]/(double) steps.size();
 		}
 	}
 	
 	@Override
 	public void run(DataStep input, Vector output) {
-		output.setData(average);
+		output.setData(averages);
 	}
 
 	@Override
 	public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
-		output.setData(average);
+		output.setData(averages);
 	}
 
 
@@ -47,8 +47,8 @@ public class AverageModel implements Model{
 	}
 
 	@Override
-	public String description() {
-		return Utilities.arrayToString(average);
+	public String provideDescription() {
+		return Utilities.arrayToString(averages);
 	}
 
 

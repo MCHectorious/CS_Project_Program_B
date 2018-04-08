@@ -3,6 +3,7 @@ package manualTranslation;
 import dataStructures.Flashcard;
 import fileManipulation.DataExport;
 import fileManipulation.DataImport;
+import generalUtilities.CustomRandom;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -12,32 +13,32 @@ public class ManualTranslation {
 
 	public static void main(String[] args) {
 
-        ArrayList<Flashcard> Flashcards = DataImport.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
-        ArrayList<Flashcard> FlashcardsWithTranslations = DataImport.getFlashcardListFromTextFile("DataSets/TranslatedFlashcards.txt");
-		ArrayList<Flashcard> AvailableFlashcards = new ArrayList<>();
+        ArrayList<Flashcard> rawFlashcards = DataImport.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
+        ArrayList<Flashcard> flashcardsWithTranslations = DataImport.getFlashcardListFromTextFile("DataSets/TranslatedFlashcards.txt");
+		ArrayList<Flashcard> availableFlashcards = new ArrayList<>();
 		
-		for(Flashcard cardWithoutTranslation: Flashcards){
-			if(!FlashcardsWithTranslations.contains(cardWithoutTranslation)){
-				AvailableFlashcards.add(cardWithoutTranslation);}
+		for(Flashcard cardWithoutTranslation: rawFlashcards){
+			if(!flashcardsWithTranslations.contains(cardWithoutTranslation)){
+				availableFlashcards.add(cardWithoutTranslation);}
 		}
 		
 		
-		Random rand = new Random();
-		Flashcard card;
-		String Translation;
+		CustomRandom random = new CustomRandom();
+		Flashcard flashcard;
+		String userTranslation;
 		
 		Scanner scanner = new Scanner(System.in);
 		
-		while(AvailableFlashcards.size()>0){		
-			int randomCardIndex = rand.nextInt(AvailableFlashcards.size());
-			card = AvailableFlashcards.get(randomCardIndex);
-            System.out.println("What would be the sentence form of a flashcard with a front of " + card.getFront() + " and a back of " + card.getBack() + "?");
+		while(availableFlashcards.size()>0){
+			int randomFlashcardIndex = random.randomInt(availableFlashcards.size());
+			flashcard = availableFlashcards.get(randomFlashcardIndex);
+            System.out.println("What would be the sentence form of a flashcard with a front of " + flashcard.getFlashcardFront() + " and a back of " + flashcard.getFlashcardBack() + "?");
 			do{
-				Translation = scanner.nextLine();
-			}while( Translation.isEmpty() );
-			AvailableFlashcards.remove(randomCardIndex);
-			card.setTranslation(Translation);					
-			DataExport.appendToTextFile(card.toString(), "DataSets/TranslatedFlashcards.txt");
+				userTranslation = scanner.nextLine();
+			}while( userTranslation.isEmpty() );
+			availableFlashcards.remove(randomFlashcardIndex);
+			flashcard.setSentence(userTranslation);
+			DataExport.appendToTextFile(flashcard.toString(), "DataSets/TranslatedFlashcards.txt");
 		}
 		
 		scanner.close();

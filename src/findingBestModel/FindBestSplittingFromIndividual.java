@@ -1,7 +1,7 @@
 package findingBestModel;
 
 import dataSplitting.DataSplitOperation;
-import dataSplitting.Splitter;
+import dataSplitting.DataSplitter;
 import dataStructures.DataStep;
 import dataStructures.FlashcardDataSet;
 import fileManipulation.DataExport;
@@ -10,7 +10,7 @@ import generalUtilities.CustomRandom;
 import models.*;
 import nonlinearityFunctions.RoughTanhUnit;
 import training.DataProcessing;
-import training.Trainer;
+import training.ModelTrainer;
 
 import java.util.ArrayList;
 
@@ -18,11 +18,11 @@ import java.util.ArrayList;
 public class FindBestSplittingFromIndividual {
 
 	public static void main(String[] args) {
-		CustomRandom util = new CustomRandom();
+		CustomRandom random = new CustomRandom();
 
-		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", util);
+		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", random);
 		
-		int numOfTrainingEpochs = 10000000;
+		int maximumTrainingEpochs = 10000000;
 		int displayReportPeriod = 100000;
 		int showEpochPeriod = 10000;
 		int checkMinimumPeriod = 50;
@@ -32,76 +32,76 @@ public class FindBestSplittingFromIndividual {
 		
 		int attempts = 3;
 
-        Model bestTempModel;
-		double minLoss;
+        Model bestTemporaryModel;
+		double minimumLoss;
 		
-		ArrayList<String> lineFromTextFile = DataImport.getLines("bestModel/BestLinearLayerWeights.txt");
+		ArrayList<String> lineFromTextFile = DataImport.getLinesFromTextFile("bestModel/BestLinearLayerWeights.txt");
 		double[] weights = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(0) );
-        bestTempModel = new LinearLayer(weights, DataProcessing.FIXED_VECTOR_SIZE);
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+        bestTemporaryModel = new LinearLayer(weights, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 		
 		
-		lineFromTextFile = DataImport.getLines("bestModel/BestFeedForwardLayerParams.txt");
+		lineFromTextFile = DataImport.getLinesFromTextFile("bestModel/BestFeedForwardLayerParams.txt");
 		double[] biases = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(0) );
 		weights = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(1) );
-		bestTempModel = new FeedForwardLayer(weights, biases, new RoughTanhUnit());		
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+		bestTemporaryModel = new FeedForwardLayer(weights, biases, new RoughTanhUnit());
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 
-        bestTempModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 9, data.getDataPrep(), util);
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+        bestTemporaryModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 9, data.getDataProcessing(), random);
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 
-        bestTempModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 4, data.getDataPrep(), util);
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+        bestTemporaryModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 4, data.getDataProcessing(), random);
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 		
 		
 		
 		
-		lineFromTextFile = DataImport.getLines("bestModel/Best2LayerNeuralNetwork.txt");
+		lineFromTextFile = DataImport.getLinesFromTextFile("bestModel/Best2LayerNeuralNetwork.txt");
 		ArrayList<Layer> layers = new ArrayList<>();
-		double[] biases1 = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(1) );
-		double[] weights1 = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(2) );
-		layers.add(new FeedForwardLayer(weights1, biases1, new RoughTanhUnit()));
-		double[] biases2 = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(4) );
-		double[] weights2 = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(5) );
-		layers.add(new FeedForwardLayer(weights2, biases2, new RoughTanhUnit()));
-        bestTempModel = new NeuralNetworkModel(layers);
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+		double[] biasesForFirstLayerOf2LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(1) );
+		double[] weightsForFirstLayerOf2LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(2) );
+		layers.add(new FeedForwardLayer(weightsForFirstLayerOf2LayerNeuralNetwork, biasesForFirstLayerOf2LayerNeuralNetwork, new RoughTanhUnit()));
+		double[] biasesForSecondLayerOf2LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(4) );
+		double[] weightsForSecondLayerOf2LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(5) );
+		layers.add(new FeedForwardLayer(weightsForSecondLayerOf2LayerNeuralNetwork, biasesForSecondLayerOf2LayerNeuralNetwork, new RoughTanhUnit()));
+        bestTemporaryModel = new NeuralNetworkModel(layers);
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 		
-		lineFromTextFile = DataImport.getLines("bestModel/Best3LayerNeuralNetwork.txt");
-		ArrayList<Layer> layersFor3NN = new ArrayList<>();
-		double[] biases1For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(1) );
-		double[] weights1For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(2) );
-		layersFor3NN.add(new FeedForwardLayer(weights1For3NN, biases1For3NN, new RoughTanhUnit()));
-		double[] biases2For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(4) );
-		double[] weights2For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(5) );
-		layersFor3NN.add(new FeedForwardLayer(weights2For3NN, biases2For3NN, new RoughTanhUnit()));
-		double[] biases3For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(7) );
-		double[] weights3For3NN = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(8) );
-        layersFor3NN.add(new FeedForwardLayer(weights3For3NN, biases3For3NN, new RoughTanhUnit()));
-        bestTempModel = new NeuralNetworkModel(layersFor3NN);
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+		lineFromTextFile = DataImport.getLinesFromTextFile("bestModel/Best3LayerNeuralNetwork.txt");
+		ArrayList<Layer> layersFor3LayerNeuralNetwork = new ArrayList<>();
+		double[] biasesForFirstLayerOf3LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(1) );
+		double[] weightsForFirstLayerOf3LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(2) );
+		layersFor3LayerNeuralNetwork.add(new FeedForwardLayer(weightsForFirstLayerOf3LayerNeuralNetwork, biasesForFirstLayerOf3LayerNeuralNetwork, new RoughTanhUnit()));
+		double[] biasesForSecondLayerOf3LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(4) );
+		double[] weightsForSecondLayerOf3LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(5) );
+		layersFor3LayerNeuralNetwork.add(new FeedForwardLayer(weightsForSecondLayerOf3LayerNeuralNetwork, biasesForSecondLayerOf3LayerNeuralNetwork, new RoughTanhUnit()));
+		double[] biasesForThirdLayerOf3LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(7) );
+		double[] weightsForThridLayerOf3LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( lineFromTextFile.get(8) );
+        layersFor3LayerNeuralNetwork.add(new FeedForwardLayer(weightsForThridLayerOf3LayerNeuralNetwork, biasesForThirdLayerOf3LayerNeuralNetwork, new RoughTanhUnit()));
+        bestTemporaryModel = new NeuralNetworkModel(layersFor3LayerNeuralNetwork);
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 			
-		bestTempModel = new AverageModel(data.getTrainingDataSteps());
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+		bestTemporaryModel = new AverageModel(data.getTrainingDataSteps());
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 
-        bestTempModel = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
-		minLoss = (new Trainer()).train(numOfTrainingEpochs, bestTempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
-		System.out.println(bestTempModel.toString()+" : "+minLoss);
-		modelList.add(bestTempModel);
+        bestTemporaryModel = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataProcessing(), random);
+		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+		modelList.add(bestTemporaryModel);
 
 		
 		Model[] models = modelList.toArray(new Model[0]);
@@ -111,26 +111,26 @@ public class FindBestSplittingFromIndividual {
 		double total, average;
 		
 		for(Model originalModel: models) {
-            DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataPrep());
-			ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
+            DataSplitOperation splitOp = DataSplitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataProcessing());
+			ArrayList<DataStep> badValues = DataSplitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 			
 			for(int i=0;i<=9;i++) {
 				total = 0.0;
 				Model otherModel = null;
 				for(int j=0;j<attempts;j++) {
-					otherModel = getModelFromIndex(i,badValues,data.getDataPrep(),util);				
-				//(new Trainer()).train(numOfTrainingEpochs, otherModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+					otherModel = getModelFromIndex(i,badValues,data.getDataProcessing(),random);
+				//(new ModelTrainer()).train(numOfTrainingEpochs, otherModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 					Model model = new SplittingEnsembleModel(originalModel, otherModel, splitOp);
-					total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+					total += (new ModelTrainer()).train(maximumTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
 				}
 				average = total / (double) attempts;
 
-				StringBuilder tempBuilder = new StringBuilder();
-                splitOp.description(tempBuilder);
-				String tempString = "Splitting Model with split "+tempBuilder.toString()+" with good model "+originalModel.toString()+" and bad model "+otherModel.toString()+": "+average; 
-				tempBuilder.append(tempString);
-				System.out.println(tempBuilder.toString());
-				DataExport.appendToTextFile(tempBuilder.toString(), "Models/ParameterTuning.txt");
+				StringBuilder modelEvaluationBuilder = new StringBuilder();
+                splitOp.provideDescription(modelEvaluationBuilder);
+				String modelEvaluation = "Splitting Model with split "+modelEvaluationBuilder.toString()+" with good model "+originalModel.toString()+" and bad model "+otherModel.toString()+": "+average;
+				modelEvaluationBuilder.append(modelEvaluation);
+				System.out.println(modelEvaluationBuilder.toString());
+				DataExport.appendToTextFile(modelEvaluationBuilder.toString(), "Models/ParameterTuning.txt");
 
 			}
 		
@@ -146,7 +146,7 @@ public class FindBestSplittingFromIndividual {
     private static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataProcessing dataPrep, CustomRandom rand) {
 		switch(index) {
 		case 0:
-            return new AdvancedCopyingModel(1, DataProcessing.FIXED_VECTOR_SIZE);
+            return new AdvancedCopyingModel(1, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 		case 1:
 			return new AverageModel(trainingData);
 		case 2:
@@ -156,15 +156,15 @@ public class FindBestSplittingFromIndividual {
 		case 4:
             return new CharacterManipulationFromStringDistanceModel(trainingData, dataPrep, rand);
 		case 5:
-            return new FeedForwardLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, new RoughTanhUnit(), rand);
+            return new FeedForwardLayer(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, new RoughTanhUnit(), rand);
 		case 6:
-            return new LinearLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, rand);
+            return new LinearLayer(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, rand);
 		case 7:
-            return new NeuralNetworkModel(new int[]{1, 0}, DataProcessing.FIXED_VECTOR_SIZE, new int[]{20}, DataProcessing.FIXED_VECTOR_SIZE, rand);
+            return new NeuralNetworkModel(new int[]{1, 0}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, new int[]{20}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, rand);
 		case 8:
-            return new NeuralNetworkModel(new int[]{0, 0}, DataProcessing.FIXED_VECTOR_SIZE, new int[]{2}, DataProcessing.FIXED_VECTOR_SIZE, rand);
+            return new NeuralNetworkModel(new int[]{0, 0}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, new int[]{2}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, rand);
 		case 9:
-            return new NeuralNetworkModel(new int[]{0, 0, 0}, DataProcessing.FIXED_VECTOR_SIZE, new int[]{3, 2}, DataProcessing.FIXED_VECTOR_SIZE, rand);
+            return new NeuralNetworkModel(new int[]{0, 0, 0}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, new int[]{3, 2}, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, rand);
 
 		default:
             return new BasicCopyingModel();
@@ -193,7 +193,7 @@ public class FindBestSplittingFromIndividual {
 		
 		ArrayList<Model> modelList = new ArrayList<>();
 		tempModel = new AverageModel(data.getTrainingDataSteps());
-		loss = (new Trainer()).train(numOfTrainingEpochs, tempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+		loss = (new ModelTrainer()).train(numOfTrainingEpochs, tempModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		System.out.println(tempModel.toString()+" : "+loss);
 		modelList.add(tempModel);
 
@@ -202,14 +202,14 @@ public class FindBestSplittingFromIndividual {
 		
 		
 		for(Model originalModel: models) {
-			DataSplitOperation splitOp = Splitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataPrep());
-			ArrayList<DataStep> badValues = Splitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
+			DataSplitOperation splitOp = DataSplitter.getBestDataSplit(data.getTrainingDataSteps(), originalModel, data.getDataProcessing());
+			ArrayList<DataStep> badValues = DataSplitter.getStepsNotInSplit(data.getTrainingDataSteps(), splitOp);
 			
 			for(int i=0;i<=7;i++) {
-				Model otherModel = getModelFromIndex(i,badValues,data.getDataPrep(),util);				
-				(new Trainer()).train(numOfTrainingEpochs, otherModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+				Model otherModel = getModelFromIndex(i,badValues,data.getDataProcessing(),util);
+				(new ModelTrainer()).train(numOfTrainingEpochs, otherModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 				Model model = new SplittingEnsembleModel(originalModel, otherModel, splitOp);
-				double tempLoss = (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+				double tempLoss = (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 				StringBuilder tempBuilder = new StringBuilder();
 				splitOp.toString(tempBuilder);
 				String tempString = "Splitting Model with split "+tempBuilder.toString()+" with good model "+originalModel.toString()+" and bad model "+otherModel.toString()+": "+tempLoss; 
@@ -227,24 +227,24 @@ public class FindBestSplittingFromIndividual {
 		
 	}
 
-	public static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataProcessing dataPrep, CustomRandom rand) {
+	public static Model getModelFromIndex(int index, ArrayList<DataStep> trainingData, DataProcessing dataPrep, CustomRandom random) {
 		switch(index) {
 		case 0:
-			return new AdvancedCopyingModel(2, DataProcessing.FIXED_VECTOR_SIZE);
+			return new AdvancedCopyingModel(2, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
 		case 1:
 			return new AverageModel(trainingData);
 		case 2:
 			return new BasicCopyingModel();
 		case 3:
-			return new ProportionProbabilityForCharacterModel(trainingData, 3, dataPrep, rand);
+			return new ProportionProbabilityForCharacterModel(trainingData, 3, dataPrep, random);
 		case 4:
-			return new CharacterManipulationFromStringDistanceModel(trainingData, dataPrep, rand);
+			return new CharacterManipulationFromStringDistanceModel(trainingData, dataPrep, random);
 		case 5:
-			return new FeedForwardLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, new RoughTanhUnit(), rand);
+			return new FeedForwardLayer(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, new RoughTanhUnit(), random);
 		case 6:
-			return new LinearLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, rand);
+			return new LinearLayer(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, random);
 		case 7:
-			return new NeuralNetworkModel(2, DataProcessing.FIXED_VECTOR_SIZE, 10, DataProcessing.FIXED_VECTOR_SIZE, rand);
+			return new NeuralNetworkModel(2, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, 10, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, random);
 		default:
 			return new BasicCopyingModel();
 		}

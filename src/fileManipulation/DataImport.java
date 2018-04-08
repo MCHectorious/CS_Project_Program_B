@@ -9,56 +9,56 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class DataImport {
-	public static ArrayList<String> getLines(String file){
-		ArrayList<String> output = new ArrayList<>();
-		BufferedReader br = null;
+	public static ArrayList<String> getLinesFromTextFile(String filePath){
+		ArrayList<String> lines = new ArrayList<>();
+		BufferedReader bufferedReader = null;
 		try{
-			br = new BufferedReader(new FileReader(file));
+			bufferedReader = new BufferedReader(new FileReader(filePath));
 			String line;
-		    while ((line = br.readLine()) != null){
-		    	output.add(line);
+		    while ((line = bufferedReader.readLine()) != null){
+		    	lines.add(line);
 		    }
 		} catch (IOException exception) {
-			System.out.println("Error trying to access file: " + file);
+			System.out.println("Error trying to access file: " + filePath);
 			System.out.println(exception.getMessage());
 		}finally {
-			if (br != null){
+			if (bufferedReader != null){
 				try {
-					br.close();
+					bufferedReader.close();
 				} catch (IOException exception) {
-					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println("Error trying to close connection to file: " + filePath);
 					System.out.println(exception.getMessage());
 				}
 			}
 		}
-		return output;
+		return lines;
 	}
-	public static double[] getDoubleArrayFromLine(String string) {
-		String[] stringValues = string.split("\t");
-		double[] values = new double[stringValues.length];
-		for(int i=0;i<stringValues.length;i++) {
-			values[i] = Double.parseDouble( stringValues[i]);
+	public static double[] getDoubleArrayFromLine(String line) {
+		String[] doublesAsStrings = line.split("\t");
+		double[] outputDoubleArray = new double[doublesAsStrings.length];
+		for(int i=0;i<doublesAsStrings.length;i++) {
+			outputDoubleArray[i] = Double.parseDouble( doublesAsStrings[i]);
 		}
-		return values;
+		return outputDoubleArray;
 	}
-	public static double getDoubleFromFile(String file) {
+	public static double getDoubleFromFile(String filePath) {
 		double output = 0;
-		BufferedReader br = null;
+		BufferedReader bufferedReader = null;
 		try{
-			br = new BufferedReader(new FileReader(file));
+			bufferedReader = new BufferedReader(new FileReader(filePath));
 			String line;
-		    while ((line = br.readLine()) != null){
+		    while ((line = bufferedReader.readLine()) != null){
 		    	output = Double.parseDouble(line);
 		    }
 		} catch (IOException exception) {
-			System.out.println("Error trying to get double from file: " + file);
+			System.out.println("Error trying to get double from file: " + filePath);
 			System.out.println(exception.getMessage());
 		}finally {
-			if (br != null){
+			if (bufferedReader != null){
 				try {
-					br.close();
+					bufferedReader.close();
 				} catch (IOException exception) {
-					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println("Error trying to close connection to file: " + filePath);
 					System.out.println(exception.getMessage());
 				}
 			}
@@ -66,24 +66,24 @@ public class DataImport {
 		return output;
 	}
 	
-	public static HashSet<String> getUniqueLines(String file){
+	public static HashSet<String> getUniqueLinesFromTextFile(String filePath){
 		HashSet<String> output = new HashSet<>();
-		BufferedReader br = null;
+		BufferedReader bufferedReader = null;
 		try{
-			br = new BufferedReader(new FileReader(file));
+			bufferedReader = new BufferedReader(new FileReader(filePath));
 			String line;
-		    while ((line = br.readLine()) != null){
+		    while ((line = bufferedReader.readLine()) != null){
 		    	output.add(line);
 		    }
 		} catch (IOException exception) {
-			System.out.println("Error trying to access file: " + file);
+			System.out.println("Error trying to access file: " + filePath);
 			System.out.println(exception.getMessage());
 		}finally {
-			if (br != null){
+			if (bufferedReader != null){
 				try {
-					br.close();
+					bufferedReader.close();
 				} catch (IOException exception) {
-					System.out.println("Error trying to close connection to file: " + file);
+					System.out.println("Error trying to close connection to file: " + filePath);
 					System.out.println(exception.getMessage());
 				}
 			}
@@ -95,20 +95,20 @@ public class DataImport {
 
 	public static ArrayList<Flashcard> getFlashcardListFromTextFile(String file){
 		ArrayList<Flashcard> output = new ArrayList<>();
-		BufferedReader br = null;
+		BufferedReader bufferedReader = null;
 		try{
-			br = new BufferedReader(new FileReader(file));
+			bufferedReader = new BufferedReader(new FileReader(file));
 			String line;
-			while ((line = br.readLine()) != null){
+			while ((line = bufferedReader.readLine()) != null){
 				output.add(new Flashcard(line));
 			}
 		} catch (IOException exception) {
 			System.out.println("Error trying to get flashcard list from file: " + file);
 			System.out.println(exception.getMessage());
 		}finally {
-			if (br != null){
+			if (bufferedReader != null){
 				try {
-					br.close();
+					bufferedReader.close();
 				} catch (IOException exception) {
 					System.out.println("Error trying to close connection to file: " + file);
 					System.out.println(exception.getMessage());

@@ -5,7 +5,7 @@ import fileManipulation.DataExport;
 import generalUtilities.CustomRandom;
 import models.AverageModel;
 import models.Model;
-import training.Trainer;
+import training.ModelTrainer;
 
 public class FindBestIndividualModel {
 
@@ -13,15 +13,15 @@ public class FindBestIndividualModel {
 		//Model bestModel;
 		//double bestLoss = Double.MAX_VALUE;
 		int attempts = 10;
-		CustomRandom util = new CustomRandom();
+		CustomRandom random = new CustomRandom();
 
-		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", util);
+		FlashcardDataSet data = new FlashcardDataSet("DataSets/TranslatedFlashcards.txt", random);
 
 		String savePath = "Models/CardToSentence.txt";
 
 		double total,average;
 		
-		int numOfTrainingEpochs = 10000000;
+		int maximumTrainingEpochs = 10000000;
 		int displayReportPeriod = 1;
 		int showEpochPeriod = 20000;
 		int checkMinimumPeriod = 40;
@@ -30,8 +30,8 @@ public class FindBestIndividualModel {
 		for(int size=0;size<5;size++) {
 			total = 0.0;
 			for(int i=0;i<attempts;i++) {
-				Model model = new AdvancedCopyingModel(size, DataProcessing.FIXED_VECTOR_SIZE);
-				total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+				Model model = new AdvancedCopyingModel(size, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
+				total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 			}
 			average = total/(double) attempts;
 			String tempString = "Advanced Copying with size of "+size+":\t"+average;
@@ -43,19 +43,19 @@ public class FindBestIndividualModel {
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
 			Model model = new AverageModel(data.getTrainingDataSteps());
-			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+			total += (new ModelTrainer()).train(maximumTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
 		}
 		average = total/(double) attempts;
-		String tempString ="Average Model:\t"+average;
-		System.out.println(tempString);
-		DataExport.appendToTextFile(tempString, "Models/ParameterTuning.txt");
+		String evaluationOfModel ="Average Model:\t"+average;
+		System.out.println(evaluationOfModel);
+		DataExport.appendToTextFile(evaluationOfModel, "Models/ParameterTuning.txt");
 		System.gc();
 		/*
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
 			Model model = new BasicCopyingModel();
-			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+			total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
 		tempString ="Basic Copying Model:\t"+average;
@@ -67,8 +67,8 @@ public class FindBestIndividualModel {
 		for(int size=0;size<10;size++) {
 			total = 0.0;
 			for(int i=0;i<attempts;i++) {
-				Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), size, data.getDataPrep(), util);
-				total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+				Model model = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), size, data.getDataProcessing(), util);
+				total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 			}
 			average = total/(double) attempts;
 			tempString ="Categoric Prob for Character with size of "+size+":\t"+average; 
@@ -79,8 +79,8 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataPrep(), util);
-			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+			Model model = new CharacterManipulationFromStringDistanceModel(data.getTrainingDataSteps(), data.getDataProcessing(), util);
+			total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
 		tempString = "Character Manipulation From String Distance Model:\t"+average; 
@@ -92,8 +92,8 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new FeedForwardLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, new RoughTanhUnit(), util);
-			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+			Model model = new FeedForwardLayer(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, new RoughTanhUnit(), util);
+			total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
 		tempString = "FeedForward Layer Model:\t"+average; 
@@ -105,8 +105,8 @@ public class FindBestIndividualModel {
 		
 		total = 0.0;
 		for(int i=0;i<attempts;i++) {
-			Model model = new LinearLayer(DataProcessing.FIXED_VECTOR_SIZE, DataProcessing.FIXED_VECTOR_SIZE, util);
-			total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+			Model model = new LinearLayer(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
+			total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 		}
 		average = total/(double) attempts;
 		tempString = "Linear Layer Model:\t"+average; 
@@ -144,8 +144,8 @@ public class FindBestIndividualModel {
 					
 					//.out.println(Utilities.arrayToString(hiddenDims[b]));
 					for(int i=0;i<attempts;i++) {
-						Model model = new NeuralNetworkModel(layerTypes[a],DataProcessing.FIXED_VECTOR_SIZE,hiddenDims[b],DataProcessing.FIXED_VECTOR_SIZE,util);
-						total += (new Trainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+						Model model = new NeuralNetworkModel(layerTypes[a],DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR,hiddenDims[b],DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR,util);
+						total += (new ModelTrainer()).train(numOfTrainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 					}
 					average = total/(double) attempts;
 					tempString = "Neural Network with layers "+Utilities.arrayToString(layerTypes[a])+"and hidden dimensions "+Utilities.arrayToString(hiddenDims[b])+"  Model:\t"+average;

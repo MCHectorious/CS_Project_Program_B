@@ -49,18 +49,18 @@ public class SplittingEnsembleModel implements Model{
 	}
 
 	@Override
-	public String description() {
-		return "Data Split - \t" + split.description() + "Model for split\n" +
-				modelInSplit.description() + "Model not for split\n" + modelNotInSplit.description();
+	public String provideDescription() {
+		return "Data Split - \t" + split.provideDescription() + "Model for split\n" +
+				modelInSplit.provideDescription() + "Model not for split\n" + modelNotInSplit.provideDescription();
 	}
 
 	@Override
-	public void description(StringBuilder stringBuilder) {
+	public void provideDescription(StringBuilder stringBuilder) {
 		stringBuilder.append("Data Split - \t");
-		split.description(stringBuilder);
+		split.provideDescription(stringBuilder);
 		stringBuilder.append("Model for split\n");
-		modelInSplit.description(stringBuilder);
+		modelInSplit.provideDescription(stringBuilder);
 		stringBuilder.append("Model not for split\n");
-		modelNotInSplit.description(stringBuilder);
+		modelNotInSplit.provideDescription(stringBuilder);
 	}
 }

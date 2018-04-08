@@ -12,11 +12,11 @@ public class ContainPhrase extends DataSplitOperation {
 
     ContainPhrase(ArrayList<DataStep> list1, ArrayList<DataStep> list2, DataProcessing dataProcessing) {
 		String bestStringSoFar = "";
-        for (String string : dataProcessing.getPhrases()) {
+        for (String phrase : dataProcessing.getPhrases()) {
 			int list1LabelledList1=0,list1LabelledList2=0,list2LabelledList1=0,list2LabelledList2=0;
 			for(DataStep step:list1) {
-				//System.out.println(isInSet(step.getInputText(),string));
-				if(isInSet(step.getInputText(),string)) {
+				//System.out.println(isInSet(step.getInputText(),phrase));
+				if(isInSet(step.getInputText(),phrase)) {
 					list1LabelledList1++;
 				}else {
 					list1LabelledList2++;
@@ -24,7 +24,7 @@ public class ContainPhrase extends DataSplitOperation {
 			}
 			
 			for(DataStep step:list2) {
-				if(isInSet(step.getInputText(),string)) {
+				if(isInSet(step.getInputText(),phrase)) {
 					list2LabelledList1++;
 				}else {
 					list2LabelledList2++;
@@ -33,9 +33,9 @@ public class ContainPhrase extends DataSplitOperation {
 			
 			double value = (double)list1LabelledList1/(double)(list1LabelledList1+list1LabelledList2) + (double)list2LabelledList2/(double)(list2LabelledList1+list2LabelledList2);	
 			
-			if(value>valueOfOp) {
-				valueOfOp = value;
-				bestStringSoFar = string;
+			if(value> valueOfOperation) {
+				valueOfOperation = value;
+				bestStringSoFar = phrase;
 			}
 		}
 		phrase = bestStringSoFar;
@@ -64,12 +64,12 @@ public class ContainPhrase extends DataSplitOperation {
 	}
 
 	@Override
-    public String description() {
+    public String provideDescription() {
         return "Contains Phrase: " + phrase;
 	}
 
 	@Override
-    public void description(StringBuilder stringBuilder) {
+    public void provideDescription(StringBuilder stringBuilder) {
         stringBuilder.append("Contains Phrase: ").append(phrase);
 	}
 }

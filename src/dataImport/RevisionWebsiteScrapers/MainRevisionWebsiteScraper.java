@@ -9,9 +9,9 @@ public class MainRevisionWebsiteScraper {
         ArrayList<String> cramCourses = cramScraper.getRelatedCourses(courses);
         cramScraper.getFlashcards(cramCourses);
 
-        MemRiseScraper memRiseScraper = new MemRiseScraper();
-        ArrayList<String> memriseCourses = memRiseScraper.getRelatedCourses(courses);
-        memRiseScraper.getFlashcards(memriseCourses);
+        MemriseScraper memriseScraper = new MemriseScraper();
+        ArrayList<String> memriseCourses = memriseScraper.getRelatedCourses(courses);
+        memriseScraper.getFlashcards(memriseCourses);
 
     }
 

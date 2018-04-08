@@ -31,7 +31,7 @@ public class BasicCopyingModel implements Model {
     }
 
     @Override
-    public String description() {
+    public String provideDescription() {
         return "Copy Model";
     }
 

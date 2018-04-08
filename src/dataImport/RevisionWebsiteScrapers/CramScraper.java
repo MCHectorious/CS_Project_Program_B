@@ -15,24 +15,24 @@ import java.util.ArrayList;
 class CramScraper implements RevisionWebsiteScraper {
 
     @Override
-    public ArrayList<String> getRelatedCourses(ArrayList<String> strings) {
-        ArrayList<String> relatedWebsites = new ArrayList<>();
-        for ( String string: strings) {
+    public ArrayList<String> getRelatedCourses(ArrayList<String> courseSearchStrings) {
+        ArrayList<String> relatedCourses = new ArrayList<>();
+        for ( String courseSearchString: courseSearchStrings) {
 
-            String url = "http://www.cram.com/search?query=" + Utilities.convertToURLFormat(string)
+            String URL = "http://www.cram.com/search?query=" + Utilities.convertToURLFormat(courseSearchString)
                     + "&search_in%5B%5D=title&search_in%5B%5D=body&search_in%5B%5D=subject&search_in%5B%5D=username&image_filter=exclude_imgs&period=any";
             try {
-                Document document = Jsoup.connect(url).timeout(1000000).get();
-                Elements section = document.select("div[id=searchResults]").select("a[href]");
+                Document searchResultsWebsite = Jsoup.connect(URL).timeout(1000000).get();
+                Elements searchResultsSection = searchResultsWebsite.select("div[id=searchResults]").select("a[href]");
 
-                for (Element element:section ) {
-                    String website = element.attr("href");
-                    if (website.length()>12){
-                        if(website.substring(0,12).equals("/flashcards/")){
+                for (Element searchResult:searchResultsSection ) {
+                    String courseWebsite = searchResult.attr("href");
+                    if (courseWebsite.length()>12){
+                        if(courseWebsite.substring(0,12).equals("/flashcards/")){
 
 
-                            relatedWebsites.add(website);
-                            if (relatedWebsites.size()==5){
+                            relatedCourses.add(courseWebsite);
+                            if (relatedCourses.size()==5){
                                 break;
                             }
                         }
@@ -43,25 +43,25 @@ class CramScraper implements RevisionWebsiteScraper {
                 System.out.println(exception.getMessage());
             }
         }
-        return relatedWebsites;
+        return relatedCourses;
     }
 
     @Override
-    public void getFlashcards(ArrayList<String> strings) {
-        for (String url: strings) {
+    public void getFlashcards(ArrayList<String> relatedCoursesURLs) {
+        for (String relatedCourseURL: relatedCoursesURLs) {
             try {
-                //System.out.println("http://www.cram.com"+url);
-                Document courseWebsite = Jsoup.connect("http://www.cram.com"+url).timeout(1000000).get();
-                Elements FlashCardSection = courseWebsite.select("table[class=flashCardsListingTable]").select("tr");
-                for (Element e: FlashCardSection){
-                    String front = e.select("div[class=front_text card_text]").text();
-                    String back = e.select("div[class=back_text card_text]").text();
-                    DataExport.appendToTextFile(Flashcard.withSep(front, back), "DataSets/RawFlashcards.txt");
-                    //System.out.println(Flashcard.withSep(front, back));
+                //System.out.println("http://www.cram.com"+relatedCourseURL);
+                Document courseWebsite = Jsoup.connect("http://www.cram.com"+relatedCourseURL).timeout(1000000).get();
+                Elements flashcardSection = courseWebsite.select("table[class=flashCardsListingTable]").select("tr");
+                for (Element flashcard: flashcardSection){
+                    String flashcardFront = flashcard.select("div[class=front_text card_text]").text();
+                    String flashcardBack = flashcard.select("div[class=back_text card_text]").text();
+                    DataExport.appendToTextFile(Flashcard.withSeparator(flashcardFront, flashcardBack), "DataSets/RawFlashcards.txt");
+                    //System.out.println(Flashcard.withSeparator(flashcardFront, flashcardBack));
 
                 }
             } catch (IOException e) {
-                System.out.println(url);
+                System.out.println(relatedCourseURL);
                 System.out.println("Error"+e.getMessage());
 
             }

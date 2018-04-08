@@ -1,6 +1,6 @@
 package nonlinearityFunctions;
 
 public interface NonLinearity {
-	double forward(double x);
-	double backward(double x);
+	double evaluate(double x);
+	double evaluateDerivative(double x);
 }

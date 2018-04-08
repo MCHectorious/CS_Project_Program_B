@@ -54,12 +54,12 @@ public class SystematicParameterTuningForNeuralNetwork {
 
 								parameterSetLoss = 0.0;
 								for (int iteration = 0; iteration < numOfIterations; iteration++) {
-									Trainer trainer = new Trainer(alpha, beta1, beta2, momentum);
-									//Model model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimension, DataProcessing.FIXED_VECTOR_SIZE, util );
+									ModelTrainer modelTrainer = new ModelTrainer(alpha, beta1, beta2, momentum);
+									//Model model = new NeuralNetworkModel(numOfLayers, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, hiddenDimension, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util );
 
-									Model model = new NeuralNetworkModel(layerTypes, DataProcessing.FIXED_VECTOR_SIZE, hiddenDimensions, DataProcessing.FIXED_VECTOR_SIZE, util);
+									Model model = new NeuralNetworkModel(layerTypes, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, hiddenDimensions, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR, util);
 
-									parameterSetLoss += trainer.train(trainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
+									parameterSetLoss += modelTrainer.train(trainingEpochs, model, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, util);
 								}
 								System.out.println("Set Of Parameters Completed:\t" + alpha + "\t" + beta1 + "\t" + beta2 + "\t" + momentum + "\t" + Utilities.arrayToString(layerTypes) + "\t" + Utilities.arrayToString(hiddenDimensions) + "\t" + parameterSetLoss / numOfIterations);
 								DataExport.appendToTextFile(alpha + "\t" + beta1 + "\t" + beta2 + "\t" + momentum + "\t" + Utilities.arrayToString(layerTypes) + "\t" + Utilities.arrayToString(hiddenDimensions) + "\t" + parameterSetLoss / numOfIterations, parameterSetSavePath);

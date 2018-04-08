@@ -15,9 +15,9 @@ public class MainTranslation {
 		
 		//ArrayList<Flashcard> Flashcards = Flashcard.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
 
-        //AutomaticDataPreProcessing.autoTranslateRawFlashcards(Flashcards, "DataSets/TranslatedFlashcards.txt");
+        //AutomaticDataPreProcessing.automaticallyTranslateRawFlashcards(Flashcards, "DataSets/TranslatedFlashcards.txt");
 
-        //AutomaticDataPreProcessing.deleteDuplicates("DataSets/TranslatedFlashcards.txt");
+        //AutomaticDataPreProcessing.deleteDuplicateFlashcards("DataSets/TranslatedFlashcards.txt");
 
         AutomaticDataPreProcessing.removeTranslatedCards("DataSets/RawFlashcards.txt", "DataSets/TranslatedFlashcards.txt");
 		

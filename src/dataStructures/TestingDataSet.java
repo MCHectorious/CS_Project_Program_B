@@ -5,7 +5,6 @@ import generalUtilities.CustomRandom;
 import lossFunctions.LossStringDistance;
 import matrices.Vector;
 import models.Model;
-import nonlinearityFunctions.RoughTanhUnit;
 import training.DataProcessing;
 
 import java.util.ArrayList;
@@ -13,84 +12,72 @@ import java.util.List;
 
 public class TestingDataSet implements DataSet {
 
-	private static final String border = "--------------------------------------------------------------";
-	private DataSequence training = new DataSequence();
-	private DataSequence testing = new DataSequence();
-    private DataProcessing dataPrep;
-	private double ReciprocalOfTrainingSize;
-	private double ReciprocalOfTestingSize;
+	private static final String reportBorder = "--------------------------------------------------------------";
+	private DataSequence trainingDataSequence = new DataSequence();
+	private DataSequence testingDataSequence = new DataSequence();
+    private DataProcessing dataProcessing;
+	private double reciprocalOfTrainingSize;
 	private CustomRandom random;
 	private Vector modelOutput = new Vector(3);
 	private Vector modelInput = new Vector(3);
-	private LossStringDistance stringLoss;
-	private RoughTanhUnit roughTanhUnit = new RoughTanhUnit();
-
-	
+	private LossStringDistance stringDistanceLoss;
 	
 	public TestingDataSet(CustomRandom rand) {
 		random = rand;
-		
 
+		ArrayList<String> linesFromTextFile = DataImport.getLinesFromTextFile("DataSets/TranslatedFlashcards.txt");
+        dataProcessing = new DataProcessing(linesFromTextFile);
+		stringDistanceLoss = new LossStringDistance(dataProcessing);
 		
-		ArrayList<String> lines = DataImport.getLines("DataSets/TranslatedFlashcards.txt");
-        dataPrep = new DataProcessing(lines);
-		stringLoss = new LossStringDistance(dataPrep);
+		trainingDataSequence.addDataStep( new double[]{0.25,-0.75,-0.25} , new double[] {-0.9493670886075949, -0.9646017699115044, -0.9767441860465116}, "man", "anm");
+		trainingDataSequence.addDataStep( new double[]{-0.25,-0.75,-0.25} , new double[]{-0.9646017699115044, -0.9760479041916168, -0.9836065573770492} , "saw", "aws");
+		trainingDataSequence.addDataStep( new double[]{-0.15,-0.65,-0.95} , new double[]{-0.9748427672955975, -0.9835119538334708, -0.988399071925754} , "que", "ueq");
 		
-		training.addDataStep( new double[]{0.25,-0.75,-0.25} , new double[] {-0.9493670886075949, -0.9646017699115044, -0.9767441860465116}, "man", "anm");
-		training.addDataStep( new double[]{-0.25,-0.75,-0.25} , new double[]{-0.9646017699115044, -0.9760479041916168, -0.9836065573770492} , "saw", "aws");
-		training.addDataStep( new double[]{-0.15,-0.65,-0.95} , new double[]{-0.9748427672955975, -0.9835119538334708, -0.988399071925754} , "que", "ueq");
-		
-		testing.addDataStep( new double[]{-0.85,-0.35,-0.995} , new double[]{-0.9782797567332754, -0.9857893988915731, -0.9899152884227511} , "nod", "odn");
-		testing.addDataStep( new double[]{-0.65,-0.765,-0.765} , new double[]{-0.9785913080710769, -0.9860393689794779, -0.9900833002776676} , "uno", "nou");
-		testing.addDataStep( new double[]{-0.125,-0.715,-0.85} , new double[]{-0.9740630268447672, -0.9829685770246104, -0.9880411384836164} , "two", "wot");
+		testingDataSequence.addDataStep( new double[]{-0.85,-0.35,-0.995} , new double[]{-0.9782797567332754, -0.9857893988915731, -0.9899152884227511} , "nod", "odn");
+		testingDataSequence.addDataStep( new double[]{-0.65,-0.765,-0.765} , new double[]{-0.9785913080710769, -0.9860393689794779, -0.9900833002776676} , "uno", "nou");
+		testingDataSequence.addDataStep( new double[]{-0.125,-0.715,-0.85} , new double[]{-0.9740630268447672, -0.9829685770246104, -0.9880411384836164} , "two", "wot");
 
-		System.out.println("Total phrases = " + dataPrep.getNumOfPhrases());
-		System.out.println(training.getSize() + " steps in training set");
-		System.out.println(testing.getSize() + " steps in testing set");
-		ReciprocalOfTrainingSize = 1.0/training.getSize();
-		ReciprocalOfTestingSize = 1.0/testing.getSize();
+		System.out.println("Total phrases = " + dataProcessing.getNumOfPhrases());
+		System.out.println(trainingDataSequence.getSize() + " steps in trainingDataSequence set");
+		System.out.println(testingDataSequence.getSize() + " steps in testingDataSequence set");
+		reciprocalOfTrainingSize = 1.0/ trainingDataSequence.getSize();
 
 	}
 	
 	@Override
-	public void DisplayReport(Model model) {
-		DataStep example =  testing.getRandom(random) ;
-		StringBuilder builder = new StringBuilder(300);
-		builder.append(border+"\nReport:\n");
-		builder.append("Input: ").append(example.getInputText()).append("\n");
-		builder.append("Expected Output: \t").append( example.getOutputText()).append("\n");
-		modelInput.setData(example.getInput());
-		//modelInput.toString(builder);
-		//builder.append("\n");
+	public void displayReport(Model model) {
+		DataStep exampleTestingDataStep =  testingDataSequence.getRandom(random) ;
+		StringBuilder reportBuilder = new StringBuilder(300);
+		reportBuilder.append(reportBorder +"\nReport:\n");
+		reportBuilder.append("Input: ").append(exampleTestingDataStep.getInputText()).append("\n");
+		reportBuilder.append("Expected Output: \t").append( exampleTestingDataStep.getTargetOutputText()).append("\n");
+		modelInput.setData(exampleTestingDataStep.getInput());
         model.run(new DataStep(modelInput), modelOutput);
-		//modelOutput.toString(builder);
-		//builder.append("\n");
-		String modelOutputString = dataPrep.doubleArrayToString(modelOutput.getData());
-		builder.append("Actual Output: \t\t").append(modelOutputString ).append("\n");
-		builder.append("String Distance: ").append(stringLoss.measure(modelOutputString, example.getOutputText()));
-		builder.append("\n").append(border);
-		System.out.println(builder.toString());
+		String modelOutputString = dataProcessing.doubleArrayToString(modelOutput.getData());
+		reportBuilder.append("Actual Output: \t\t").append(modelOutputString ).append("\n");
+		reportBuilder.append("String Distance: ").append(stringDistanceLoss.measure(modelOutputString, exampleTestingDataStep.getTargetOutputText()));
+		reportBuilder.append("\n").append(reportBorder);
+		System.out.println(reportBuilder.toString());
 	}
 
-	public int getTrainingSize() {
-		return training.getSize();
+	public int getTrainingDataStepsSize() {
+		return trainingDataSequence.getSize();
 	}
 	
 	public double getReciprocalOfTrainingSize() {
-		return ReciprocalOfTrainingSize;
+		return reciprocalOfTrainingSize;
 	}
 
-
 	public List<DataStep> getTrainingDataSteps() {
-		return training.getDataSteps();
+		return trainingDataSequence.getDataSteps();
 	}
 	
 	public List<DataStep> getTestingDataSteps() {
-		return testing.getDataSteps();
+		return testingDataSequence.getDataSteps();
 	}
 	
-	public int getTestingSize() {
-		return testing.getSize();
+	public int getTestingDataStepsSize() {
+		return testingDataSequence.getSize();
 	}
 	
 

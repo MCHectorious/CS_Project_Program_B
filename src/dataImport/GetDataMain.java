@@ -10,7 +10,7 @@ public class GetDataMain {
 
     public static void main(String[] args) {
         System.out.println("Getting Courses");
-        ArrayList<String> courses = new AQACourseListScraper().getCourses();
+        ArrayList<String> courses = new AQACourseListScraper().getWebsitesForCourses();
         System.out.println("Getting Flashcards");
         MainRevisionWebsiteScraper.scrapeRevisionWebsites(courses);
 

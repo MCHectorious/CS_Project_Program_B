@@ -20,20 +20,20 @@ public class DataSequence {
 		return dataSteps.size();
 	}
 
-    DataStep getRandom(CustomRandom util) {
-		return dataSteps.get(util.randomInt(dataSteps.size()-1));
+    DataStep getRandom(CustomRandom random) {
+		return dataSteps.get(random.randomInt(dataSteps.size()-1));
 	}
 
     void addDataStep(double[] input, double[] targetOutput, String inputText, String outputText) {
 		dataSteps.add(new DataStep(input, targetOutput,inputText, outputText));
 	}
 
-    void addDataStepsWithCapitilisationVariation(double[] input, double[] output, String inputText, String outputText, DataProcessing dataPrep) {
+    void addDataStepsWithCapitalisationVariation(double[] input, double[] output, String inputText, String outputText, DataProcessing dataProcessing) {
 		dataSteps.add(new DataStep(input, output,inputText, outputText));
 
-		Flashcard card = new Flashcard(inputText);
+		Flashcard flashcard = new Flashcard(inputText);
 
-        ArrayList<DataStep> steps = AutomaticDataPreProcessing.addCapitalisationVariation(card.getFront(), card.getBack(), dataPrep, output, outputText);
+        ArrayList<DataStep> steps = AutomaticDataPreProcessing.addCapitalisationVariation(flashcard.getFlashcardFront(), flashcard.getFlashcardBack(), dataProcessing, output, outputText);
 
         dataSteps.addAll(steps);
 		

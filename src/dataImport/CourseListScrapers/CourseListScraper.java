@@ -4,6 +4,6 @@ import java.util.ArrayList;
 
 public interface CourseListScraper {
 
-    ArrayList<String> getCourses();
+    ArrayList<String> getWebsitesForCourses();
 
 }

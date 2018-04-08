@@ -7,15 +7,15 @@ import models.Model;
 import java.util.List;
 
 public interface DataSet {
-    Loss lossTraining = new LossSumOfSquares();
+    Loss trainingLoss = new LossSumOfSquares();
 
-    void DisplayReport(Model model);
+    void displayReport(Model model);
 
     List<DataStep> getTestingDataSteps();
 
-    int getTestingSize();
+    int getTestingDataStepsSize();
 
-    int getTrainingSize();
+    int getTrainingDataStepsSize();
 
     List<DataStep> getTrainingDataSteps();
 

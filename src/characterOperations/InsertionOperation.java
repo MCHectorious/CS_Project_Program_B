@@ -4,33 +4,33 @@ import java.util.ArrayList;
 
 public class InsertionOperation implements CharacterOperation {
 
-    private char character;
+    private char characterToInsert;
 
     public InsertionOperation(char charValue) {
-        character = charValue;
+        characterToInsert = charValue;
     }
 
     @Override
-    public void convertCharacter(char c, StringBuilder builder) {
-        builder.append(character);
+    public void convertCharacter(char character, StringBuilder outputTextBuilder) {
+        outputTextBuilder.append(characterToInsert);
 
     }
 
     @Override
-    public ArrayList<Character> getInputs() {
+    public ArrayList<Character> getRelevantInputs() {
         return new ArrayList<>();
     }
 
     @Override
-    public ArrayList<Character> getOutputs() {
-        ArrayList<Character> output = new ArrayList<>();
-        output.add(character);
-        return output;
+    public ArrayList<Character> getRelevantOutputs() {
+        ArrayList<Character> relevantOutputs = new ArrayList<>();
+        relevantOutputs.add(characterToInsert);
+        return relevantOutputs;
     }
 
 
     @Override
-    public String description() {
-        return "Insert " + character;
+    public String provideDescription() {
+        return "Insert " + characterToInsert;
     }
 }
