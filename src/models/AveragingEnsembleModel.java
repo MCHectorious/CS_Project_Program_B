@@ -10,14 +10,14 @@ import java.util.ArrayList;
 
 public class AveragingEnsembleModel implements Model {
 
-	private ArrayList<Model> subModels;
-	private ArrayList<Vector> subModelOutputs = new ArrayList<>();
-	private int outputSize;
-	private int modelSizeMinus1;
-	private double[] weights;
-	private double[] subModelLosses;
+	private ArrayList<Model> subModels;//The models to take the average of
+	private ArrayList<Vector> subModelOutputs = new ArrayList<>();//Used as a field to avoid creating objects in a loop
+	private int outputSize;//The size of the output of the model
+	private int modelSizeMinus1;//Cache to avoid calculating this multiple times
+	private double[] weights;//How much of the average is for this particular model
+	private double[] subModelLosses;//The inaccuracy of each of the sub-models
 	
-	private Loss loss = new LossSumOfSquares();
+	private Loss loss = new LossSumOfSquares();//Used to measure the loss of the sub-models
 	
 	
 	public AveragingEnsembleModel(ArrayList<Model> models, int outputDimension) {
@@ -30,7 +30,7 @@ public class AveragingEnsembleModel implements Model {
 		outputSize = outputDimension;
 		weights = new double[models.size()];
 		for(int i=0;i<models.size();i++) {
-			weights[i] = reciprocalOfModelSize;
+			weights[i] = reciprocalOfModelSize;//Assumes that the models are all equally good to start with
 		}
 		subModelLosses = new double[models.size()];
 	}
@@ -44,7 +44,7 @@ public class AveragingEnsembleModel implements Model {
 		for(int i=outputSize-1;i>=0;i--) {
 			double total=0.0;
 			for(int j=modelSizeMinus1;j>=0;j--) {
-				total += subModelOutputs.get(j).get(i)* weights[j];
+				total += subModelOutputs.get(j).get(i)* weights[j];//Gets the weighted average
 			}
 			output.set(i, total);
 		}
@@ -58,7 +58,7 @@ public class AveragingEnsembleModel implements Model {
 		
 		for(int i=subModels.size()-1; i >= 0; i--) {
 			subModels.get(i).runAndDecideImprovements(input, subModelOutputs.get(i), targetOutput);
-			subModelLosses[i] += loss.measureLoss(subModelOutputs.get(i), targetOutput);
+			subModelLosses[i] += loss.measureLoss(subModelOutputs.get(i), targetOutput);//keeps track of the loss, so that th model can be weighted ppropriately
 		}
 		for(int i=outputSize-1;i>=0;i--) {
 			double total=0.0;
@@ -78,13 +78,13 @@ public class AveragingEnsembleModel implements Model {
 		}
 		double totalLoss = 0.0;
 		for(int i=modelSizeMinus1;i>=0;i--) {
-			totalLoss += subModelLosses[i];
+			totalLoss += subModelLosses[i];//Gets the total loss of all of the models
 		}
 
 		for(int i=modelSizeMinus1;i>=0;i--) {
 			
 			weights[i] = (totalLoss-subModelLosses[i])/(totalLoss*modelSizeMinus1);
-			subModelLosses[i] *= momentum;
+			subModelLosses[i] *= momentum;//Decide how much the previous loss of ths  model affect the current loss of the model
 		}
 
 	}

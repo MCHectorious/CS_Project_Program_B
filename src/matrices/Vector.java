@@ -19,11 +19,11 @@ public class Vector extends GeneralMatrix{
 	}
 
 
-	public static Vector randomVector(int length, CustomRandom rand) {
+	public static Vector randomVector(int length, CustomRandom rand) {//generates a random vector of a specified length
 		return new Vector(rand.randomDoubleArray(length));
 	}
 	
-	public static void concatenateVector(ArrayList<Vector> vectors, Vector output) {
+	public static void concatenateVector(ArrayList<Vector> vectors, Vector output) {//sets the vales of the out vector to the list of vectors
 		int index=0;
 		for(Vector vector:vectors) {
 			for(int i=0;i<vector.getSize();i++) {

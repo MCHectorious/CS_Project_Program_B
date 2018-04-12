@@ -13,35 +13,35 @@ public class ManualTranslation {
 
 	public static void main(String[] args) {
 
-        ArrayList<Flashcard> rawFlashcards = DataImport.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
-        ArrayList<Flashcard> flashcardsWithTranslations = DataImport.getFlashcardListFromTextFile("DataSets/TranslatedFlashcards.txt");
+        ArrayList<Flashcard> rawFlashcards = DataImport.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");//Gets the flascards without a translation
+        ArrayList<Flashcard> flashcardsWithTranslations = DataImport.getFlashcardListFromTextFile("DataSets/TranslatedFlashcards.txt");//Gets the flashcards with a translation
 		ArrayList<Flashcard> availableFlashcards = new ArrayList<>();
 		
 		for(Flashcard cardWithoutTranslation: rawFlashcards){
 			if(!flashcardsWithTranslations.contains(cardWithoutTranslation)){
-				availableFlashcards.add(cardWithoutTranslation);}
+				availableFlashcards.add(cardWithoutTranslation);}//Only show flashcards which haven't already been translated
 		}
 		
 		
 		CustomRandom random = new CustomRandom();
-		Flashcard flashcard;
+		Flashcard flashcard;//To store the flashcard which the user is going to translate
 		String userTranslation;
 		
-		Scanner scanner = new Scanner(System.in);
+		Scanner scanner = new Scanner(System.in);//Used to get the user input
 		
-		while(availableFlashcards.size()>0){
+		while(availableFlashcards.size()>0){//While there are still flashcards to translate
 			int randomFlashcardIndex = random.randomInt(availableFlashcards.size());
-			flashcard = availableFlashcards.get(randomFlashcardIndex);
-            System.out.println("What would be the sentence form of a flashcard with a front of " + flashcard.getFlashcardFront() + " and a back of " + flashcard.getFlashcardBack() + "?");
+			flashcard = availableFlashcards.get(randomFlashcardIndex);//Picks a random flashcard
+            System.out.println("What would be the sentence form of a flashcard with a front of " + flashcard.getFlashcardFront() + " and a back of " + flashcard.getFlashcardBack() + "?");//Explains to the user what to do
 			do{
-				userTranslation = scanner.nextLine();
-			}while( userTranslation.isEmpty() );
-			availableFlashcards.remove(randomFlashcardIndex);
-			flashcard.setSentence(userTranslation);
-			DataExport.appendToTextFile(flashcard.toString(), "DataSets/TranslatedFlashcards.txt");
+				userTranslation = scanner.nextLine();//Gets the user input
+			}while( userTranslation.isEmpty() );//Keeps asking the user question until they given a response which isn't an empty line
+			availableFlashcards.remove(randomFlashcardIndex);//Removes it from the list to avoid asking the user to translate it again
+			flashcard.setSentence(userTranslation);//Updates the flashcard
+			DataExport.appendToTextFile(flashcard.toString(), "DataSets/TranslatedFlashcards.txt");//Adds the translated flashcard to the te text file
 		}
 		
-		scanner.close();
+		scanner.close();//Closes the scanner to avoid memory leaks
 	
 		
 	}

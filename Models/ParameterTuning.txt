@@ -1,0 +1,34 @@
+Average Model:	6.295896333554057
+Average Model:	6.298441069407588
+Average Model:	6.304546681156894
+Average Model:	6.300064453626039
+Average Model:	6.311973291422993
+Average Model:	6.302080646474487
+Average Model:	6.289179508619411
+Average Model:	6.316419976904334
+Average Model:	6.309494161053039
+Average Model:	6.318538945313742
+Average Model:	6.307786635050123
+Average Model:	6.319126949307524
+Average Model:	6.309253615592215
+Average Model:	6.596984526429275
+Advanced Copying with size of 0:	6.313276623363779
+Advanced Copying with size of 1:	6.644411291169104
+Advanced Copying with size of 2:	6.757050869820015
+Advanced Copying with size of 3:	6.55491992533459
+Advanced Copying with size of 4:	6.213329300070889
+Categoric Prob for Character with size of 0:	4.828247756453031
+Character Manipulation From String Distance Model:	6.4001494986425715
+Categoric Prob for Character with size of 1:	3.1623334525180455
+Categoric Prob for Character with size of 2:	4.760710940142234
+Neural Network with layers 0,0,and hidden dimensions 1,  Model:	6.0937097834994916
+Neural Network with layers 0,0,and hidden dimensions 2,  Model:	7.90869966688404
+Neural Network with layers 0,0,0,and hidden dimensions 1,1,  Model:	6.985139941307005
+Neural Network with layers 0,0,and hidden dimensions 1,  Model:	6.390720324571484
+Neural Network with layers 0,0,and hidden dimensions 2,  Model:	7.238524178772082
+Neural Network with layers 0,0,0,and hidden dimensions 2,1,  Model:	6.746033545593623
+Neural Network with layers 0,0,and hidden dimensions 3,  Model:	5.146319114506226
+Neural Network with layers 0,0,0,and hidden dimensions 3,1,  Model:	6.557781166887328
+Neural Network with layers 0,0,and hidden dimensions 5,  Model:	5.776650973221596
+Neural Network with layers 0,0,and hidden dimensions 10,  Model:	4.88192403645661
+Neural Network with layers 0,0,0,and hidden dimensions 5,1,  Model:	6.470639369946981

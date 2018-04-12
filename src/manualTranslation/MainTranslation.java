@@ -1,36 +1,23 @@
 package manualTranslation;
 
+import dataStructures.Flashcard;
+import fileManipulation.DataImport;
+
+import java.util.ArrayList;
+
 public class MainTranslation {
 
 	public static void main(String[] args) {
+        AutomaticDataPreProcessing.removeFlashcardsWithUnknownCharacters("DataSets/RawFlashcards.txt");//Removes flashcards which include characters which can't represented in UTF-8 correctly (this could include characters from language for example)
 
-		//ArrayList<Flashcard> Flashcards = Flashcard.getFlashcardListFromTextFile("DataSets/TranslatedFlashcards.txt");
-		//autoDataIncrease.addCapitalisationVariation(Flashcards, "DataSets/TranslatedFlashcards.txt");
-		
-		//ArrayList<Flashcard> Flashcards = Flashcard.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
-		//autoDataIncrease.addOneWordTranslations(Flashcards, "DataSets/TranslatedFlashcards.txt");
-		//String s = "â";
-		//System.out.println(s.toUpperCase());
-		
-		
-		//ArrayList<Flashcard> Flashcards = Flashcard.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");
+		ArrayList<Flashcard> flashcards = DataImport.getFlashcardListFromTextFile("DataSets/RawFlashcards.txt");//Gets the raw flashcards
 
-        //AutomaticDataPreProcessing.automaticallyTranslateRawFlashcards(Flashcards, "DataSets/TranslatedFlashcards.txt");
+        AutomaticDataPreProcessing.automaticallyTranslateRawFlashcards(flashcards, "DataSets/TranslatedFlashcards.txt");//If possible generate the correct sentence
 
-        //AutomaticDataPreProcessing.deleteDuplicateFlashcards("DataSets/TranslatedFlashcards.txt");
+        AutomaticDataPreProcessing.removeTranslatedCards("DataSets/RawFlashcards.txt", "DataSets/TranslatedFlashcards.txt");//Because the flashcards have been  translated they can be removed
 
-        AutomaticDataPreProcessing.removeTranslatedCards("DataSets/RawFlashcards.txt", "DataSets/TranslatedFlashcards.txt");
-		
-		
-		//.removeFlashcardsWithUnknownCharacters("DataSets/RawFlashcards.txt");
-		
-		//System.out.println("�?");
+		AutomaticDataPreProcessing.deleteDuplicateFlashcards("DataSets/TranslatedFlashcards.txt");//To avoiid the model being biased to certain data steps
 
-		
-		//String test = "�?�√(8a�?�b³)<F_B_S>a �?�√(8b³)<Fc_S_S>�?�√(8a�?�b³) means a �?�√(8b³)\r\n"; 
-				
-		//System.out.println(test.contains("�?"));
-		
 	}
 
 }

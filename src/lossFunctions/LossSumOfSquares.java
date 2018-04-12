@@ -5,7 +5,7 @@ import matrices.Vector;
 
 public class LossSumOfSquares implements Loss{
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {//for testing purposes
 		double[] actualOutputArray = {0.1,-0.1, -0.9};
         System.out.println("Actual Output: " + Utilities.arrayToString(actualOutputArray));
 		Vector actualOutput = new Vector(actualOutputArray );
@@ -20,20 +20,12 @@ public class LossSumOfSquares implements Loss{
 	public double measureLoss(Vector actualOutput, Vector targetOutput) {
 		double output = 0;
 		double difference;
-		//System.out.println(actualOutput.getSize());
-		
-		//System.out.println("actual size "+actualOutput.getSize());
+
 		for(int i=0;i<actualOutput.getSize();i++) {
 			difference = actualOutput.get(i)-targetOutput.get(i);
-			
-			//difference = actualOutput.get(i);
-			//difference -= targetOutput.get(i);
-			
-			output += difference*difference;
-			//System.out.print(output+",");
+			output += difference*difference;//using squares means that being too large or small affect the loss the same amount
 		}
-		//System.out.println();
-		return output*0.5;
+		return output*0.5;//I multiply by half so that the derivative of teh loss function is just the actual values - the target values
 	}
 
 }

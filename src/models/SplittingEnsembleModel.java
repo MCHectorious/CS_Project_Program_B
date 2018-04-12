@@ -6,20 +6,19 @@ import matrices.Vector;
 
 public class SplittingEnsembleModel implements Model{
 
-	private Model modelInSplit, modelNotInSplit;
-	private DataSplitOperation split;
+	private Model modelInSplit, modelNotInSplit;//the models to be used based on the data split operation
+	private DataSplitOperation split;//decides if the data step follows a certain format
 
 	public SplittingEnsembleModel(Model model1, Model model2, DataSplitOperation splitOp) {
 		modelInSplit = model1;
 		modelNotInSplit = model2;
-		
 		split = splitOp;
 	}
 	
 	
 	@Override
 	public void run(DataStep input, Vector output) {
-		if(split.isInSet(input)) {
+		if(split.isInSet(input)) {//decides whether the data step follows a certain format
 			modelInSplit.run(input, output);
 		}else {
 			modelNotInSplit.run(input, output);

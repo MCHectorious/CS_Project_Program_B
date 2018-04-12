@@ -4,10 +4,10 @@ import generalUtilities.HasDescription;
 import generalUtilities.Utilities;
 
 public class GeneralMatrix implements HasDescription {
-	protected double[] data;
+	protected double[] data;//the infomration stored in the matrix
 
     public String provideDescription() {
-        return Utilities.arrayToString(data);
+        return Utilities.arrayToString(data);//The description is just the data
     }
 
     public void provideDescription(StringBuilder builder) {
@@ -39,8 +39,8 @@ public class GeneralMatrix implements HasDescription {
         return data[index];
     }
     
-    public double set( int index , double value ) {
-        return data[index] = value;
+    public void set( int index , double value ) {
+        data[index] = value;
     }
 
 }

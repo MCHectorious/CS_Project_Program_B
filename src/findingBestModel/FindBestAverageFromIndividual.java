@@ -27,9 +27,9 @@ public class FindBestAverageFromIndividual {
 		int displayReportPeriod = 100000;
 		int showEpochPeriod = 10000;
 		int checkMinimumPeriod = 50;
-		String savePath = "Models/CardToSentence.txt";
+		String savePath = "Models/CardToSentence.txt";//Where the best model is to be stored
 		
-		ArrayList<Model> modelList = new ArrayList<>();
+		ArrayList<Model> modelList = new ArrayList<>();//List of models of which the programs is trying to find the best average
 
         Model bestTemporaryModel;
 		double minimumLoss;
@@ -37,17 +37,22 @@ public class FindBestAverageFromIndividual {
 		ArrayList<String> linesFromTextFile = DataImport.getLinesFromTextFile("bestModel/BestLinearLayerWeights.txt");
 		double[] weights = DataImport.getDoubleArrayFromLine( linesFromTextFile.get(0) );
         bestTemporaryModel = new LinearLayer(weights, DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
+        //Imports the linear layer from the text file
 		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+		//Re-trains because the data steps will be slightly different this time
 		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
 		modelList.add(bestTemporaryModel);
+
 		
 		
 		linesFromTextFile = DataImport.getLinesFromTextFile("bestModel/BestFeedForwardLayerParams.txt");
 		double[] biases = DataImport.getDoubleArrayFromLine( linesFromTextFile.get(0) );
 		weights = DataImport.getDoubleArrayFromLine( linesFromTextFile.get(1) );
 		bestTemporaryModel = new FeedForwardLayer(weights, biases, new RoughTanhUnit());
-		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
-		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
+        //Imports the feed-forward layer from the text file
+        minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+        //Re-trains because the data steps will be slightly different this time
+        System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
 		modelList.add(bestTemporaryModel);
 
         bestTemporaryModel = new ProportionProbabilityForCharacterModel(data.getTrainingDataSteps(), 9, data.getDataProcessing(), random);
@@ -72,7 +77,8 @@ public class FindBestAverageFromIndividual {
 		double[] weightsForSecondLayerOf2LayerNeuralNetwork = DataImport.getDoubleArrayFromLine( linesFromTextFile.get(5) );
 		layers.add(new FeedForwardLayer(weightsForSecondLayerOf2LayerNeuralNetwork, biasesForSecondLayerOf2LayerNeuralNetwork, new RoughTanhUnit()));
         bestTemporaryModel = new NeuralNetworkModel(layers);
-		minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
+        //Imports the neural network from the text file
+        minimumLoss = (new ModelTrainer()).train(maximumTrainingEpochs, bestTemporaryModel, data, displayReportPeriod, showEpochPeriod, checkMinimumPeriod, savePath, random);
 		System.out.println(bestTemporaryModel.toString()+" : "+minimumLoss);
 		modelList.add(bestTemporaryModel);
 		

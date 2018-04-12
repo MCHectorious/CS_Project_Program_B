@@ -17,7 +17,7 @@ public class DataSplitter {
 		ArrayList<Double> losses = new ArrayList<>();
 		
 		Loss getLoss = new LossSumOfSquares();
-        Vector temporaryOutput = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
+        Vector temporaryOutput = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);//Used to avoid creating a new object each loop
 
         for (DataStep step : steps) {
             model.run(step, temporaryOutput);
@@ -26,7 +26,7 @@ public class DataSplitter {
 		}
 
 
-        double upperQuartile = Utilities.getUpperQuartile(losses);
+        double upperQuartile = Utilities.getUpperQuartile(losses);// 1/4 of the data steps have worse losses than this
 		System.out.println("Upper Quartile: "+upperQuartile);
 		
 		ArrayList<DataStep> goodLosses = new ArrayList<>();
@@ -34,7 +34,7 @@ public class DataSplitter {
 		
 		for(int i=0;i<steps.size();i++) {
 			if(losses.get(i)>=upperQuartile) {
-				badLosses.add(steps.get(i));
+				badLosses.add(steps.get(i));//Higher losses are worse
 			}else {
 				goodLosses.add(steps.get(i));
 			}
@@ -45,7 +45,7 @@ public class DataSplitter {
 		
 		ContainPhrase containsPhrase = new ContainPhrase(goodLosses, badLosses, dataPrep);
 		WithinCertainInterval withinCertainInterval = new WithinCertainInterval(goodLosses, badLosses);
-		return (containsPhrase.getValue()>withinCertainInterval.getValue())? containsPhrase : withinCertainInterval;
+		return (containsPhrase.getValue()>withinCertainInterval.getValue())? containsPhrase : withinCertainInterval;//Returns the data split operation which most accurately slits the data
 		
 	}
 

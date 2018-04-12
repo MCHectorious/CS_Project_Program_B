@@ -5,7 +5,7 @@ import generalUtilities.HasDescription;
 
 public abstract class DataSplitOperation implements HasDescription {
 
-    double valueOfOperation = -1;
+    double valueOfOperation = -1;//Initialises the value to an impossible value
 
 
     public abstract boolean isInSet(DataStep step);

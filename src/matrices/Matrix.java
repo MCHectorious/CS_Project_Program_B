@@ -22,7 +22,7 @@ public class Matrix extends GeneralMatrix{
     	return numberOfRows * numberOfColumns;
     }
     
-    public static Matrix random(int rows, int numberOfColumns, CustomRandom random) {
+    public static Matrix random(int rows, int numberOfColumns, CustomRandom random) {//Generates a random matrix of specified dimensions
     	Matrix output = new Matrix(rows,numberOfColumns);
     	output.setData(random.randomDoubleArray(rows*numberOfColumns));
     	return output;

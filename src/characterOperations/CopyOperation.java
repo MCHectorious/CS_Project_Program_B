@@ -7,17 +7,17 @@ public class CopyOperation implements CharacterOperation{
 
     @Override
     public void convertCharacter(char character, StringBuilder outputTextBuilder) {
-        outputTextBuilder.append(character);
+        outputTextBuilder.append(character);//Copies the character to the string builder
     }
 
     @Override
     public ArrayList<Character> getRelevantInputs() {
-        return new ArrayList<>();
+        return null;//This has no relevant inputs
     }
 
     @Override
     public ArrayList<Character> getRelevantOutputs() {
-        return null;
+        return null;//This has no relevant outputs
     }
 
     @Override

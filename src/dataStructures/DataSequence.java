@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataSequence {
-	private List<DataStep> dataSteps = new ArrayList<>();
+	private List<DataStep> dataSteps = new ArrayList<>();// The data steps in this  sequence
 
     DataSequence() {
     }
@@ -20,7 +20,7 @@ public class DataSequence {
 		return dataSteps.size();
 	}
 
-    DataStep getRandom(CustomRandom random) {
+    DataStep getRandomDataStep(CustomRandom random) {
 		return dataSteps.get(random.randomInt(dataSteps.size()-1));
 	}
 
@@ -29,11 +29,11 @@ public class DataSequence {
 	}
 
     void addDataStepsWithCapitalisationVariation(double[] input, double[] output, String inputText, String outputText, DataProcessing dataProcessing) {
-		dataSteps.add(new DataStep(input, output,inputText, outputText));
+		dataSteps.add(new DataStep(input, output,inputText, outputText));//Adds the original data step
 
 		Flashcard flashcard = new Flashcard(inputText);
 
-        ArrayList<DataStep> steps = AutomaticDataPreProcessing.addCapitalisationVariation(flashcard.getFlashcardFront(), flashcard.getFlashcardBack(), dataProcessing, output, outputText);
+        ArrayList<DataStep> steps = AutomaticDataPreProcessing.addCapitalisationVariation(flashcard.getFlashcardFront(), flashcard.getFlashcardBack(), dataProcessing, output, outputText);//Gets the data step but the capitalisation of the first character is flipped if possible
 
         dataSteps.addAll(steps);
 		

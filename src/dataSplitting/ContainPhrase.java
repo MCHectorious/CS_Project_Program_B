@@ -7,42 +7,41 @@ import java.util.ArrayList;
 
 public class ContainPhrase extends DataSplitOperation {
 
-	private String phrase;
+	private String phrase;//The phrase which determines whether it is in the set or not
 
 
     ContainPhrase(ArrayList<DataStep> list1, ArrayList<DataStep> list2, DataProcessing dataProcessing) {
-		String bestStringSoFar = "";
+		String bestStringSoFar = "";//Initialises to an impossible value
         for (String phrase : dataProcessing.getPhrases()) {
-			int list1LabelledList1=0,list1LabelledList2=0,list2LabelledList1=0,list2LabelledList2=0;
+			int inList1AndLabelledList1=0,inList1AndLabelledList2=0,inList2AndLabelledList1=0,inList2AndLabelledList2=0;
 			for(DataStep step:list1) {
-				//System.out.println(isInSet(step.getInputText(),phrase));
 				if(isInSet(step.getInputText(),phrase)) {
-					list1LabelledList1++;
+					inList1AndLabelledList1++;
 				}else {
-					list1LabelledList2++;
+					inList1AndLabelledList2++;
 				}
 			}
 			
 			for(DataStep step:list2) {
 				if(isInSet(step.getInputText(),phrase)) {
-					list2LabelledList1++;
+					inList2AndLabelledList1++;
 				}else {
-					list2LabelledList2++;
+					inList2AndLabelledList2++;
 				}
 			}
 			
-			double value = (double)list1LabelledList1/(double)(list1LabelledList1+list1LabelledList2) + (double)list2LabelledList2/(double)(list2LabelledList1+list2LabelledList2);	
+			double value = (double)inList1AndLabelledList1/(double)(inList1AndLabelledList1+inList1AndLabelledList2) + (double)inList2AndLabelledList2/(double)(inList2AndLabelledList1+inList2AndLabelledList2);//Measure how accuracy the phrase splits the data to match how it should be. It ranges from 0 to 2
 			
 			if(value> valueOfOperation) {
 				valueOfOperation = value;
 				bestStringSoFar = phrase;
-			}
+			}//Updates to get the best phrase and corresponding value of operation
 		}
 		phrase = bestStringSoFar;
 		
 	}
 	
-	private boolean isInSet(String input, String phraseToUse) {
+	private boolean isInSet(String input, String phraseToUse) {//Used to determine which phrase to use in constructor
 		for(int i=0;i<input.length()-phraseToUse.length();i++) {
 			if( input.substring(i, i+phraseToUse.length()).equals(phraseToUse) ) {
 				return true;

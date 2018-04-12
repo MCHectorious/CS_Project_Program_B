@@ -10,14 +10,13 @@ import nonlinearityFunctions.RoughTanhUnit;
 
 public class FeedForwardLayer implements Layer, Model{
 
-	private Vector biases;
-	private NonLinearity nonLinearity;
-	private double[] meanForBiases,varianceForBiases;
-	private Matrix weights;
-	private double[] derivativeOfCostWithRespectToWeight, derivativeOfCostWithRespectToBias, derivativeOfCostWithRespectToOutput;
-	private double[] derivativeOfNonLinWithRespectToTotal, derivativeOfCostWithRespectToTotal, derivativeOfCostWithRespectToInput;
-	private double[] meanForWeights;
-	private double[] varianceForWeights;
+	private Vector biases;//Added to the matrix multiplication
+	private NonLinearity nonLinearity;//Used to convert values into a specific range
+	private double[] meanForBiases,varianceForBiases;//Used to decide how to update the biases
+	private Matrix weights;//Multiplied by the input
+	private double[] derivativeOfCostWithRespectToWeight, derivativeOfCostWithRespectToBias, derivativeOfCostWithRespectToOutput;//Used to decide how to improvement the parameters
+	private double[] derivativeOfNonLinWithRespectToTotal, derivativeOfCostWithRespectToTotal, derivativeOfCostWithRespectToInput;//Used to decide how to improvement the parameters
+	private double[] meanForWeights, varianceForWeights;//Used to decide how to update the weights
 	private int inputSize;
 	private int outputSize;
 
@@ -59,7 +58,7 @@ public class FeedForwardLayer implements Layer, Model{
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {//For testing purposes
 		double[] weights = {1, -2, 3, -4, 5, -6, 7, -8, 9};
 		System.out.println("weights: " + Utilities.arrayToString(weights));
 		double[] biases = {1, -2, 3};
@@ -76,12 +75,12 @@ public class FeedForwardLayer implements Layer, Model{
 	
 	@Override
 	public void run(DataStep input, Vector Output) {
-		run(input.getInputVector(), Output);
+		run(input.getInputVector(), Output);//Runs the overloaded version of this method with a vector for faster computation time
 	}
 
 	@Override
 	public void runAndDecideImprovements(DataStep input, Vector Output, Vector targetOutput) {
-		runWithBackPropagation(input.getInputVector(), Output, targetOutput);
+		runWithBackPropagation(input.getInputVector(), Output, targetOutput);//Runs the overloaded version of this method with a vector for faster computation time
 
 	}
 
@@ -93,16 +92,16 @@ public class FeedForwardLayer implements Layer, Model{
             total = biases.get(i);
 			int startingPos = i * inputSize;
             for( int j = inputSize-1; j >=0; j-- ) {
-            	total += weights.get(startingPos + j) * input.get(j);
+            	total += weights.get(startingPos + j) * input.get(j);//Matrix multiplication of the weights and input
 			}
 			derivativeOfNonLinWithRespectToTotal[i] = nonLinearity.evaluateDerivative(total);
-			output.set(i, nonLinearity.evaluate(total));
+			output.set(i, nonLinearity.evaluate(total));//Sets the value
 		}
 
 		for (int i = 0; i < outputSize; i++) {
 			int startingPos = i * inputSize;
 			for (int j = 0; j < inputSize; j++) {
-				derivativeOfCostWithRespectToInput[j] += weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];
+				derivativeOfCostWithRespectToInput[j] += weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];//Gets the derivation of the cost with respect to the input
 			}
 		}
 
@@ -116,21 +115,21 @@ public class FeedForwardLayer implements Layer, Model{
 		for (int i = outputSize - 1; i >= 0; i--) {
 			total = biases.get(i);
 			for (int j = inputSize - 1; j >= 0; j--) {
-				total += weights.get(index--) * input.get(j);
+				total += weights.get(index--) * input.get(j);//Does the matrix multiplication of the weights and input
 			}
 			outputValue = nonLinearity.evaluate(total);
-			derivativeOfCostWithRespectToOutput[i] = outputValue - targetOutput.get(i);
+			derivativeOfCostWithRespectToOutput[i] = outputValue - targetOutput.get(i);//The derivative of the loss (sum of squares)
 			derivativeOfNonLinWithRespectToTotal[i] = nonLinearity.evaluateDerivative(total);
 			derivativeOfCostWithRespectToTotal[i] = derivativeOfCostWithRespectToOutput[i] * derivativeOfNonLinWithRespectToTotal[i];
-			derivativeOfCostWithRespectToBias[i] += derivativeOfCostWithRespectToTotal[i];
+			derivativeOfCostWithRespectToBias[i] += derivativeOfCostWithRespectToTotal[i];//Decides how to update the bias
 			Output.set(i, outputValue);
 		}
 
 		for (int i = 0; i < outputSize; i++) {
 			int startingPos = i * inputSize;
 			for (int j = 0; j < inputSize; j++) {
-				derivativeOfCostWithRespectToWeight[startingPos + j] += input.get(j) * derivativeOfCostWithRespectToTotal[i];
-				derivativeOfCostWithRespectToInput[j] += weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];
+				derivativeOfCostWithRespectToWeight[startingPos + j] += input.get(j) * derivativeOfCostWithRespectToTotal[i];//Decides how to update the weights
+				derivativeOfCostWithRespectToInput[j] += weights.get(startingPos + j) * derivativeOfCostWithRespectToTotal[i];//For the previous layers
 			}
 		}
 
@@ -143,7 +142,7 @@ public class FeedForwardLayer implements Layer, Model{
 		for (int i = outputSize - 1; i >= 0; i--) {
 			total = biases.get(i);
 			for (int j = inputSize - 1; j >= 0; j--) {
-				total += weights.get(index--) * input.get(j);
+				total += weights.get(index--) * input.get(j);//Performs the matrix multiplication
 			}
 			Output.set(i, nonLinearity.evaluate(total));
 		}
@@ -156,13 +155,13 @@ public class FeedForwardLayer implements Layer, Model{
 	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1, double OneMinusBeta2) {
 		
 		double gradient,value;
-		for(int i=0;i<derivativeOfCostWithRespectToWeight.length;i++) {
+		for(int i=0;i<derivativeOfCostWithRespectToWeight.length;i++) {//Uses the ADAM optimiser
 			gradient = derivativeOfCostWithRespectToWeight[i];
 			meanForWeights[i] =  beta1*meanForWeights[i]+OneMinusBeta1*gradient;
 			varianceForWeights[i] =  beta2*varianceForWeights[i]+OneMinusBeta2*gradient*gradient ;
-			value = alpha*meanForWeights[i]/(Math.sqrt(varianceForWeights[i])+0.00000001);
+			value = alpha*meanForWeights[i]/(Math.sqrt(varianceForWeights[i])+0.00000001);//The addition of the small value (called epsilon) is to avoid division by 0
 			weights.addToData(i, -value);
-			derivativeOfCostWithRespectToWeight[i] = momentum*value;
+			derivativeOfCostWithRespectToWeight[i] = momentum*value;//Decides how much the previous derivative affects the current derivative
 		}
 		for(int i=0;i<derivativeOfCostWithRespectToBias.length;i++) {
 			gradient = derivativeOfCostWithRespectToBias[i];
@@ -171,11 +170,11 @@ public class FeedForwardLayer implements Layer, Model{
 			
 			varianceForBiases[i] =  beta2*varianceForBiases[i]+OneMinusBeta2*gradient*gradient ;
 			
-			value = alpha*meanForBiases[i]/(Math.sqrt(varianceForBiases[i])+0.00000001);
+			value = alpha*meanForBiases[i]/(Math.sqrt(varianceForBiases[i])+0.00000001);//The addition of the small value (called epsilon) is to avoid division by 0
 			
 			
 			biases.addToData(i, -value);
-			derivativeOfCostWithRespectToBias[i] = momentum*value;
+			derivativeOfCostWithRespectToBias[i] = momentum*value;//Decides how much the previous derivative affects the current derivative
 		}
 	}
 
@@ -207,7 +206,7 @@ public class FeedForwardLayer implements Layer, Model{
 			}
 			derivativeOfCostWithRespectToOutput[i] = total;
 			
-			derivativeOfCostWithRespectToTotal[i] = total*derivativeOfNonLinWithRespectToTotal[i];
+			derivativeOfCostWithRespectToTotal[i] = total*derivativeOfNonLinWithRespectToTotal[i];//For the previous layer
 			
 			
 			derivativeOfCostWithRespectToBias[i] += derivativeOfCostWithRespectToTotal[i];

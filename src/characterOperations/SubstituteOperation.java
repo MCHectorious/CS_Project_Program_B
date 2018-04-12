@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class SubstituteOperation implements CharacterOperation {
 
-    private char inputCharacter;
-    private char outputCharacter;
+    private char inputCharacter;//The character will be substituted
+    private char outputCharacter;//The substitue character
 
     public SubstituteOperation(char input, char output) {
         inputCharacter = input;
@@ -17,21 +17,21 @@ public class SubstituteOperation implements CharacterOperation {
         if(character == inputCharacter) {
             outputTextBuilder.append(outputCharacter);
         }else {
-            outputTextBuilder.append(character);
+            outputTextBuilder.append(character);//If the character isn't the character to be substituted it copies
         }
     }
 
     @Override
     public ArrayList<Character> getRelevantInputs() {
         ArrayList<Character> relevantInputs = new ArrayList<>();
-        relevantInputs.add(inputCharacter);
+        relevantInputs.add(inputCharacter);//The input character is the only relevant input
         return relevantInputs;
     }
 
     @Override
     public ArrayList<Character> getRelevantOutputs() {
         ArrayList<Character> relevantOutputs = new ArrayList<>();
-        relevantOutputs.add(outputCharacter);
+        relevantOutputs.add(outputCharacter);//This is the only relevant output
         return relevantOutputs;
     }
 

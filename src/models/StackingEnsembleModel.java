@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 public class StackingEnsembleModel implements Model {
 
-	private ArrayList<Model> subModels;
-	private final Model combiningModel;
-	private ArrayList<Vector> subModelOutputs = new ArrayList<>();
-	private DataStep combiningModelInput;
+	private ArrayList<Model> subModels;// the models which are combined
+	private final Model combiningModel;// the model which combine the sub-models
+	private ArrayList<Vector> subModelOutputs = new ArrayList<>();// created here to avoid creating new objects in a loop
+	private DataStep combiningModelInput;// to avoid creating new objects in a loop
 	
 	
 	public StackingEnsembleModel(ArrayList<Model> models, int inputDimension, int outputDimension, CustomRandom util) {
@@ -20,7 +20,7 @@ public class StackingEnsembleModel implements Model {
 		for(int i=0;i<models.size();i++) {
 			subModelOutputs.add(new Vector(outputDimension));
 		}
-		combiningModel = new FeedForwardLayer(subModels.size()*inputDimension, outputDimension, new RoughTanhUnit(), util);
+		combiningModel = new FeedForwardLayer(subModels.size()*inputDimension, outputDimension, new RoughTanhUnit(), util);//defaults to using a feed-forward layers to ombine them
 
 		combiningModelInput = new DataStep(new Vector(subModels.size() * outputDimension));
 		
@@ -42,7 +42,7 @@ public class StackingEnsembleModel implements Model {
 		for(int i=subModels.size()-1;i>=0;i--) {
 			subModels.get(i).run(input, subModelOutputs.get(i));
 		}
-		Vector.concatenateVector(subModelOutputs, combiningModelInput.getInputVector());
+		Vector.concatenateVector(subModelOutputs, combiningModelInput.getInputVector());// puts all the intermediate outputs in one vector
 		combiningModel.run(combiningModelInput, output);
 
 	}
@@ -52,7 +52,7 @@ public class StackingEnsembleModel implements Model {
 		for(int i=subModels.size()-1;i>=0;i--) {
 			subModels.get(i).runAndDecideImprovements(input, subModelOutputs.get(i), targetOutput);
 		}
-		Vector.concatenateVector(subModelOutputs, combiningModelInput.getInputVector());
+		Vector.concatenateVector(subModelOutputs, combiningModelInput.getInputVector());// puts all the intermediate outputs in one vector
 
 		combiningModel.runAndDecideImprovements(combiningModelInput, output, targetOutput);
 	}

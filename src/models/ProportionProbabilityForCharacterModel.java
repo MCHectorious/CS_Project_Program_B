@@ -13,11 +13,11 @@ import java.util.Map;
 public class ProportionProbabilityForCharacterModel implements Model {
 
 
-	private DataProcessing dataProcessing;
-	private Map<String, ProportionProbability> getProbabilityDecider = new HashMap<>();
-	private int windowSideSize;
+	private DataProcessing dataProcessing;//To convert the numerical data to text and vice versa
+	private Map<String, ProportionProbability> getProbabilityDecider = new HashMap<>();//Gets what should occur given an input string
+	private int windowSideSize;//The size of the strings to chheck
 	private CustomRandom random;
-	private StringBuilder stringBuilder = new StringBuilder();
+	private StringBuilder stringBuilder = new StringBuilder();//Created here to avoid creating objects in a loop
 
 	public ProportionProbabilityForCharacterModel(List<DataStep> trainingData, int size, DataProcessing dataProcessing, CustomRandom random) {
 		this.dataProcessing = dataProcessing;
@@ -34,11 +34,11 @@ public class ProportionProbabilityForCharacterModel implements Model {
 			String outputText = step.getTargetOutputText();
 
 			for(int i=0;i<inputText.length();i++) {
-				int lowerBound = (i-windowSideSize<0)? 0:i-windowSideSize;
-				int upperBound = (i+windowSideSize>inputText.length())? inputText.length():i+windowSideSize;
+				int lowerBound = (i-windowSideSize<0)? 0:i-windowSideSize;//So that early sub-strings can be used as samples
+				int upperBound = (i+windowSideSize>inputText.length())? inputText.length():i+windowSideSize;//So that late sub-strings can be used as samples
 				String substring = inputText.substring(lowerBound,upperBound);
 				if(i>outputText.length()-1) {
-					break;
+					break;//Stop when the end of the text has been reached
 				}
 				Character character = outputText.charAt(i);
 
@@ -56,7 +56,7 @@ public class ProportionProbabilityForCharacterModel implements Model {
 				if(tupleExists) {
 					int index = strings.indexOf(substring);
 					int prevValue = counts.get(index);
-					counts.set(index, prevValue+1);
+					counts.set(index, prevValue+1);//increments the count of the input-output pair//Adds the input output pair
 				}else {
 					strings.add(substring);
 					characters.add(character);
@@ -74,7 +74,7 @@ public class ProportionProbabilityForCharacterModel implements Model {
 			if (!uniqueStrings.contains(string)) {
 				uniqueStrings.add(string);
 			}
-		}
+		}//Gets the unique strings
 
 		for (String uniqueString : uniqueStrings) {
 			ArrayList<Character> charactersForString = new ArrayList<>();
@@ -84,7 +84,7 @@ public class ProportionProbabilityForCharacterModel implements Model {
 				if (uniqueString.equals(strings.get(i))) {
 					charactersForString.add(characters.get(i));
 					countForCharacter.add(counts.get(i));
-					totalCountsForString += counts.get(i);
+					totalCountsForString += counts.get(i);//Gets the total
 				}
 
 			}
@@ -92,9 +92,9 @@ public class ProportionProbabilityForCharacterModel implements Model {
 			double[] probabilities = new double[countForCharacter.size()];
 			for (int i = 0; i < charactersForString.size(); i++) {
 				characterArray[i] = charactersForString.get(i);
-				probabilities[i] = (double) countForCharacter.get(i) / (double) totalCountsForString;
+				probabilities[i] = (double) countForCharacter.get(i) / (double) totalCountsForString;//Gets the empirical probability
 			}
-			getProbabilityDecider.put(uniqueString, new ProportionProbability(probabilities, characterArray));
+			getProbabilityDecider.put(uniqueString, new ProportionProbability(probabilities, characterArray));//Adds the probability decider
 		}
 
 
@@ -123,39 +123,39 @@ public class ProportionProbabilityForCharacterModel implements Model {
 
 	@Override
 	public void run(DataStep input, Vector output) {
-		stringBuilder.setLength(0);
+		stringBuilder.setLength(0);//resets the string builder
 		for (int i = 0; i < input.getInputText().length(); i++) {
-			int lowerBound = (i-windowSideSize<0)? 0:i-windowSideSize;
-			int upperBound = (i + windowSideSize > input.getInputText().length()) ? input.getInputText().length() : i + windowSideSize;
+			int lowerBound = (i-windowSideSize<0)? 0:i-windowSideSize;//so that early strings can  be used
+			int upperBound = (i + windowSideSize > input.getInputText().length()) ? input.getInputText().length() : i + windowSideSize;//so that late strings can  be used
 			String substring = input.getInputText().substring(lowerBound, upperBound);
 			if(getProbabilityDecider.containsKey(substring)) {
 				stringBuilder.append(getProbabilityDecider.get(substring).execute(random));
 			}else {
-				stringBuilder.append(input.getInputText().charAt(i));
+				stringBuilder.append(input.getInputText().charAt(i));//Otherwise it just copies the value
 			}
 
 		}
-		output.setData(dataProcessing.stringToDoubleArray(stringBuilder.toString()));
+		output.setData(dataProcessing.stringToDoubleArray(stringBuilder.toString()));//Sets the output
 	}
 
 	@Override
 	public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
-		run(input, output);
+		run(input, output);//Will not decide improvements
 
 	}
 
 	@Override
 	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
 									  double OneMinusBeta2) {
-
+		//Will not update the model parameters
 	}
 
 	private class ProportionProbability {
 
-		boolean onlyOneOption;
-		char onlyOption;
-		private double[] valuesForProbabilities;
-		private char[] outputs;
+		private boolean onlyOneOption;//states whether there is only one character output
+		private char onlyOption;//the only output, if there is only one output
+		private double[] valuesForProbabilities;//the empirical probabilities of the outputs
+		private char[] outputs;//the possible characters
 
 		ProportionProbability(double[] probabilities, char[] outputs) {
 			if (outputs.length == 1) {
@@ -174,7 +174,7 @@ public class ProportionProbabilityForCharacterModel implements Model {
 		}
 
 		char execute(CustomRandom random) {
-			if (onlyOneOption) {
+			if (onlyOneOption) {//to save on computation time
 				return onlyOption;
 			} else {
 				double value = random.randomDouble();
@@ -183,7 +183,7 @@ public class ProportionProbabilityForCharacterModel implements Model {
 						return outputs[i];
 					}
 				}
-				return ' ';
+				return ' ';//defaults to a space
 			}
 
 		}

@@ -7,9 +7,9 @@ import models.Model;
 import java.util.List;
 
 public interface DataSet {
-    Loss trainingLoss = new LossSumOfSquares();
+    Loss trainingLoss = new LossSumOfSquares();// Measures how well the training data and its predictions match
 
-    void displayReport(Model model);
+    void displayReport(Model model);//Shows how well the model does on a random piece of testing data
 
     List<DataStep> getTestingDataSteps();
 
@@ -19,5 +19,5 @@ public interface DataSet {
 
     List<DataStep> getTrainingDataSteps();
 
-    double getReciprocalOfTrainingSize();
+    double getReciprocalOfTrainingSize();//To avoid having to division lots of times which can take some tmie
 }

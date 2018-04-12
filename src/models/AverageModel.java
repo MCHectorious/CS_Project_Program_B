@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AverageModel implements Model{
 
-	private double[] averages = new double[DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR];
+	private double[] averages = new double[DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR];//The average for each value
 	
 	public AverageModel(List<DataStep> steps) {
 		double[] total = new double[DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR];
@@ -31,14 +31,14 @@ public class AverageModel implements Model{
 
 	@Override
 	public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
-		output.setData(averages);
+		output.setData(averages);//No improvements will be made
 	}
 
 
 	@Override
 	public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
 									  double OneMinusBeta2) {
-		
+		//No changes will be made to the parameters
 	}
 
 	@Override

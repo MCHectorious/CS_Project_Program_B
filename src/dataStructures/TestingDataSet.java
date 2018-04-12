@@ -46,7 +46,7 @@ public class TestingDataSet implements DataSet {
 	
 	@Override
 	public void displayReport(Model model) {
-		DataStep exampleTestingDataStep =  testingDataSequence.getRandom(random) ;
+		DataStep exampleTestingDataStep =  testingDataSequence.getRandomDataStep(random) ;
 		StringBuilder reportBuilder = new StringBuilder(300);
 		reportBuilder.append(reportBorder +"\nReport:\n");
 		reportBuilder.append("Input: ").append(exampleTestingDataStep.getInputText()).append("\n");

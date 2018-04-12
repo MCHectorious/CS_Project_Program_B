@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class SubstitutionSetOperation implements CharacterOperation{
 
 
-    private ArrayList<Character> inputs;
-    private ArrayList<Character> outputs;
+    private ArrayList<Character> inputs;//The relevant inputs
+    private ArrayList<Character> outputs;//The relevant outputs
 
     public SubstitutionSetOperation(ArrayList<Character> inputs, ArrayList<Character> outputs) {
         this.inputs =inputs;
@@ -20,7 +20,8 @@ public class SubstitutionSetOperation implements CharacterOperation{
         for(int i=0;i<inputs.size();i++) {
             if (character == inputs.get(i)) {
                 outputTextBuilder.append(outputs.get(i));
-                break;
+                //If the character matches tha input, the respective output is outputted
+                break;//If doesn't need to keep looking because it has already found a match
             }
         }
     }

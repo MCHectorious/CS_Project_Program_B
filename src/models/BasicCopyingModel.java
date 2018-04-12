@@ -15,14 +15,14 @@ public class BasicCopyingModel implements Model {
 
     @Override
     public void runAndDecideImprovements(DataStep input, Vector output, Vector targetOutput) {
-        run(input, output);
+        run(input, output);//Improvements will not be made
 
     }
 
     @Override
     public void updateModelParameters(double momentum, double beta1, double beta2, double alpha, double OneMinusBeta1,
                                       double OneMinusBeta2) {
-
+        //Parameters don't exist, so they want be changed
     }
 
     @Override

@@ -11,16 +11,15 @@ public class Subsets {
 
         int modelSize = models.size();
 
-        for (int i = 1; i < (1<<modelSize); i++)
-        {
+        for (int i = 1; i < (1<<modelSize); i++) {//Used to get get the numbers between  1 and 2^model size (0 is not included becauseI don't want the empty set)
             ArrayList<Model> subset = new ArrayList<>();
             for (int j = 0; j < modelSize; j++) {
-                if ((i & (1 << j)) > 0) {
-                    subset.add(models.get(j));
+                if ((i & (1 << j)) > 0) {//I.e. checks if the model is in the subset by there being a 1 in the binary representation of the number (i)
+                    subset.add(models.get(j));//Adds model to the subset
                 }
             }
-            if(subset.size()>=2) {
-                output.add(subset.toArray(new Model[0]));
+            if(subset.size()>=2) {//Won't get subsets with just 1 model in them
+                output.add(subset.toArray(new Model[0]));//Adds the subset to the output
             }
 
         }

@@ -3,9 +3,9 @@ package dataStructures;
 import matrices.Vector;
 
 public class DataStep {
-	private Vector input;
-	private Vector targetOutput;
-	private String inputText, targetOutputText;
+	private Vector input;//The numerical form of the input
+	private Vector targetOutput;//The numerical form of the target output
+	private String inputText, targetOutputText;// The textual form of the input and target out respectively
 	
 	public DataStep(double[] input, double[] targetOutput) {
 		this.input = new Vector(input);

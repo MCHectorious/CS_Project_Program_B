@@ -10,21 +10,33 @@ import models.Model;
 
 public class ModelTrainer {
 
-	private double numeratorLoss;
-	private Vector output = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);
-	private static final String minLossPath = "Models/Minimum Loss.txt";
+	private double numeratorLoss;//stores the loss of the model
+	private Vector output = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);// created here to avoid creating object in loops
+	private String minLossPath = "Models/Minimum Loss.txt";//stores the local of the global minimum loss of any model
 	
-	final private double alpha,beta1, beta2, oneMinusBeta1, oneMinusBeta2,momentum;
+	final private double alpha,beta1, beta2, oneMinusBeta1, oneMinusBeta2,momentum;//Used with the ADAM optimiser except for the momentum which the proportion that the previous staate of the model affects its currnt state
 
 	private double beta1ForEpoch = 1.0;
 	private double beta2ForEpoch = 1.0;
 	
-	
+	public ModelTrainer(String minLossPath){
+		this.minLossPath = minLossPath;//Changes where to look for the global minimum loss
+		alpha = 0.001;
+		beta1 = 0.9;
+		beta2 = 0.999;
+		//uses the recommended values
+
+		oneMinusBeta1 = 1-beta1;
+		oneMinusBeta2 = 1-beta2;
+
+		momentum = 0.0001;
+	}
 	
 	public ModelTrainer() {
 		alpha = 0.001;
 		beta1 = 0.9;
 		beta2 = 0.999;
+        //uses the recommended values
 		
 		oneMinusBeta1 = 1-beta1;
 		oneMinusBeta2 = 1-beta2;
@@ -55,45 +67,42 @@ public class ModelTrainer {
 		final String epochSuffix = "/"+maxTrainingEpochs+"]";
 		double localMinimum = Double.MAX_VALUE;
 		double globalMinimum = DataImport.getDoubleFromFile(minLossPath);
+		//Initialise variables to be used later
 		
-		
-		System.gc();
+		System.gc();//enables garbage collection so that more space is available
+
 		for(int epoch = 1; epoch<=maxTrainingEpochs; epoch++) {
 			
-			previousTime = System.currentTimeMillis();
+			previousTime = System.currentTimeMillis();// gets the initial time
 			trainingLoss = trainingPass(model,data);
 			if(trainingLoss < localMinimum) {
 				localMinimum = trainingLoss;
-				increasingStreak = 0;
+				increasingStreak = 0;// resets the the streak as the model is still improving
 				if(trainingLoss < globalMinimum) {
-					epochStringBuilder.setLength(0);
+					epochStringBuilder.setLength(0);//resets the string builder to avoid creating new objects
 					model.provideDescription(epochStringBuilder);
-					DataExport.overwriteTextFile(epochStringBuilder, savePath);
+					DataExport.overwriteTextFile(epochStringBuilder, savePath);//Stores the description of the best model
 					globalMinimum = trainingLoss;
-					DataExport.overwriteTextFile(globalMinimum, minLossPath);
+					DataExport.overwriteTextFile(globalMinimum, minLossPath);//stores the best loss
 				}
 			}else {
 				increasingStreak++;
-				if(increasingStreak==checkMinimumPeriod) {
+				if(increasingStreak==checkMinimumPeriod) {//if the model has gotten worse for long enough, the training stops
 					break;
 				}
 			}
-				
-			
-			
-			
-			if(epoch % showEpochPeriod == 0) {
-					
-				testingLoss = testingPass(model, data,1500,random);
-				epochStringBuilder.setLength(0);
+
+			if(epoch % showEpochPeriod == 0) {//every time an epoch is shown
+				testingLoss = testingPass(model, data,1500,random);// gets the testing loss
+				epochStringBuilder.setLength(0);//resets the string builder
 				epochStringBuilder.append("epoch[").append(epoch).append(epochSuffix);
 				duration = System.currentTimeMillis() - previousTime;
-				epochStringBuilder.append("\ttime = ").append(duration);
-				epochStringBuilder.append("\t training loss = ").append(trainingLoss);
-				epochStringBuilder.append("\t testing loss = ").append(testingLoss);
+				epochStringBuilder.append("\ttime = ").append(duration);//Shows the time
+				epochStringBuilder.append("\t training loss = ").append(trainingLoss);//shows the training loss
+				epochStringBuilder.append("\t testing loss = ").append(testingLoss);//shows the testing loss
 				System.out.println(epochStringBuilder.toString());
 				if(epoch % displayReportPeriod == 0) {
-					data.displayReport(model);
+					data.displayReport(model);//Shows a report
 				}
 					
 			}
@@ -111,11 +120,11 @@ public class ModelTrainer {
 		numeratorLoss = 0;
 		DataStep step;
 
-		int[] toTest = rand.randomIntArray(numTested, data.getTestingDataStepsSize());
+		int[] toTest = rand.randomDistinctIntArray(numTested, data.getTestingDataStepsSize());//gets the list of indexes of testing data steps to be tested
 		for(int i=toTest.length-1;i>=0;i--) {
 			step = data.getTestingDataSteps().get(toTest[i]);
-			model.run(step, output);
-			numeratorLoss += DataSet.trainingLoss.measureLoss(output, step.getTargetOutputVector());
+			model.run(step, output);// runs the model
+			numeratorLoss += DataSet.trainingLoss.measureLoss(output, step.getTargetOutputVector());//gets the loss
 
 		}
 
@@ -127,7 +136,6 @@ public class ModelTrainer {
 		DataStep step;
 		for(int i = data.getTrainingDataStepsSize()-1; i>=0; i--) {
 			step = data.getTrainingDataSteps().get(i);
-			//System.out.println(i);
 			model.runAndDecideImprovements(step, output, step.getTargetOutputVector());
 			numeratorLoss += DataSet.trainingLoss.measureLoss(output, step.getTargetOutputVector());
 		}
@@ -135,9 +143,9 @@ public class ModelTrainer {
 		beta1ForEpoch *= beta1;
 		beta2ForEpoch *= beta2;
 
-		double alphaForEpoch = alpha * Math.sqrt(1 - beta2ForEpoch) / (1 - beta1ForEpoch);
+		double alphaForEpoch = alpha * Math.sqrt(1 - beta2ForEpoch) / (1 - beta1ForEpoch);// so that alpha decreases over time to allow for faster and more accurate convergence
 
-		model.updateModelParameters(momentum, beta1, beta2, alphaForEpoch, oneMinusBeta1, oneMinusBeta2);
+		model.updateModelParameters(momentum, beta1, beta2, alphaForEpoch, oneMinusBeta1, oneMinusBeta2);// updates the model
 		
 		return numeratorLoss*data.getReciprocalOfTrainingSize();
 	}
