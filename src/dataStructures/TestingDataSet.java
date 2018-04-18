@@ -37,7 +37,7 @@ public class TestingDataSet implements DataSet {
 		testingDataSequence.addDataStep( new double[]{-0.65,-0.765,-0.765} , new double[]{-0.9785913080710769, -0.9860393689794779, -0.9900833002776676} , "uno", "nou");
 		testingDataSequence.addDataStep( new double[]{-0.125,-0.715,-0.85} , new double[]{-0.9740630268447672, -0.9829685770246104, -0.9880411384836164} , "two", "wot");
 
-		System.out.println("Total phrases = " + dataProcessing.getNumOfPhrases());
+		System.out.println("Total phrases = " + dataProcessing.getNumberOfPhrases());
 		System.out.println(trainingDataSequence.getSize() + " steps in trainingDataSequence set");
 		System.out.println(testingDataSequence.getSize() + " steps in testingDataSequence set");
 		reciprocalOfTrainingSize = 1.0/ trainingDataSequence.getSize();

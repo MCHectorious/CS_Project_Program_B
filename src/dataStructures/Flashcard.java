@@ -35,7 +35,7 @@ public class Flashcard {
 	
 	@Override
 	public String toString() {
-		if(sentence.equals("")) {//i.e. if the flashcard doesn't have a sentence transaltion
+		if(sentence.equals("")) {//i.e. if the flashcard doesn't have a sentence translation
 			return flashcardFront +FRONT_BACK_SEPARATOR+ flashcardBack;
 		}else {
 			return flashcardFront +FRONT_BACK_SEPARATOR+ flashcardBack + CARD_SENTENCE_SEPARATOR + sentence;

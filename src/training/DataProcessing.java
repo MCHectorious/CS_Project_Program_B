@@ -168,8 +168,6 @@ public class DataProcessing {
 		System.out.println("Finished Data Preparation");
 	}
 
-
-	
 	public double[] stringToDoubleArray(String string) {
 		double[] output = new double[FIXED_DATA_SIZE_FOR_VECTOR];
 		int index =0;
@@ -184,8 +182,6 @@ public class DataProcessing {
 						break;// searches the next part of the string
 					}
 				}
-				
-				
 			}
 			if(index>= FIXED_DATA_SIZE_FOR_VECTOR) {
 				break;//stops when all the data is filled
@@ -194,7 +190,6 @@ public class DataProcessing {
 		for(int i = index; i< FIXED_DATA_SIZE_FOR_VECTOR; i++) {
 			output[i] = positionForEmptyString+0.0000001* random.randomDouble()*(1.0-positionForEmptyString);
 		}//fills the rest of the data
-
 		return output;
 	}
 	
@@ -210,7 +205,7 @@ public class DataProcessing {
 			int high = phrasesSize - 1;
 			boolean found = false;
 			while (!found) {
-				int middle = (low + high) / 2;
+				int middle = (low + high) >> 1;//the floor of the midpoint between the two indexes
 				if (value >= valuesForSortedPhrases[middle] && value < valuesForSortedPhrases[middle + 1]) {
 					stringBuilder.append(sortedPhrases.get(middle));
 					found = true;
@@ -225,7 +220,7 @@ public class DataProcessing {
 		return stringBuilder.toString();
 	}
 	
-	public int getNumOfPhrases() {
+	public int getNumberOfPhrases() {
 		return phrasesSize;
 	}
 }

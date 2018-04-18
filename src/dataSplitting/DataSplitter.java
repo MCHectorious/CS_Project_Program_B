@@ -49,6 +49,16 @@ public class DataSplitter {
 		
 	}
 
+	public static ArrayList<DataStep> getStepsInSplit(List<DataStep> steps, DataSplitOperation split) {
+		ArrayList<DataStep> stepsNotInSplit = new ArrayList<>();
+		for(DataStep step: steps) {
+			if (split.isInSet(step)) {
+				stepsNotInSplit.add(step);
+			}
+		}
+		return stepsNotInSplit;
+	}
+
     public static ArrayList<DataStep> getStepsNotInSplit(List<DataStep> steps, DataSplitOperation split) {
 		ArrayList<DataStep> stepsNotInSplit = new ArrayList<>();
 		for(DataStep step: steps) {

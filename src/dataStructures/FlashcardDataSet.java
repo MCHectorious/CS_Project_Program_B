@@ -44,12 +44,8 @@ public class FlashcardDataSet implements DataSet{
 	
 	public FlashcardDataSet(String dataFilePath, CustomRandom random) {
 		this.random = random;
-
-		ArrayList<String> linesFromTextFile = DataImport.getLinesFromTextFile(dataFilePath);//Gets the lines representing the data stepss from a text file
-
-
+		ArrayList<String> linesFromTextFile = DataImport.getLinesFromTextFile(dataFilePath);//Gets the lines representing the data steps from a text file
         dataProcessing = new DataProcessing(linesFromTextFile);//Initiated so that the program can convert numerical data to textual data and vice versa
-
 		stringDistanceLoss = new LossStringDistance(dataProcessing);//Used to measure the real-world loss of  the model
 
 		for(String line: linesFromTextFile) {
@@ -63,7 +59,7 @@ public class FlashcardDataSet implements DataSet{
 			}
 
 		}
-		System.out.println("Total phrases = " + dataProcessing.getNumOfPhrases());
+		System.out.println("Total phrases = " + dataProcessing.getNumberOfPhrases());
 		System.out.println(trainingDataSequence.getSize() + " steps in trainingDataSequence set");
 		System.out.println(testingDataSequence.getSize() + " steps in testingDataSequence set");
 		reciprocalOfTrainingSize = 1.0/ trainingDataSequence.getSize();//Calculated just once

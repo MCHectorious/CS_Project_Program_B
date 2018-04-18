@@ -12,15 +12,15 @@ public class ModelTrainer {
 
 	private double numeratorLoss;//stores the loss of the model
 	private Vector output = new Vector(DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR);// created here to avoid creating object in loops
-	private String minLossPath = "Models/Minimum Loss.txt";//stores the local of the global minimum loss of any model
+	private String minimumLossPath = "Models/Minimum Loss.txt";//stores the local of the global minimum loss of any model
 	
 	final private double alpha,beta1, beta2, oneMinusBeta1, oneMinusBeta2,momentum;//Used with the ADAM optimiser except for the momentum which the proportion that the previous staate of the model affects its currnt state
 
 	private double beta1ForEpoch = 1.0;
 	private double beta2ForEpoch = 1.0;
 	
-	public ModelTrainer(String minLossPath){
-		this.minLossPath = minLossPath;//Changes where to look for the global minimum loss
+	public ModelTrainer(String minimumLossPath){
+		this.minimumLossPath = minimumLossPath;//Changes where to look for the global minimum loss
 		alpha = 0.001;
 		beta1 = 0.9;
 		beta2 = 0.999;
@@ -66,7 +66,7 @@ public class ModelTrainer {
 		double testingLoss;
 		final String epochSuffix = "/"+maxTrainingEpochs+"]";
 		double localMinimum = Double.MAX_VALUE;
-		double globalMinimum = DataImport.getDoubleFromFile(minLossPath);
+		double globalMinimum = DataImport.getDoubleFromFile(minimumLossPath);
 		//Initialise variables to be used later
 		
 		System.gc();//enables garbage collection so that more space is available
@@ -83,7 +83,7 @@ public class ModelTrainer {
 					model.provideDescription(epochStringBuilder);
 					DataExport.overwriteTextFile(epochStringBuilder, savePath);//Stores the description of the best model
 					globalMinimum = trainingLoss;
-					DataExport.overwriteTextFile(globalMinimum, minLossPath);//stores the best loss
+					DataExport.overwriteTextFile(globalMinimum, minimumLossPath);//stores the best loss
 				}
 			}else {
 				increasingStreak++;
@@ -115,8 +115,27 @@ public class ModelTrainer {
 		
 		
 	}
-	
-	private  double testingPass(Model model, DataSet data, int numTested, CustomRandom rand) {
+
+    private double trainingPass(Model model, DataSet data) {
+        numeratorLoss = 0;
+        DataStep step;
+        for(int i = data.getTrainingDataStepsSize()-1; i>=0; i--) {
+            step = data.getTrainingDataSteps().get(i);
+            model.runAndDecideImprovements(step, output, step.getTargetOutputVector());
+            numeratorLoss += DataSet.trainingLoss.measureLoss(output, step.getTargetOutputVector());
+        }
+
+        beta1ForEpoch *= beta1;
+        beta2ForEpoch *= beta2;
+
+        double alphaForEpoch = alpha * Math.sqrt(1 - beta2ForEpoch) / (1 - beta1ForEpoch);// so that alpha decreases over time to allow for faster and more accurate convergence
+
+        model.updateModelParameters(momentum, beta1, beta2, alphaForEpoch, oneMinusBeta1, oneMinusBeta2);// updates the model
+
+        return numeratorLoss*data.getReciprocalOfTrainingSize();
+    }
+
+    private  double testingPass(Model model, DataSet data, int numTested, CustomRandom rand) {
 		numeratorLoss = 0;
 		DataStep step;
 
@@ -131,24 +150,6 @@ public class ModelTrainer {
 		return numeratorLoss/toTest.length;
 	}
 
-	private double trainingPass(Model model, DataSet data) {
-		numeratorLoss = 0;
-		DataStep step;
-		for(int i = data.getTrainingDataStepsSize()-1; i>=0; i--) {
-			step = data.getTrainingDataSteps().get(i);
-			model.runAndDecideImprovements(step, output, step.getTargetOutputVector());
-			numeratorLoss += DataSet.trainingLoss.measureLoss(output, step.getTargetOutputVector());
-		}
-		
-		beta1ForEpoch *= beta1;
-		beta2ForEpoch *= beta2;
-
-		double alphaForEpoch = alpha * Math.sqrt(1 - beta2ForEpoch) / (1 - beta1ForEpoch);// so that alpha decreases over time to allow for faster and more accurate convergence
-
-		model.updateModelParameters(momentum, beta1, beta2, alphaForEpoch, oneMinusBeta1, oneMinusBeta2);// updates the model
-		
-		return numeratorLoss*data.getReciprocalOfTrainingSize();
-	}
 
 	
 }

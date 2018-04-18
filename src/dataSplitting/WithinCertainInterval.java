@@ -12,6 +12,12 @@ public class WithinCertainInterval extends DataSplitOperation {
 	private double pivot;//The middle of the range which makes the value in the data split
 	private double interval;// the range in the data split = pivot-interval to pivot+interval
 
+	public WithinCertainInterval(int index, double pivot, double interval){
+		this.index = index;
+		this.pivot = pivot;
+		this.interval = interval;
+	}
+
     WithinCertainInterval(ArrayList<DataStep> list1, ArrayList<DataStep> list2) {
 		double[] possibleIntervals = {0.01,0.1,0.25,0.5};//Possible values for the interval (not too precise to avoid over-fitting)
         for (int temporaryIndex = 0; temporaryIndex < DataProcessing.FIXED_DATA_SIZE_FOR_VECTOR; temporaryIndex++) {//goes through each possible index

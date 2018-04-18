@@ -17,9 +17,10 @@ public class ManualTranslation {
         ArrayList<Flashcard> flashcardsWithTranslations = DataImport.getFlashcardListFromTextFile("DataSets/TranslatedFlashcards.txt");//Gets the flashcards with a translation
 		ArrayList<Flashcard> availableFlashcards = new ArrayList<>();
 		
-		for(Flashcard cardWithoutTranslation: rawFlashcards){
-			if(!flashcardsWithTranslations.contains(cardWithoutTranslation)){
-				availableFlashcards.add(cardWithoutTranslation);}//Only show flashcards which haven't already been translated
+		for(Flashcard flashcardWithoutTranslation: rawFlashcards){
+			if(!flashcardsWithTranslations.contains(flashcardWithoutTranslation)){
+				availableFlashcards.add(flashcardWithoutTranslation);
+			}//Only show flashcards which haven't already been translated
 		}
 		
 		

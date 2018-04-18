@@ -200,15 +200,11 @@ public class FeedForwardLayer implements Layer, Model{
 		for(int i=0;i<outputSize;i++) {
 			double total =0;
         	int startingPos = i*inputSize;
-
 			for(int j=0;j<inputSize;j++) {
 				total+= weights.get(startingPos+j)*derivativeOfCostWithRespectToInputFromNextLayer[i];
 			}
 			derivativeOfCostWithRespectToOutput[i] = total;
-			
 			derivativeOfCostWithRespectToTotal[i] = total*derivativeOfNonLinWithRespectToTotal[i];//For the previous layer
-			
-			
 			derivativeOfCostWithRespectToBias[i] += derivativeOfCostWithRespectToTotal[i];
 		}
 		
@@ -216,7 +212,6 @@ public class FeedForwardLayer implements Layer, Model{
 			int startingPos = i*inputSize;
 			for(int j=0;j<inputSize;j++) {
 				derivativeOfCostWithRespectToWeight[startingPos+j] += input.get(j)*derivativeOfCostWithRespectToTotal[i];
-				
 			}
 		}
 

@@ -34,7 +34,7 @@ public class DataImport {
 		return lines;
 	}
 	public static double[] getDoubleArrayFromLine(String line) {
-		String[] doublesAsStrings = line.split("\t");//Assumes that the array was tab-separated
+		String[] doublesAsStrings = line.split(",");//Assumes that the array was comma-separated
 		double[] outputDoubleArray = new double[doublesAsStrings.length];
 		for(int i=0;i<doublesAsStrings.length;i++) {
 			outputDoubleArray[i] = Double.parseDouble( doublesAsStrings[i]);
