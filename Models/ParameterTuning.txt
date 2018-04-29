@@ -35,15 +35,16 @@ Neural Network with layers 0,0,0,and hidden dimensions 5,1,  Model:	6.4706393699
 Neural Network with layers 0,0,and hidden dimensions 20,  Model:	4.426539269194505
 Neural Network with layers 0,0,0,and hidden dimensions 10,1,  Model:	7.475599993148518
 Neural Network with layers 0,0,and hidden dimensions 50,  Model:	4.714639011113505
-At index 55, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 55, within +/- 0.25 of 0.4999999999999999 with good model models.LinearLayer@4dd8dc3 and bad model models.AdvancedCopyingModel@6d03e736: 5.052033314108316
-At index 60, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 60, within +/- 0.25 of 0.4999999999999999 with good model models.FeedForwardLayer@4dd8dc3 and bad model models.AdvancedCopyingModel@6d03e736: 4.989549119252719
+At index 55, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 55, within +/- 0.25 of 0.4999999999999999 with good model Models.LinearLayer@4dd8dc3 and bad model Models.AdvancedCopyingModel@6d03e736: 5.052033314108316
+At index 60, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 60, within +/- 0.25 of 0.4999999999999999 with good model Models.FeedForwardLayer@4dd8dc3 and bad model Models.AdvancedCopyingModel@6d03e736: 4.989549119252719
 Neural Network with layers 0,0,and hidden dimensions 75,  Model:	3.9416128374170443
 Neural Network with layers 1,0,and hidden dimensions 1,  Model:	9.77779378282325
 Neural Network with layers 0,0,0,and hidden dimensions 20,1,  Model:	5.996509996165888
 Neural Network with layers 1,0,and hidden dimensions 2,  Model:	9.409062959259774
 Neural Network with layers 1,0,and hidden dimensions 3,  Model:	10.913399411531456
 Neural Network with layers 1,0,and hidden dimensions 5,  Model:	10.31614176443113
-At index 60, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 60, within +/- 0.25 of 0.4999999999999999 with good model models.FeedForwardLayer@4dd8dc3 and bad model models.FeedForwardLayer@15aeb7ab: 2.659303948625972
-At index 55, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 55, within +/- 0.25 of 0.4999999999999999 with good model models.LinearLayer@4dd8dc3 and bad model models.FeedForwardLayer@15aeb7ab: 2.611384170850398
-At index 55, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 55, within +/- 0.25 of 0.4999999999999999 with good model models.LinearLayer@4dd8dc3 and bad model models.LinearLayer@7b23ec81: 2.5619910249494953
-At index 60, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 60, within +/- 0.25 of 0.4999999999999999 with good model models.FeedForwardLayer@4dd8dc3 and bad model models.LinearLayer@7b23ec81: 2.61355484153594
+At index 60, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 60, within +/- 0.25 of 0.4999999999999999 with good model Models.FeedForwardLayer@4dd8dc3 and bad model Models.FeedForwardLayer@15aeb7ab: 2.659303948625972
+At index 55, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 55, within +/- 0.25 of 0.4999999999999999 with good model Models.LinearLayer@4dd8dc3 and bad model Models.FeedForwardLayer@15aeb7ab: 2.611384170850398
+At index 55, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 55, within +/- 0.25 of 0.4999999999999999 with good model Models.LinearLayer@4dd8dc3 and bad model Models.LinearLayer@7b23ec81: 2.5619910249494953
+At index 60, within +/- 0.25 of 0.4999999999999999Splitting Model with split At index 60, within +/- 0.25 of 0.4999999999999999 with good model Models.FeedForwardLayer@4dd8dc3 and bad model Models.LinearLayer@7b23ec81: 2.61355484153594
+Stacking Model with model Feed forward layer with Models Models.SplittingEnsembleModel@7ef20235,Models.SplittingEnsembleModel@27d6c5e0,Models.ProportionalProbabilityForCharacterModel@4f3f5b24,:	2.4048361182277076
